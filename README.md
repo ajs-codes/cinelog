@@ -95,9 +95,16 @@ The migration command uses `TURSO_CONNECTION_URL` and `TURSO_AUTH_TOKEN` from yo
 
 ```bash
 yarn lint
+yarn lint:fix
+yarn typecheck
 yarn build
 yarn start
 ```
+
+`yarn lint` checks all project files and prints lint errors in the CLI. It exits
+silently when there are no ESLint errors or warnings. Use `yarn lint:fix` to
+apply safe automatic fixes. `yarn typecheck` reports TypeScript errors; those
+errors do not have a reliable automatic fixer and must be corrected in source.
 
 ## Application Routes
 
