@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   try {
     const [movie] = await getDb()
       .insert(movies)
-      .values(parsed.data)
+      .values({ ...parsed.data, createdAt: new Date() })
       .returning();
     return Response.json(movie, { status: 201 });
   } catch {
