@@ -3,15 +3,15 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-surface px-6 text-center">
-      <p className="text-sm font-medium uppercase tracking-widest text-text-secondary">
+      <p className="text-sm font-medium uppercase tracking-widest text-secondary">
         CineLog
       </p>
 
-      <h1 className="text-4xl font-semibold tracking-tight text-text-on-surface">
+      <h1 className="text-4xl font-semibold tracking-tight text-on-surface">
         Your movie log starts here.
       </h1>
 
-      <p className="max-w-md text-text-secondary">
+      <p className="max-w-md text-secondary">
         A Next.js foundation with typed API routes, Zod validation, Drizzle, and
         Redux Saga.
       </p>
