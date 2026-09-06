@@ -18,8 +18,11 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Run ESLint
         run: yarn lint
@@ -37,8 +40,11 @@ jobs:
           node-version: "20"
           cache: "yarn"
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Run TypeScript Compiler
         run: yarn typecheck
