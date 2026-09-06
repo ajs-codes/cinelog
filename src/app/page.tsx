@@ -18,6 +18,9 @@ export default function Home() {
             To get started, edit the{" "}
             <code className={styles.code}>page.tsx</code> file.
           </h1>
+              <h1 className="text-3xl font-bold underline">
+              Hello world!
+          </h1>
           <p>
             Looking for a starting point or more instructions? Head over to{" "}
             <a
