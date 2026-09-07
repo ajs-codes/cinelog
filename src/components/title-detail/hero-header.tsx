@@ -3,7 +3,11 @@ import { GenrePills } from "@/components/title-detail/hero-header/genre_pills";
 import { MetaRow } from "@/components/title-detail/hero-header/meta_row";
 import { PosterPanel } from "@/components/title-detail/hero-header/poster_panel";
 
-export function HeroHeader() {
+type HeroHeaderProps = {
+  type?: "movie" | "series";
+};
+
+export function HeroHeader({ type }: HeroHeaderProps) {
   return (
     <section
       className="relative m-4 overflow-hidden rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] font-body"
@@ -17,7 +21,7 @@ export function HeroHeader() {
 
         <div className="col-span-9 flex flex-col justify-between">
           <div className="flex flex-col gap-3">
-            <MetaRow />
+            <MetaRow type={type} />
 
             <div className="space-y-2">
               <h1 className="font-heading text-[48px] leading-[0.96] tracking-[-1.2px] text-white">

@@ -10,6 +10,7 @@ type MovieItemProps = {
   year?: string | number;
   rating?: string | number;
   genre?: string;
+  mediaType?: "movie" | "series";
   originalLanguage?: string;
   synopsis?: string;
   poster?: string;
@@ -26,6 +27,7 @@ function MovieItem({
   className,
   genre,
   id,
+  mediaType,
   onAction,
   onItemClick,
   originalLanguage,
@@ -63,7 +65,7 @@ function MovieItem({
       ) : (
         <>
           <Link
-            href={id !== undefined ? `/details/${id}` : "#"}
+            href={id !== undefined ? `/${mediaType}/${id}` : "#"}
             className="flex min-w-0 flex-1 items-stretch gap-2 sm:gap-4"
             onClick={onItemClick}
           >
