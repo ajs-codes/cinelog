@@ -1,7 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
-import { ArrowDownUp, Clapperboard, UserRound } from "lucide-react";
+import { Search, X, Clapperboard } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,24 +8,10 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { MovieList } from "@/components/search-popup/movie-list";
 import { SearchGroup } from "@/components/ui/search-group";
 import { FloatingSearchButton } from "@/components/search-popup/floating-search-button";
-import type { SortKey } from "@/types/sorting";
 
 export function GlobalSearchDialog() {
   const [query, setQuery] = useState("");
   const [mediaType, setMediaType] = useState<"movies" | "series">("movies");
-  const [sortKey, setSortKey] = useState<SortKey>("relevance");
-
-  const nextSortKey: Record<SortKey, SortKey> = {
-    relevance: "rating",
-    rating: "year",
-    year: "relevance",
-  };
-
-  const sortLabels: Record<SortKey, string> = {
-    relevance: "Relevance",
-    rating: "Rating",
-    year: "Year",
-  };
 
   return (
     <Dialog>
@@ -73,30 +58,6 @@ export function GlobalSearchDialog() {
             indicator="success"
             text="5 results"
           />
-        </div>
-
-        <div className="flex items-center justify-between gap-3 px-1 pt-1">
-          <Badge
-            className="rounded-md border-[#404040]/50 bg-[#262626]/60 px-2.25 py-0.75 text-outline-muted"
-            inlineStart={<UserRound />}
-            text={
-              <>
-                Director:{" "}
-                <strong className="text-on-surface">Denis Villeneuve</strong>
-              </>
-            }
-          />
-          <Button
-            className="h-auto bg-transparent p-0 text-outline-muted! no-underline"
-            onClick={() => setSortKey(nextSortKey[sortKey])}
-            size="default"
-            type="button"
-            variant="link"
-          >
-            <ArrowDownUp className="size-3.5" />
-            Sorted by{" "}
-            <strong className="text-on-surface">{sortLabels[sortKey]}</strong>
-          </Button>
         </div>
 
         <MovieList
