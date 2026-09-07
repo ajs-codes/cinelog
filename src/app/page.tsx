@@ -133,11 +133,11 @@ function Shelf({
           {action} <span aria-hidden="true">→</span>
         </button>
       </div>
-      <div className="flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex snap-x gap-4 overflow-x-auto pb-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
         {movies.map((movie) => (
           <div
             key={`${title}-${movie.title}`}
-            className="w-[240px] min-w-[240px] shrink-0 snap-start"
+            className="w-60 min-w-60 shrink-0 snap-start"
           >
             <MovieCard movie={movie} />
           </div>
