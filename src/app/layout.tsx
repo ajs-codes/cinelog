@@ -28,8 +28,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${notoSerif.variable} ${publicSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
-        <SearchDialog />
+        <Providers>
+          {children}
+          <SearchDialog />
+        </Providers>
       </body>
     </html>
   );

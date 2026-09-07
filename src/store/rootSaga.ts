@@ -1,7 +1,6 @@
 import type { SagaIterator } from "redux-saga";
-import { all, fork } from "redux-saga/effects";
-import movieSaga from "./slices/movieSaga";
+import { searchSaga } from "./slices/searchSaga";
 
 export default function* rootSaga(): SagaIterator {
-  yield all([fork(movieSaga)]);
+  yield* searchSaga();
 }

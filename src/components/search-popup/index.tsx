@@ -1,17 +1,50 @@
 "use client";
 
-import { Search, X, Clapperboard } from "lucide-react";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { MovieList } from "@/components/search-popup/movie-list";
+import { MovieLists } from "@/components/search-popup/movie-lists";
 import { SearchGroup } from "@/components/ui/search-group";
 import { FloatingSearchButton } from "@/components/search-popup/floating-search-button";
+import {
+  SearchControls,
+  type SearchMediaType,
+} from "@/components/search-popup/search-controls";
+import { searchCleared, searchRequested } from "@/store/slices/searchSlice";
+import { useAppDispatch, useAppSelector } from "@/store";
 
 export function SearchDialog() {
   const [query, setQuery] = useState("");
-  const [mediaType, setMediaType] = useState<"movies" | "series">("movies");
+  const [mediaType, setMediaType] = useState<SearchMediaType>("movies");
+  const dispatch = useAppDispatch();
+  const searchState = useAppSelector((state) => state.search[mediaType]);
+  const resultIndicator =
+    searchState.status === "loading"
+      ? "accentAlt"
+      : searchState.status === "failed"
+        ? "error"
+        : searchState.status === "idle"
+          ? undefined
+          : "success";
+  const resultText =
+    searchState.status === "idle"
+      ? `Search for ${mediaType === "movies" ? "movies" : "series"}`
+      : `${searchState.results.length} results`;
+
+  useEffect(() => {
+    const normalizedQuery = query.trim();
+
+    if (normalizedQuery.length <= 0) {
+      dispatch(searchCleared(mediaType));
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      dispatch(searchRequested({ mediaType, query: normalizedQuery }));
+    }, 500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [dispatch, mediaType, query]);
 
   return (
     <Dialog>
@@ -30,44 +63,17 @@ export function SearchDialog() {
           value={query}
         />
 
-        <div className="flex items-center justify-between gap-3 pt-1">
-          <div className="flex items-center rounded-xl border border-[#232527] bg-[#101112] p-1 gap-1">
-            <Button
-              className="rounded-lg px-3.5 py-1.5"
-              onClick={() => setMediaType("movies")}
-              size="default"
-              variant={mediaType === "movies" ? "primaryFilled" : "darkFilled"}
-              type="button"
-            >
-              <Clapperboard className="size-3.5" />
-              Movies
-            </Button>
-            <Button
-              className="rounded-lg px-3.5 py-1.5 text-text-secondary no-underline"
-              onClick={() => setMediaType("series")}
-              size="default"
-              variant={mediaType === "series" ? "primaryFilled" : "darkFilled"}
-              type="button"
-            >
-              Series &amp; Anime
-            </Button>
-          </div>
+        <SearchControls
+          mediaType={mediaType}
+          onMediaTypeChange={setMediaType}
+          resultIndicator={resultIndicator}
+          resultText={resultText}
+        />
 
-          <Badge
-            className="border-[#262626] bg-[#161718] px-3.25 py-1.75 text-on-surface"
-            indicator="success"
-            text="5 results"
-          />
-        </div>
-
-        <MovieList
-          genre="Sci-Fi, Adventure"
-          originalLanguage="English"
-          poster="https://image.tmdb.org/t/p/w200/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg"
-          rating="8.8"
-          synopsis="Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family, facing a choice between love and the fate of the universe."
-          title="Dune: Part Two"
-          year="2024"
+        <MovieLists
+          mediaType={mediaType}
+          results={searchState.results}
+          status={searchState.status}
         />
       </DialogContent>
     </Dialog>
