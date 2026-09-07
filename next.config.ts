@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  //TODO: Remove this once we have a proper way to use images.
 };
 
 export default nextConfig;
