@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type MovieCardProps = {
+type MovieListProps = {
   title: string;
   year?: string | number;
   rating?: string | number;
@@ -17,7 +17,7 @@ type MovieCardProps = {
   className?: string;
 };
 
-function MovieCard({
+function MovieList({
   actionLabel = "Watchlist",
   className,
   genre,
@@ -29,7 +29,7 @@ function MovieCard({
   synopsis,
   title,
   year,
-}: MovieCardProps) {
+}: MovieListProps) {
   return (
     <article
       className={cn(
@@ -104,5 +104,5 @@ function MovieCard({
   );
 }
 
-export { MovieCard };
-export type { MovieCardProps };
+export { MovieList };
+export type { MovieListProps };
