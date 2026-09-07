@@ -69,9 +69,10 @@ Copy the URL and token into a local environment file. Use `.env.local` for local
 ```env
 TURSO_CONNECTION_URL=libsql://your-database-your-org.turso.io
 TURSO_AUTH_TOKEN=your-turso-auth-token
+TMDB_API_KEY=your-tmdb-api-key
 ```
 
-Do not commit `.env.local` or expose `TURSO_AUTH_TOKEN` in client-side code. The database connection is created on the server in `src/db/index.ts`.
+Do not commit `.env.local` or expose `TURSO_AUTH_TOKEN` or `TMDB_API_KEY` in client-side code. The database connection and TMDB requests are made on the server.
 
 ## Database Migrations
 
@@ -105,12 +106,3 @@ yarn start
 silently when there are no ESLint errors or warnings. Use `yarn lint:fix` to
 apply safe automatic fixes. `yarn typecheck` reports TypeScript errors; those
 errors do not have a reliable automatic fixer and must be corrected in source.
-
-## Application Routes
-
-- `/` - Application home page
-- `/dashboard` - Movie dashboard
-- `GET /api/movies` - List movies
-- `POST /api/movies` - Add a validated movie
-- `GET /api/auth` - Authentication status placeholder
-- `POST /api/auth` - Authentication endpoint placeholder
