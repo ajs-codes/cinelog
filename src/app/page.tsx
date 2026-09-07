@@ -1,8 +1,8 @@
 "use client";
 
 import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
-import { AppShell } from "@/components/custom/app-shell";
-import { UserStats } from "@/components/custom/user-stats";
+import { AppShell } from "@/components/ui/app-shell";
+import { UserStats } from "@/components/dashboard/user-stats";
 
 const posterImages = [
   "https://www.figma.com/api/mcp/asset/3fd27b50-b02b-4c77-ab7a-eb88e7a6e75a.png",
