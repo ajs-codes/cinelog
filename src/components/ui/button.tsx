@@ -16,12 +16,14 @@ const buttonVariants = cva(
           "bg-surface-container-high text-brand-primary hover:bg-surface-container-high/80 border border-brand-primary",
         ghost:
           "bg-surface-container-high text-brand-primary hover:bg-surface-container-high/80",
-        dark: "bg-surface-container-low text-on-surface hover:bg-surface-container-low/80",
-        link: "text-primary underline-offset-4 hover:underline",
+        dark: 
+          "bg-surface-container-low text-on-surface hover:bg-surface-container-low/80",
+        link: 
+          "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default:
-          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+          "h-9 gap-1.5 px-9 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
         icon:
           "size-8",
         "icon-xs":
