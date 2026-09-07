@@ -38,7 +38,7 @@ export function UserStats() {
       {statCards.map((stat) => (
         <article
           key={stat.label}
-          className="flex min-h-[142px] flex-col justify-between rounded-lg bg-surface-container-low p-5 shadow-[0_1px_2px_rgb(0_0_0/20%)]"
+          className="flex min-h-35 flex-col justify-between rounded-lg bg-surface-container-low p-5 shadow-[0_1px_2px_rgb(0_0_0/20%)]"
         >
           <p className="font-public-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-secondary">
             {stat.label}
