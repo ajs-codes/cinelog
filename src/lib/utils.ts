@@ -1,3 +1,15 @@
 export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
+
+export function formatLanguage(languageCode: string) {
+  return (
+    new Intl.DisplayNames(["en"], { type: "language" }).of(languageCode) ??
+    languageCode
+  );
+}
+
+export function formatRating(value: string | number) {
+  const rating = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(rating) ? rating.toFixed(1) : value;
+}

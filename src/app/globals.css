@@ -2,6 +2,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer utilities {
+  .movie-lists-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface) transparent;
+  }
+
+  .movie-lists-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .movie-lists-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .movie-lists-scrollbar::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--surface);
+    background-clip: padding-box;
+  }
+
+  .movie-lists-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-container-high);
+    background-clip: padding-box;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

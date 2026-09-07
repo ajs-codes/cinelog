@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GlobalSearchDialog } from "@/components/search-popup/global-search-dialog";
+import { SearchDialog } from "@/components/search-popup";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Noto_Serif, Public_Sans } from "next/font/google";
@@ -28,8 +28,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${notoSerif.variable} ${publicSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
-        <GlobalSearchDialog />
+        <Providers>
+          {children}
+          <SearchDialog />
+        </Providers>
       </body>
     </html>
   );
