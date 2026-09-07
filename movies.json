@@ -1,263 +1,276 @@
 {
-  "url": "https://api.themoviedb.org/3/movie/557?append_to_response=release_dates%2Ccredits&language=en-US",
-  "backdrop_path": "/zQ8AxTPiCiS5nnwXpwTBPBHSaa5.jpg",
-  "belongs_to_collection": {
-    "id": 556,
-    "name": "Spider-Man Collection",
-    "poster_path": "/bp5PqLa06QA1LsELA1SsKZ008H7.jpg",
-    "backdrop_path": "/waZqriYTuBE3WqXI3SDGi3kfDQE.jpg"
-  },
+  "backdrop_path": "/rZfmzpixLKLR3Hg2u0WgC7XLFl8.jpg",
+  "belongs_to_collection": null,
   "genres": [
-    {
-      "id": 28,
-      "name": "Action"
-    },
-    {
-      "id": 878,
-      "name": "Science Fiction"
-    }
+    { "id": 27, "name": "Horror" },
+    { "id": 53, "name": "Thriller" }
   ],
-  "id": 557,
-  "imdb_id": "tt0145487",
-  "original_title": "Spider-Man",
-  "overview": "After being bitten by a genetically altered spider at Oscorp, nerdy but endearing high school student Peter Parker is endowed with amazing powers to become the superhero known as Spider-Man.",
-  "poster_path": "/or6XJBVpcEbIkma0V9zshnbEtx4.jpg",
+  "id": 1339713,
+  "imdb_id": "tt37287335",
+  "original_title": "Obsession",
+  "overview": "After breaking the mysterious \"One Wish Willow\" to win his crush's heart, a hopeless romantic finds himself getting exactly what he asked for but soon discovers that some desires come at a dark, sinister price.",
+  "poster_path": "/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
   "production_companies": [
     {
-      "id": 19551,
-      "logo_path": "/2WpWp9b108hizjHKdA107hFmvQ5.png",
-      "name": "Marvel Enterprises",
-      "origin_country": "US"
+      "id": 155758,
+      "logo_path": "/iZi0zd9ijrcWR9zlEUUthG8d600.png",
+      "name": "Tea Shop Productions",
+      "origin_country": "GB"
     },
     {
-      "id": 326,
+      "id": 273145,
       "logo_path": null,
-      "name": "Laura Ziskin Productions",
+      "name": "Under the Shell",
       "origin_country": "US"
     },
     {
-      "id": 5,
-      "logo_path": "/71BqEFAF4V3qjjMPCpLuyJFB9A.png",
-      "name": "Columbia Pictures",
+      "id": 154063,
+      "logo_path": "/r4anaxYa8OL5KaUbU35VkrIe88L.png",
+      "name": "Capstone Pictures",
+      "origin_country": "US"
+    },
+    {
+      "id": 3172,
+      "logo_path": "/rzKluDcRkIwHZK2pHsiT667A2Kw.png",
+      "name": "Blumhouse Productions",
       "origin_country": "US"
     }
   ],
   "production_countries": [
-    {
-      "iso_3166_1": "US",
-      "name": "United States of America"
-    }
+    { "iso_3166_1": "US", "name": "United States of America" },
+    { "iso_3166_1": "GB", "name": "United Kingdom" }
   ],
-  "release_date": "2002-05-01",
-  "runtime": 121,
+  "release_date": "2026-05-13",
+  "runtime": 109,
   "spoken_languages": [
-    {
-      "english_name": "English",
-      "iso_639_1": "en",
-      "name": "English"
-    }
+    { "english_name": "English", "iso_639_1": "en", "name": "English" }
   ],
   "status": "Released",
-  "tagline": "Go for the ultimate spin.",
-  "title": "Spider-Man",
-  "vote_average": 7.352,
+  "tagline": "Be careful who you wish for…",
+  "title": "Obsession",
+  "vote_average": 8.2,
   "release_dates": {
-    "iso_3166_1": "IN",
-    "release_dates": [
+    "results": [
       {
-        "certification": "U",
-        "descriptors": [],
-        "iso_639_1": "",
-        "note": "",
-        "release_date": "2002-05-24T00:00:00.000Z",
-        "type": 3
+        "iso_3166_1": "IN",
+        "release_dates": [
+          {
+            "certification": "A",
+            "descriptors": [],
+            "iso_639_1": "",
+            "note": "",
+            "release_date": "2026-05-29T00:00:00.000Z",
+            "type": 3
+          }
+        ]
       }
     ]
   },
-  "credits": {
-    "id": 557,
-    "cast": [
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 2219,
-        "known_for_department": "Acting",
-        "name": "Tobey Maguire",
-        "original_name": "Tobey Maguire",
-        "popularity": 6.143,
-        "profile_path": "/s6PwSvq6gC7PGEjIku69tPbvR8M.jpg",
-        "cast_id": 31,
-        "character": "Spider-Man / Peter Parker",
-        "credit_id": "52fe4251c3a36847f8014f77",
-        "order": 0
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 5293,
-        "known_for_department": "Acting",
-        "name": "Willem Dafoe",
-        "original_name": "Willem Dafoe",
-        "popularity": 8.8652,
-        "profile_path": "/ui8e4sgZAwMPi3hzEO53jyBJF9B.jpg",
-        "cast_id": 32,
-        "character": "Green Goblin / Norman Osborn",
-        "credit_id": "52fe4251c3a36847f8014f7b",
-        "order": 1
-      },
-      {
-        "adult": false,
-        "gender": 1,
-        "id": 205,
-        "known_for_department": "Acting",
-        "name": "Kirsten Dunst",
-        "original_name": "Kirsten Dunst",
-        "popularity": 8.4312,
-        "profile_path": "/yhLKGjuiMMdbGnFrR8AREkCZcVF.jpg",
-        "cast_id": 10,
-        "character": "Mary Jane Watson",
-        "credit_id": "52fe4251c3a36847f8014f11",
-        "order": 2
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 17051,
-        "known_for_department": "Acting",
-        "name": "James Franco",
-        "original_name": "James Franco",
-        "popularity": 4.9166,
-        "profile_path": "/bjmAntHGiibLZixH8nTNVBzaFQn.jpg",
-        "cast_id": 11,
-        "character": "Harry Osborn",
-        "credit_id": "52fe4251c3a36847f8014f15",
-        "order": 3
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 19153,
-        "known_for_department": "Acting",
-        "name": "Cliff Robertson",
-        "original_name": "Cliff Robertson",
-        "popularity": 3.2953,
-        "profile_path": "/8pH2RWCPtXKzT9P33MbzgnzPlF0.jpg",
-        "cast_id": 34,
-        "character": "Ben Parker",
-        "credit_id": "52fe4251c3a36847f8014f83",
-        "order": 4
-      },
-      {
-        "adult": false,
-        "gender": 1,
-        "id": 18998,
-        "known_for_department": "Acting",
-        "name": "Rosemary Harris",
-        "original_name": "Rosemary Harris",
-        "popularity": 3.9836,
-        "profile_path": "/3Mu02enwaF8dFuT195f7esILXns.jpg",
-        "cast_id": 35,
-        "character": "May Parker",
-        "credit_id": "52fe4251c3a36847f8014f87",
-        "order": 5
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 18999,
-        "known_for_department": "Acting",
-        "name": "J.K. Simmons",
-        "original_name": "J.K. Simmons",
-        "popularity": 9.0231,
-        "profile_path": "/ScmKoJ9eiSUOthAt1PDNLi8Fkw.jpg",
-        "cast_id": 12,
-        "character": "J. Jonah Jameson",
-        "credit_id": "52fe4251c3a36847f8014f19",
-        "order": 6
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 20580,
-        "known_for_department": "Acting",
-        "name": "Joe Manganiello",
-        "original_name": "Joe Manganiello",
-        "popularity": 3.0136,
-        "profile_path": "/mTdACmitdrwor0Nrv5sr0u123vZ.jpg",
-        "cast_id": 13,
-        "character": "Flash Thompson",
-        "credit_id": "52fe4251c3a36847f8014f1d",
-        "order": 7
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 19468,
-        "known_for_department": "Acting",
-        "name": "Gerry Becker",
-        "original_name": "Gerry Becker",
-        "popularity": 1.6221,
-        "profile_path": "/il1r1Iym5WFJyo8SQon60aqu4nC.jpg",
-        "cast_id": 33,
-        "character": "Maximilian Fargas",
-        "credit_id": "52fe4251c3a36847f8014f7f",
-        "order": 8
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 5502,
-        "known_for_department": "Acting",
-        "name": "Bill Nunn",
-        "original_name": "Bill Nunn",
-        "popularity": 2.3726,
-        "profile_path": "/trxNvS6g5yvwbXzx2LK6JqutE5z.jpg",
-        "cast_id": 36,
-        "character": "Joseph 'Robbie' Robertson",
-        "credit_id": "52fe4251c3a36847f8014f8b",
-        "order": 9
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 20581,
-        "known_for_department": "Acting",
-        "name": "Jack Betts",
-        "original_name": "Jack Betts",
-        "popularity": 1.5377,
-        "profile_path": "/aC8uOwxVW2NJ5sYUvQImFZuVKQ7.jpg",
-        "cast_id": 14,
-        "character": "Henry Balkan",
-        "credit_id": "52fe4251c3a36847f8014f21",
-        "order": 10
-      },
-      {
-        "adult": false,
-        "gender": 2,
-        "id": 7623,
-        "known_for_department": "Directing",
-        "name": "Sam Raimi",
-        "original_name": "Sam Raimi",
-        "popularity": 4.4957,
-        "profile_path": "/8gssvwiPrFRuFRlr5ruKx68k1Jl.jpg",
-        "cast_id": 337,
-        "character": "Popcorn Thrower (uncredited)",
-        "credit_id": "645ca3d46aa8e00156490e7f",
-        "order": 90
-      },
-      {
-        "adult": false,
-        "gender": 1,
-        "id": 1424137,
-        "known_for_department": "Directing",
-        "name": "Susana Preston",
-        "original_name": "Susana Preston",
-        "popularity": 0.6609,
-        "profile_path": null,
-        "credit_id": "57e6988f9251412987008a35",
-        "department": "Directing",
-        "job": "Script Supervisor"
-      }
-    ]
-  }
+  "credits": [
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 1561370,
+      "known_for_department": "Acting",
+      "name": "Michael Johnston",
+      "original_name": "Michael Johnston",
+      "popularity": 3.1259,
+      "profile_path": "/fbpcCkBzu43kMdlXxEAMuLhseL8.jpg",
+      "cast_id": 58,
+      "character": "Bear",
+      "credit_id": "68bb69c6bce7b2a2989bfb98",
+      "order": 0
+    },
+    {
+      "adult": false,
+      "gender": 1,
+      "id": 2638587,
+      "known_for_department": "Acting",
+      "name": "Inde Navarrette",
+      "original_name": "Inde Navarrette",
+      "popularity": 11.743,
+      "profile_path": "/qlNBUGON8FebgzcqVhhRSVFYSa5.jpg",
+      "cast_id": 5,
+      "character": "Nikki",
+      "credit_id": "68add813dfa562a3e2548ff2",
+      "order": 1
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 2823609,
+      "known_for_department": "Acting",
+      "name": "Cooper Tomlinson",
+      "original_name": "Cooper Tomlinson",
+      "popularity": 1.5771,
+      "profile_path": "/vBMQbYT1DyWPCUp11dIiqZR9zhd.jpg",
+      "cast_id": 6,
+      "character": "Ian",
+      "credit_id": "68add854da0435381d6cf4c9",
+      "order": 2
+    },
+    {
+      "adult": false,
+      "gender": 1,
+      "id": 1519711,
+      "known_for_department": "Acting",
+      "name": "Megan Lawless",
+      "original_name": "Megan Lawless",
+      "popularity": 3.6309,
+      "profile_path": "/6qW63YEgB1qro01sM7T2HvhtFkh.jpg",
+      "cast_id": 7,
+      "character": "Sarah",
+      "credit_id": "68add862b63d261ce4449bca",
+      "order": 3
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 28637,
+      "known_for_department": "Acting",
+      "name": "Andy Richter",
+      "original_name": "Andy Richter",
+      "popularity": 3.6564,
+      "profile_path": "/5Qr7N6TzC8cI0ULxDm6EC5GpZ4C.jpg",
+      "cast_id": 50,
+      "character": "Carter",
+      "credit_id": "68bb678fe5b0c6eb7d94704d",
+      "order": 4
+    },
+    {
+      "adult": false,
+      "gender": 1,
+      "id": 3095494,
+      "known_for_department": "Acting",
+      "name": "Haley Fitzgerald",
+      "original_name": "Haley Fitzgerald",
+      "popularity": 1.2744,
+      "profile_path": "/xbKqZ5Epz0IaSCPLXDnByDACw2X.jpg",
+      "cast_id": 54,
+      "character": "Viola",
+      "credit_id": "68bb6946a0a80ad1114e5551",
+      "order": 5
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 1352948,
+      "known_for_department": "Acting",
+      "name": "Darin Toonder",
+      "original_name": "Darin Toonder",
+      "popularity": 1.4772,
+      "profile_path": "/bD7Y9T7Y6XwDXjGJ8Suabyt1ZGo.jpg",
+      "cast_id": 52,
+      "character": "Harry",
+      "credit_id": "68bb6911b70c82581b9bfaf1",
+      "order": 6
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 4030428,
+      "known_for_department": "Acting",
+      "name": "Anthony Pavone",
+      "original_name": "Anthony Pavone",
+      "popularity": 0.7071,
+      "profile_path": "/hxiqY9gHgwXGYnXSD11Wacm5Nmi.jpg",
+      "cast_id": 56,
+      "character": "Reggie",
+      "credit_id": "68bb696d46a23182a29bfbc7",
+      "order": 7
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 3592074,
+      "known_for_department": "Acting",
+      "name": "Justice",
+      "original_name": "Justice",
+      "popularity": 0.6514,
+      "profile_path": "/YFxKf2HHJvyavQf54NO5wXFOJX.jpg",
+      "cast_id": 53,
+      "character": "Joe",
+      "credit_id": "68bb6931fdd786ebf99bff28",
+      "order": 8
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 5618033,
+      "known_for_department": "Acting",
+      "name": "Anthony Casabianca",
+      "original_name": "Anthony Casabianca",
+      "popularity": 0.7584,
+      "profile_path": "/xNJUKqKQhMeyZ74erQvETr3AqV0.jpg",
+      "cast_id": 55,
+      "character": "Chris",
+      "credit_id": "68bb695db4b3bbb73b9bba58",
+      "order": 9
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 2381985,
+      "known_for_department": "Directing",
+      "name": "Curry Barker",
+      "original_name": "Curry Barker",
+      "popularity": 3.1814,
+      "profile_path": "/A16CxGKlkQYryoxGpxzKj4Wxk83.jpg",
+      "credit_id": "66ce3ce46f680bc91897d416",
+      "department": "Writing",
+      "job": "Writer"
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 2381985,
+      "known_for_department": "Directing",
+      "name": "Curry Barker",
+      "original_name": "Curry Barker",
+      "popularity": 3.1814,
+      "profile_path": "/A16CxGKlkQYryoxGpxzKj4Wxk83.jpg",
+      "credit_id": "66ce3c9dd8f4fa10a363a57c",
+      "department": "Directing",
+      "job": "Director"
+    },
+    {
+      "adult": false,
+      "gender": 2,
+      "id": 2381985,
+      "known_for_department": "Directing",
+      "name": "Curry Barker",
+      "original_name": "Curry Barker",
+      "popularity": 3.1814,
+      "profile_path": "/A16CxGKlkQYryoxGpxzKj4Wxk83.jpg",
+      "credit_id": "68add896c6eff2f62ca9acd3",
+      "department": "Editing",
+      "job": "Editor"
+    },
+    {
+      "adult": false,
+      "gender": 0,
+      "id": 5673222,
+      "known_for_department": "Directing",
+      "name": "Ricardo Padilla",
+      "original_name": "Ricardo Padilla",
+      "popularity": 0.3896,
+      "profile_path": null,
+      "credit_id": "68bb632304dd0798a50698e2",
+      "department": "Directing",
+      "job": "Second Assistant Director"
+    },
+    {
+      "adult": false,
+      "gender": 0,
+      "id": 3657824,
+      "known_for_department": "Directing",
+      "name": "Christopher Oh",
+      "original_name": "Christopher Oh",
+      "popularity": 0.4421,
+      "profile_path": null,
+      "credit_id": "68bb655ade6563fdec8ce692",
+      "department": "Lighting",
+      "job": "Gaffer"
+    }
+  ]
 }
