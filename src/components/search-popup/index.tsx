@@ -9,7 +9,7 @@ import { MovieList } from "@/components/search-popup/movie-list";
 import { SearchGroup } from "@/components/ui/search-group";
 import { FloatingSearchButton } from "@/components/search-popup/floating-search-button";
 
-export function GlobalSearchDialog() {
+export function SearchDialog() {
   const [query, setQuery] = useState("");
   const [mediaType, setMediaType] = useState<"movies" | "series">("movies");
 
