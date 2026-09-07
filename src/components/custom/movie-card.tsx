@@ -23,16 +23,21 @@ export function MovieCard({ movie }: { movie: MovieCardData }) {
     completion,
     type,
   } = movie;
+  const isLongTitle = title.length > 18;
 
   return (
-    <Card className="group/card w-full max-w-[240px] gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+    <Card className="group/card h-[352.5px] w-[240px] min-w-[240px] gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
       <CardContent className="p-0">
-        <div className="relative h-[288px] overflow-hidden bg-surface-container-low">
+        <div
+          className={`relative overflow-hidden bg-surface-container-low ${
+            isLongTitle ? "h-[272px]" : "h-[288px]"
+          }`}
+        >
           <Image
             alt={`${title} poster`}
             className="absolute inset-0 h-full w-full object-cover"
             fill
-            priority={false}
+            loading="eager"
             src={posterImage}
             sizes="(max-width: 240px) 100vw, 240px"
           />
@@ -64,9 +69,19 @@ export function MovieCard({ movie }: { movie: MovieCardData }) {
         </div>
       </CardContent>
 
-      <CardFooter className="flex-row items-center justify-between gap-[14px] rounded-none border-0 bg-surface-container-low px-[14px] py-[14px] text-on-surface">
-        <div className="flex flex-col items-start justify-center">
-          <h3 className="font-noto-sans text-[16px] font-semibold leading-[20px] text-on-surface">
+      <CardFooter
+        className={`flex-row items-start justify-between gap-[14px] rounded-none border-0 bg-surface-container-low px-[14px] py-[14px] text-on-surface ${
+          isLongTitle ? "h-[80.5px]" : "h-[64.5px]"
+        }`}
+      >
+        <div className="min-w-0 flex-1">
+          <h3
+            className={`line-clamp-2 font-noto-sans font-semibold text-on-surface ${
+              isLongTitle
+                ? "text-[14px] leading-[18px]"
+                : "text-[16px] leading-[20px]"
+            }`}
+          >
             {title}
           </h3>
           <p className="font-public-sans text-[11px] leading-[16.5px] text-secondary">
