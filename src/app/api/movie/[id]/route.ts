@@ -20,7 +20,6 @@ type TmdbMovie = {
   genres?: unknown[] | null;
   id?: number;
   imdb_id?: string | null;
-  original_title?: string;
   overview?: string;
   poster_path?: string | null;
   production_companies?: unknown[] | null;
@@ -61,7 +60,6 @@ function getMovieFields(movie: TmdbMovie) {
     genres: movie.genres ?? [],
     id: movie.id,
     imdb_id: movie.imdb_id,
-    original_title: movie.original_title,
     overview: movie.overview,
     poster_path: movie.poster_path,
     production_companies: movie.production_companies ?? [],
@@ -73,11 +71,9 @@ function getMovieFields(movie: TmdbMovie) {
     tagline: movie.tagline,
     title: movie.title,
     vote_average: movie.vote_average,
-    release_dates: {
-      results: (movie.release_dates?.results ?? []).filter(
-        (release) => release.iso_3166_1 === "IN",
-      ),
-    },
+    release_dates: (movie.release_dates?.results ?? []).filter(
+      (release) => release.iso_3166_1 === "IN",
+    ),
     credits: [...cast, ...directingCrew],
   };
 }
