@@ -22,7 +22,7 @@ export function MovieLists({ mediaType, results, status }: MovieListsProps) {
       ) : (
         results.map((result, index) => (
           <MovieItem
-            genre={result.genre_ids.join(", ")}
+            genre={result.genres.join(", ")}
             key={`${mediaType}-${result.id ?? index}`}
             originalLanguage={result.original_language}
             poster={result.poster_path ?? undefined}
