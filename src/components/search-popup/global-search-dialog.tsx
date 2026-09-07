@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { MovieCard } from "@/components/search-popup/movie-card";
+import { MovieList } from "@/components/search-popup/movie-list";
 import { SearchGroup } from "@/components/ui/search-group";
 import { FloatingSearchButton } from "@/components/search-popup/floating-search-button";
 import type { SortKey } from "@/types/sorting";
@@ -99,7 +99,7 @@ export function GlobalSearchDialog() {
           </Button>
         </div>
 
-        <MovieCard
+        <MovieList
           genre="Sci-Fi, Adventure"
           originalLanguage="English"
           poster="https://image.tmdb.org/t/p/w200/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg"
