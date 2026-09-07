@@ -1,13 +1,12 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, numeric, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const movies = sqliteTable("movies", {
+export const genres = sqliteTable("genres", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
-  year: integer("year"),
-  genre: text("genre"),
-  watched: integer("watched", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  tmdbId: integer("tmdb_id").notNull().unique(),
+  type: integer("type").notNull(),
+  name: text("name").notNull(),
+  createdAt: numeric("created_at"),
 });
 
-export type Movie = typeof movies.$inferSelect;
-export type NewMovie = typeof movies.$inferInsert;
+export type Genre = typeof genres.$inferSelect;
+export type NewGenre = typeof genres.$inferInsert;
