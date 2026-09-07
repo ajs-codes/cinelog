@@ -4,7 +4,7 @@ export type SearchMediaType = "movies" | "series";
 export type SearchStatus = "idle" | "loading" | "success" | "failed";
 
 export type SearchResult = {
-  genre_ids: number[];
+  genres: string[];
   id?: number;
   original_language?: string;
   overview?: string;

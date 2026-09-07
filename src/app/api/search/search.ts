@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { inArray } from "drizzle-orm";
+import { getDb } from "@/db";
+import { genres } from "@/db/schema";
 import { TMDB_POSTER_BASE_URL } from "@/lib/constants";
 
 const searchQuerySchema = z.object({
@@ -75,11 +78,28 @@ export async function searchTmdb(request: Request, type: SearchType) {
     }
 
     const data = (await response.json()) as TmdbSearchResponse;
+    const genreIds = [
+      ...new Set(
+        (data.results ?? []).flatMap((result) => result.genre_ids ?? []),
+      ),
+    ];
+    const genreRows = genreIds.length
+      ? await getDb()
+          .select({ tmdbId: genres.tmdbId, name: genres.name })
+          .from(genres)
+          .where(inArray(genres.tmdbId, genreIds))
+      : [];
+    const genreNamesByTmdbId = new Map(
+      genreRows.map((genre) => [genre.tmdbId, genre.name]),
+    );
 
     return Response.json({
       results: (data.results ?? []).map((result) => ({
-        genre_ids: result.genre_ids ?? [],
         id: result.id,
+        genres: (result.genre_ids ?? []).flatMap((genreId) => {
+          const name = genreNamesByTmdbId.get(genreId);
+          return name ? [name] : [];
+        }),
         original_language: result.original_language,
         overview: result.overview,
         poster_path: result.poster_path
