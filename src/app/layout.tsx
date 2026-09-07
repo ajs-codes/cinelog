@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GlobalSearchDialog } from "@/components/search-popup/global-search-dialog";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Noto_Serif, Public_Sans } from "next/font/google";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
+        <GlobalSearchDialog />
       </body>
     </html>
   );
