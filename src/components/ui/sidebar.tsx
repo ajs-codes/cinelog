@@ -1,10 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import {
-  Clapperboard,
-  LayoutDashboard,
-  Library,
-  Settings,
-} from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Clapperboard, LayoutDashboard, Library, Settings } from "lucide-react";
 
 const navigation = [
   { label: "Overview", href: "/", icon: LayoutDashboard },
@@ -13,8 +11,10 @@ const navigation = [
 ];
 
 export function Sidebar() {
+  const pathname = usePathname();
+
   return (
-    <aside className="hidden w-[232px] shrink-0 border-r border-outline-alt bg-surface-container-low lg:flex lg:flex-col">
+    <aside className="hidden w-58 shrink-0 border-r border-outline-alt bg-surface-container-low lg:flex lg:flex-col">
       <div className="flex h-20 items-center gap-3 border-b border-outline-alt px-7">
         <div className="flex size-9 items-center justify-center rounded-lg bg-brand-primary text-surface">
           <Clapperboard className="size-5" strokeWidth={2.2} />
@@ -32,7 +32,7 @@ export function Sidebar() {
           Workspace
         </p>
         {navigation.map(({ label, href, icon: Icon }) => {
-          const active = href === "/";
+          const active = pathname === href;
           return (
             <Link
               key={label}
@@ -44,7 +44,7 @@ export function Sidebar() {
               }`}
               aria-current={active ? "page" : undefined}
             >
-              <Icon className="size-[18px]" strokeWidth={1.8} />
+              <Icon className="size-4.5" strokeWidth={1.8} />
               {label}
             </Link>
           );

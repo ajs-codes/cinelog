@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { RotateCw, Plus } from "lucide-react";
+import { RotateCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,12 +15,12 @@ export function Navbar() {
       </div>
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
-        <div className="hidden items-center gap-2 font-public-sans text-xs text-outline-muted lg:flex text-secondary">
+        <div className="hidden items-center gap-2 font-public-sans text-xs text-outline-muted lg:flex">
           <span>Auto Synced</span>
           <span>.</span>
           <span>TMDB Connected</span>
         </div>
-        
+
         <Button
           aria-label="Refresh TMDB data"
           className="hidden size-9 rounded-lg text-secondary hover:text-on-surface sm:inline-flex"
@@ -29,15 +28,8 @@ export function Navbar() {
           variant="dark"
           type="button"
         >
-          <RotateCw className="size-[17px]" strokeWidth={1.8} />
+          <RotateCw className="size-4.25" strokeWidth={1.8} />
         </Button>
-        <Link
-          href="/log"
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand-primary px-3 font-public-sans text-xs font-semibold text-surface transition-opacity hover:opacity-85"
-        >
-          <Plus className="size-3.5" strokeWidth={2.5} />
-          <span className="hidden sm:inline">Quick log</span>
-        </Link>
       </div>
     </header>
   );
