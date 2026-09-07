@@ -2,6 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { MovieLists } from "@/components/search-popup/movie-lists";
 import { SearchGroup } from "@/components/ui/search-group";
@@ -14,6 +15,13 @@ import { searchCleared, searchRequested } from "@/store/slices/searchSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
 
 export function SearchDialog() {
+  const pathname = usePathname();
+
+  return <SearchDialogContent key={pathname} />;
+}
+
+function SearchDialogContent() {
+  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [mediaType, setMediaType] = useState<SearchMediaType>("movies");
   const dispatch = useAppDispatch();
@@ -47,7 +55,7 @@ export function SearchDialog() {
   }, [dispatch, mediaType, query]);
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger render={<FloatingSearchButton />} />
       <DialogContent
         className="max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] border border-outline-alt bg-surface-container shadow-[0_8px_24px_rgb(0_0_0/25%)] sm:max-w-3xl"
@@ -72,6 +80,7 @@ export function SearchDialog() {
 
         <MovieLists
           mediaType={mediaType}
+          onItemClick={() => setOpen(false)}
           results={searchState.results}
           status={searchState.status}
         />
