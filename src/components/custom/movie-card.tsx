@@ -37,7 +37,7 @@ export function MovieCard({ movie }: { movie: MovieCardData }) {
             alt={`${title} poster`}
             className="absolute inset-0 h-full w-full object-cover"
             fill
-            priority={false}
+            loading="eager"
             src={posterImage}
             sizes="(max-width: 240px) 100vw, 240px"
           />
