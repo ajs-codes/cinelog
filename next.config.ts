@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         hostname: "image.tmdb.org",
         protocol: "https",
       },
+      {
+        hostname: "www.figma.com",
+        protocol: "https",
+      },
     ],
   },
 };
