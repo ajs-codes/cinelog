@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
@@ -26,10 +28,13 @@ export function MovieCard({ movie }: { movie: MovieCardData }) {
     <Card className="group/card w-full max-w-[240px] gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
       <CardContent className="p-0">
         <div className="relative h-[288px] overflow-hidden bg-surface-container-low">
-          <img
+          <Image
             alt={`${title} poster`}
             className="absolute inset-0 h-full w-full object-cover"
+            fill
+            priority={false}
             src={posterImage}
+            sizes="(max-width: 240px) 100vw, 240px"
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-surface-container-low via-surface-container-low/20 to-transparent" />
