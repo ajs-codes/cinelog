@@ -23,7 +23,7 @@ export function SearchDialog() {
 function SearchDialogContent() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [mediaType, setMediaType] = useState<SearchMediaType>("movies");
+  const [mediaType, setMediaType] = useState<SearchMediaType>("movie");
   const dispatch = useAppDispatch();
   const searchState = useAppSelector((state) => state.search[mediaType]);
   const resultIndicator =
@@ -36,7 +36,7 @@ function SearchDialogContent() {
           : "success";
   const resultText =
     searchState.status === "idle"
-      ? `Search for ${mediaType === "movies" ? "movies" : "series"}`
+      ? `Search for ${mediaType === "movie" ? "movies" : "series"}`
       : `${searchState.results.length} results`;
 
   useEffect(() => {

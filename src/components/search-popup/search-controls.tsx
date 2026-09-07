@@ -2,7 +2,7 @@ import { Clapperboard, TvMinimal } from "lucide-react";
 import { Badge, type BadgeIndicator } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export type SearchMediaType = "movies" | "series";
+export type SearchMediaType = "movie" | "series";
 
 type SearchControlsProps = {
   mediaType: SearchMediaType;
@@ -22,9 +22,9 @@ export function SearchControls({
       <div className="flex items-center gap-1 rounded-xl border border-[#232527] bg-[#101112] p-1">
         <Button
           className="rounded-lg px-3.5 py-1.5"
-          onClick={() => onMediaTypeChange("movies")}
+          onClick={() => onMediaTypeChange("movie")}
           size="default"
-          variant={mediaType === "movies" ? "primaryFilled" : "darkFilled"}
+          variant={mediaType === "movie" ? "primaryFilled" : "darkFilled"}
           type="button"
         >
           <Clapperboard className="size-3.5" />
