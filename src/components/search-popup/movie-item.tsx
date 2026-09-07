@@ -1,9 +1,11 @@
 import { Languages, Plus, Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn, formatLanguage, formatRating } from "@/lib/utils";
 
 type MovieItemProps = {
+  id?: number;
   title?: string;
   year?: string | number;
   rating?: string | number;
@@ -14,6 +16,7 @@ type MovieItemProps = {
   posterAlt?: string;
   actionLabel?: string;
   onAction?: () => void;
+  onItemClick?: () => void;
   className?: string;
   state?: "default" | "loading" | "failed";
 };
@@ -22,7 +25,9 @@ function MovieItem({
   actionLabel = "Watchlist",
   className,
   genre,
+  id,
   onAction,
+  onItemClick,
   originalLanguage,
   poster,
   posterAlt,
@@ -57,57 +62,63 @@ function MovieItem({
         </div>
       ) : (
         <>
-          <div className="flex w-24 shrink-0 self-stretch items-center justify-center">
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-surface-container-low shadow-md">
-              {poster && (
-                <Image
-                  alt={posterAlt ?? `${title ?? "Movie"} poster`}
-                  className="object-cover"
-                  fill
-                  src={poster}
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="flex min-w-0 flex-1 flex-col justify-start py-3">
-            <div className="flex min-w-0 items-baseline gap-2">
-              <h3 className="truncate font-heading text-lg leading-7 font-semibold text-white">
-                {title ?? "Untitled"}
-              </h3>
-              {year ? (
-                <span className="shrink-0 font-public-sans text-xs text-outline-muted">
-                  ({year})
-                </span>
-              ) : null}
+          <Link
+            href={id !== undefined ? `/details/${id}` : "#"}
+            className="flex min-w-0 flex-1 items-stretch gap-2 sm:gap-4"
+            onClick={onItemClick}
+          >
+            <div className="flex w-24 shrink-0 self-stretch items-center justify-center">
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-surface-container-low shadow-md">
+                {poster && (
+                  <Image
+                    alt={posterAlt ?? `${title ?? "Movie"} poster`}
+                    className="object-cover"
+                    fill
+                    src={poster}
+                  />
+                )}
+              </div>
             </div>
 
-            <div className="mt-0.5 flex flex-wrap items-center gap-2 font-public-sans text-xs">
-              {rating !== undefined ? (
-                <span className="flex items-center gap-1 font-semibold text-brand-tertiary-accent-alt">
-                  <Star className="size-3.5 fill-current" />
-                  {formatRating(rating)}
-                </span>
-              ) : null}
-              {genre ? <span className="text-outline-muted">•</span> : null}
-              {genre ? <span className="text-secondary">{genre}</span> : null}
-              {originalLanguage ? (
-                <span className="text-outline-muted">•</span>
-              ) : null}
-              {originalLanguage ? (
-                <span className="flex items-center gap-1 text-secondary">
-                  <Languages className="size-3" />
-                  {formatLanguage(originalLanguage)}
-                </span>
+            <div className="flex min-w-0 flex-1 flex-col justify-start py-3">
+              <div className="flex min-w-0 items-baseline gap-2">
+                <h3 className="truncate font-heading text-lg leading-7 font-semibold text-white">
+                  {title ?? "Untitled"}
+                </h3>
+                {year ? (
+                  <span className="shrink-0 font-public-sans text-xs text-outline-muted">
+                    ({year})
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-0.5 flex flex-wrap items-center gap-2 font-public-sans text-xs">
+                {rating !== undefined ? (
+                  <span className="flex items-center gap-1 font-semibold text-brand-tertiary-accent-alt">
+                    <Star className="size-3.5 fill-current" />
+                    {formatRating(rating)}
+                  </span>
+                ) : null}
+                {genre ? <span className="text-outline-muted">•</span> : null}
+                {genre ? <span className="text-secondary">{genre}</span> : null}
+                {originalLanguage ? (
+                  <span className="text-outline-muted">•</span>
+                ) : null}
+                {originalLanguage ? (
+                  <span className="flex items-center gap-1 text-secondary">
+                    <Languages className="size-3" />
+                    {formatLanguage(originalLanguage)}
+                  </span>
+                ) : null}
+              </div>
+
+              {synopsis ? (
+                <p className="mt-2 line-clamp-2 max-w-2xl font-public-sans text-xs leading-5 text-outline-muted">
+                  {synopsis}
+                </p>
               ) : null}
             </div>
-
-            {synopsis ? (
-              <p className="mt-2 line-clamp-2 max-w-2xl font-public-sans text-xs leading-5 text-outline-muted">
-                {synopsis}
-              </p>
-            ) : null}
-          </div>
+          </Link>
 
           <div className="flex shrink-0 items-center pl-1 sm:pl-2">
             <Button
