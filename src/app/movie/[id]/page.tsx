@@ -1,10 +1,10 @@
 "use client";
 
-import { AppShell } from "@/components/ui/app-shell";
-import { ContentErrorState } from "@/components/ui/content-error-state";
-import { ContentLoadingOverlay } from "@/components/ui/content-loading-overlay";
-import { HeroHeader } from "@/components/title-detail/hero-header";
-import { TitleProgress } from "@/components/title-detail/progress";
+import { AppShell } from "@/components/ui/layout/app-shell";
+import { ContentErrorState } from "@/components/custom/content-error-state";
+import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
+import { HeroHeader } from "@/components/content-detail";
+import { ContentProgress } from "@/components/content-detail/progress/content_progress";
 import { useContentDetails } from "@/hooks/title-details/use-content-details";
 import type { MovieDetails } from "@/lib/types";
 import { useParams } from "next/navigation";
@@ -24,7 +24,7 @@ export default function MoviePage() {
         <main className="relative min-h-[calc(100vh-3.5rem)]">
           <div aria-hidden="true" className="blur-sm">
             <HeroHeader type="movie" />
-            <TitleProgress type="movie" />
+            <ContentProgress type="movie" />
           </div>
           <ContentLoadingOverlay />
         </main>
@@ -36,7 +36,7 @@ export default function MoviePage() {
       ) : (
         <main>
           <HeroHeader movie={movie} type="movie" />
-          <TitleProgress type="movie" />
+          <ContentProgress type="movie" />
         </main>
       )}
     </AppShell>

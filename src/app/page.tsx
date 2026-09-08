@@ -1,8 +1,8 @@
 "use client";
 
 import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
-import { AppShell } from "@/components/ui/app-shell";
-import { UserStats } from "@/components/dashboard/user-stats";
+import { AppShell } from "@/components/ui/layout/app-shell";
+// import { UserStats } from "@/components/dashboard/user-stats";
 
 const posterImages = [
   "https://www.figma.com/api/mcp/asset/3fd27b50-b02b-4c77-ab7a-eb88e7a6e75a.png",
@@ -71,7 +71,8 @@ export default function Home() {
           </p>
         </section>
 
-        <UserStats />
+        {/* TODO: will implement later */}
+        {/* <UserStats /> */}
 
         <Shelf
           title="Continue watching"

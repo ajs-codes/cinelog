@@ -3,10 +3,10 @@
 import { Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ContentErrorState } from "@/components/ui/content-error-state";
+import { ContentErrorState } from "@/components/custom/content-error-state";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { MovieLists } from "@/components/search-popup/movie-lists";
-import { SearchGroup } from "@/components/ui/search-group";
+import { SearchGroup } from "@/components/custom/search-group";
 import { FloatingSearchButton } from "@/components/search-popup/floating-search-button";
 import {
   SearchControls,

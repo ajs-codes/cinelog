@@ -1,10 +1,10 @@
 "use client";
 
-import { AppShell } from "@/components/ui/app-shell";
-import { ContentErrorState } from "@/components/ui/content-error-state";
-import { ContentLoadingOverlay } from "@/components/ui/content-loading-overlay";
-import { HeroHeader } from "@/components/title-detail/hero-header";
-import { TitleProgress } from "@/components/title-detail/progress";
+import { AppShell } from "@/components/ui/layout/app-shell";
+import { ContentErrorState } from "@/components/custom/content-error-state";
+import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
+import { HeroHeader } from "@/components/content-detail";
+import { ContentProgress } from "@/components/content-detail/progress/content_progress";
 import { useContentDetails } from "@/hooks/title-details/use-content-details";
 import type { SeriesDetails } from "@/lib/types";
 import { useParams } from "next/navigation";
@@ -24,7 +24,7 @@ export default function SeriesPage() {
         <main className="relative min-h-[calc(100vh-3.5rem)]">
           <div aria-hidden="true" className="blur-sm">
             <HeroHeader type="series" />
-            <TitleProgress type="series" />
+            <ContentProgress type="series" />
           </div>
           <ContentLoadingOverlay />
         </main>
@@ -36,7 +36,7 @@ export default function SeriesPage() {
       ) : (
         <main>
           <HeroHeader series={series} type="series" />
-          <TitleProgress series={series} type="series" />
+          <ContentProgress series={series} type="series" />
         </main>
       )}
     </AppShell>

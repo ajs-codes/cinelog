@@ -1,7 +1,7 @@
-import { ActionBar } from "@/components/title-detail/hero-header/action_bar";
-import { GenrePills } from "@/components/title-detail/hero-header/genre_pills";
-import { MetaRow } from "@/components/title-detail/hero-header/meta_row";
-import { PosterPanel } from "@/components/title-detail/hero-header/poster_panel";
+import { ActionBar } from "@/components/content-detail/hero-header/action_bar";
+import { GenrePills } from "@/components/content-detail/hero-header/genre_pills";
+import { MetaRow } from "@/components/content-detail/hero-header/meta_row";
+import { PosterPanel } from "@/components/content-detail/hero-header/poster_panel";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 
 type HeroHeaderProps = {
@@ -21,11 +21,13 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
   const rating = movie?.vote_average ?? series?.vote_average;
   return (
     <section
-      className="relative m-4 overflow-hidden rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]"
+      className="relative m-4 rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]"
       aria-label="Title header"
     >
-      <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-tertiary/10 blur-[32px]" />
-      <div className="absolute bottom-22 left-[26%] right-[42%] h-80 rounded-full bg-status-info/10 blur-[32px]" />
+      <div className="absolute inset-0 overflow-hidden rounded-[16px] pointer-events-none">
+        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-tertiary/10 blur-[32px]" />
+        <div className="absolute bottom-22 left-[26%] right-[42%] h-80 rounded-full bg-status-info/10 blur-[32px]" />
+      </div>
 
       <div className="relative grid grid-cols-12 gap-x-8 gap-y-8">
         <PosterPanel posterPath={posterPath} rating={rating} title={title} />
@@ -50,6 +52,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
             id={mediaId}
             imdbId={imdbId}
             language={language ?? undefined}
+            type={type}
           />
         </div>
       </div>
