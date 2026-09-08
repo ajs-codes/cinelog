@@ -22,7 +22,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
   const rating = movie?.vote_average ?? series?.vote_average;
   return (
     <section
-      className="relative m-4 overflow-hidden rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] font-body"
+      className="relative m-4 overflow-hidden rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]"
       aria-label="Title header"
     >
       <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-tertiary/10 blur-[32px]" />

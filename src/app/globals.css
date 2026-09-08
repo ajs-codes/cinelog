@@ -98,7 +98,6 @@
   --font-noto-sans: var(--font-noto-serif);
   --font-public-sans: var(--font-public-sans);
   --font-heading: var(--font-noto-serif);
-  --font-body: var(--font-public-sans);
 }
 
 :root {
