@@ -15,6 +15,13 @@
       "when": 1788796268568,
       "tag": "0001_silky_baron_strucker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788853968315,
+      "tag": "0002_demonic_peter_parker",
+      "breakpoints": true
     }
   ]
 }

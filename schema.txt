@@ -1,0 +1,99 @@
+table users {
+    id - primary key, auto inc, not null
+    username - text, not null, unique
+    email - text, email type, unique, not null
+    passwordhash - text, not null
+    created_at - numeric, not null
+    updated_at - numeric
+}
+
+// user has many movies (one to many)
+table movies {
+    id - primary key, not null, auto increment
+    tmdb_id - integer, not null, need index
+    user_id - foreign key, associated with users, not null, on delete cascade
+    watch_status - integer, not null, default 0, 0 -> plan to watch, 1 -> watching, 2 -> completed, 3 -> dropped
+    impression - integer, 0 -> dislike, 1 -> like, 2 -> love
+    created_at - numeric, not null
+    updated_at - numeric
+    completed_at - numeric, should populate only when watch_status is 2 -> completed
+    title - text, not null
+    poster_path - text
+    release_date - text
+    vote_average - integer
+    status - text
+    original_language - text, iso language text
+    origin_country - text, array of iso country text
+    certificate - text
+}
+
+// Join table for connecting movies table and genres master table from our system (many to many)
+table movies_to_genres {
+    id: primary key, not null, auto increment
+    movie_id: foreign key, associated with movies, not null, on delete cascade
+    genres_id: foreign key, associated with movies, not null
+}
+
+// user has many series (one to many)
+table series {
+    id - primary key, not null, auto increment
+    tmdb_id - integer, not null, need index
+    user_id - foreign key, associated with users, not null, on delete cascade
+    watch_status - integer, not null, default 0, 0 -> plan to watch, 1 -> watching, 2 -> completed, 3 -> dropped
+    impression - integer, 0 -> dislike, 1 -> like, 2 -> love
+    created_at - numeric, not null
+    updated_at - numeric
+    last_watched_at - numeric
+    completed_at - numeric, should populate only when watch_status is 2 -> completed
+    name - text, not null
+    first_air_date: text
+    last_air_date: text
+    total_number_of_episodes: integer
+    total_number_of_seasons: integer
+    total_number_of_episodes_watched: integer
+    total_number_of_seasons_watched: intger
+    poster_path: text
+    vote_average: integer
+    status: text
+    original_language - text, iso language text
+    origin_country - text, array of iso country text
+    certificate - text
+    type: text
+}
+
+// Join table for connecting series table and genres master table from our system (many to many)
+table series_to_genres {
+    id: primary key, not null, auto increment
+    series_id: foreign key, associated with movies, not null, on delete cascade
+    genres_id: foreign key, associated with movies, not null
+}
+
+// associated with both movies and series (one to many either movie or series)
+table credits {
+    id: primary key, not null, auto increment
+    movie_id: foreign key, on delete cascade
+    series_id: foreign key, on delete cascade
+    // Ensures either postId or videoId is set, never both, never neither
+    tmdb_id: integer, not null, need index
+    name: text, not null
+    known_for_department: text, not null
+}
+
+// associated with both movies and series (one to many either movie or series)
+production_companies {
+    id: primary key, not null, auto increment
+    movie_id: foreign key, on delete cascade
+    series_id: foreign key, on delete cascade
+    // Ensures either postId or videoId is set, never both, never neither
+    tmdb_id: integer, not null, need index
+    name: text, not null
+    origin_country: text, iso country text
+}
+
+// series has many creators (one to many)
+creators {
+    id: primary key, not null, auto increment
+    series_id: foreign_key, not null, on delete cascade
+    name: text, not null
+    tmdb_id: integer, not null
+}
