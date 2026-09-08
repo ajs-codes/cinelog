@@ -22,6 +22,76 @@
       "when": 1788853968315,
       "tag": "0002_demonic_peter_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788854241134,
+      "tag": "0003_chief_brood",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1788854416250,
+      "tag": "0004_shocking_vindicator",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1788854606815,
+      "tag": "0005_create_series_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1788854750746,
+      "tag": "0006_create_series_to_genres_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1788854892833,
+      "tag": "0007_create_creators_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1788855306009,
+      "tag": "0008_create_credits_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1788855423647,
+      "tag": "0009_create_production_companies_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1788859003133,
+      "tag": "0010_create_seasons_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1788859555992,
+      "tag": "0011_update_users_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1788860039286,
+      "tag": "0012_update_created_at_columns",
+      "breakpoints": true
     }
   ]
 }

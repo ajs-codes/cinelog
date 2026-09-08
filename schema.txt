@@ -61,11 +61,27 @@ table series {
     type: text
 }
 
+// series has many seasons (one to many)
+table seasons {
+    id: primary key, not null, auto increment
+    tmdb_id: integer, not null, index
+    series_id: foreign_key, associated with series, not null, delete on cascade
+    name: text
+    season_number: integer, not null
+    episode_count: integer, not null
+    air_date: text
+    episodes_watched: integer
+    last_watched_at: numeric
+    completed_at: numeric
+    created_at: numeric, not null
+    updated_at: numeric,
+}
+
 // Join table for connecting series table and genres master table from our system (many to many)
 table series_to_genres {
     id: primary key, not null, auto increment
     series_id: foreign key, associated with movies, not null, on delete cascade
-    genres_id: foreign key, associated with movies, not null
+    genres_id: foreign key, associated with genre, not null
 }
 
 // associated with both movies and series (one to many either movie or series)
