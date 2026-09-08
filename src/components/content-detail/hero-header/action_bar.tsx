@@ -28,7 +28,6 @@ type ActionBarProps = {
   isPresentInWatchlist?: boolean;
   impression?: number | null;
   mutationStatus?: ContentMutationStatus;
-  lastMutation?: ContentMutation;
   content?: MovieDetails | SeriesDetails;
 };
 
@@ -46,7 +45,6 @@ export function ActionBar({
   isPresentInWatchlist = false,
   impression = null,
   mutationStatus = "idle",
-  lastMutation,
   content,
 }: ActionBarProps) {
   const dispatch = useAppDispatch();
@@ -58,15 +56,6 @@ export function ActionBar({
     : "N/A";
 
   const isMutating = mutationStatus === "loading";
-  const contentLabel = type === "series" ? "Series" : "Movie";
-  const confirmation =
-    mutationStatus === "success" && lastMutation === "add-watchlist"
-      ? `${contentLabel} added to watchlist.`
-      : mutationStatus === "success" && lastMutation === "remove-watchlist"
-        ? `${contentLabel} removed from watchlist.`
-        : mutationStatus === "success" && lastMutation === "update-impression"
-          ? "Impression saved."
-          : null;
 
   const requestMutation = (
     mutation: ContentMutation,
@@ -141,12 +130,6 @@ export function ActionBar({
           })}
         </div>
       </div>
-
-      {confirmation && (
-        <p className="mt-3 text-sm text-status-success" role="status">
-          {confirmation}
-        </p>
-      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-neutral">
         <span>TMDB ID: {tmdbId}</span>

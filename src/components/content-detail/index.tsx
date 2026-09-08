@@ -67,7 +67,6 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
             }
             impression={movie?.impression ?? series?.impression}
             mutationStatus={entry?.mutationStatus}
-            lastMutation={entry?.lastMutation}
             content={movie ?? series ?? undefined}
           />
         </div>
