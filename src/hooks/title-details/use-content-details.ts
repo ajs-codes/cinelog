@@ -1,53 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  detailsRequested,
+  type ContentMediaType,
+} from "@/store/slices/contentDetailsSlice";
 
 type ContentDetailsState<T> = {
   data: T | null;
   error: Error | null;
   isLoading: boolean;
+  retry: () => void;
 };
 
-export function useContentDetails<T>(url: string): ContentDetailsState<T> {
-  const [state, setState] = useState<ContentDetailsState<T>>({
-    data: null,
-    error: null,
-    isLoading: true,
-  });
+export function useContentDetails<T>(
+  mediaType: ContentMediaType,
+  id: string,
+): ContentDetailsState<T> {
+  const dispatch = useAppDispatch();
+  const entry = useAppSelector((state) => state.contentDetails[mediaType][id]);
+  const requestedKey = useRef<string | null>(null);
+
+  const retry = () => {
+    dispatch(detailsRequested({ id, mediaType }));
+  };
 
   useEffect(() => {
-    const controller = new AbortController();
+    const requestKey = `${mediaType}:${id}`;
 
-    async function loadDetails() {
-      setState({ data: null, error: null, isLoading: true });
+    if (entry || requestedKey.current === requestKey) return;
 
-      try {
-        const response = await fetch(url, { signal: controller.signal });
+    requestedKey.current = requestKey;
+    dispatch(detailsRequested({ id, mediaType }));
+  }, [dispatch, entry, id, mediaType]);
 
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const data = (await response.json()) as T;
-        setState({ data, error: null, isLoading: false });
-      } catch (error) {
-        if (controller.signal.aborted) return;
-
-        setState({
-          data: null,
-          error:
-            error instanceof Error
-              ? error
-              : new Error("Failed to load details"),
-          isLoading: false,
-        });
-      }
-    }
-
-    void loadDetails();
-
-    return () => controller.abort();
-  }, [url]);
-
-  return state;
+  return {
+    data: (entry?.data as T | null) ?? null,
+    error: entry?.error ? new Error(entry.error) : null,
+    isLoading: !entry || entry.status === "loading",
+    retry,
+  };
 }
