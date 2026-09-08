@@ -1,18 +1,38 @@
-export function ProgressMetrics() {
+import type { SeriesDetails } from "@/lib/types";
+
+type ProgressStatusProps = {
+  series?: SeriesDetails | null;
+};
+
+export function ProgressMetrics({ series }: ProgressStatusProps) {
+  const seasons = series?.seasons ?? [];
+  const totalEpisodes = series?.number_of_episodes ?? 0;
+
   return (
     <div className="space-y-5">
-      <ProgressRow
-        label="Season 1 Progress"
-        value={3}
-        total={10}
-        colorClass="bg-brand-tertiary-accent-alt"
-      />
-      <ProgressRow
-        label="Series Overall Progress"
-        value={17}
-        total={1000}
-        colorClass="bg-brand-primary"
-      />
+      {seasons.map((season, index) => {
+        const seasonNumber = season.season_number ?? index + 1;
+        const episodeCount = season.episode_count ?? 0;
+
+        return (
+          <ProgressRow
+            key={season.id ?? seasonNumber}
+            label={season.name ?? `Season ${seasonNumber}`}
+            value={0}
+            total={episodeCount}
+            colorClass="bg-brand-tertiary-accent-alt"
+          />
+        );
+      })}
+
+      {series ? (
+        <ProgressRow
+          label="Series Overall Progress"
+          value={0}
+          total={totalEpisodes}
+          colorClass="bg-brand-primary"
+        />
+      ) : null}
     </div>
   );
 }

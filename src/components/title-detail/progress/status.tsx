@@ -1,6 +1,18 @@
 import { ChevronDown } from "lucide-react";
+import type { SeriesDetails } from "@/lib/types";
 
-export function ProgressStatus() {
+type ProgressStatusProps = {
+  series?: SeriesDetails | null;
+  type?: "movie" | "series";
+};
+
+export function ProgressStatus({
+  series,
+  type = "series",
+}: ProgressStatusProps) {
+  const seasonCount = series?.number_of_seasons ?? 3;
+  const episodeCount = series?.number_of_episodes ?? 10;
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
@@ -9,10 +21,15 @@ export function ProgressStatus() {
         <ChevronDown className="h-4 w-4 text-outline-muted" />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <ProgressMetadata label="SEASON" value="Season 1 of 3" />
-        <ProgressMetadata label="EPISODE" value="Ep 7 of 10" />
-      </div>
+      {type === "series" ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <ProgressMetadata
+            label="SEASON"
+            value={`Season 1 of ${seasonCount}`}
+          />
+          <ProgressMetadata label="EPISODE" value={`Ep 0 of ${episodeCount}`} />
+        </div>
+      ) : null}
     </div>
   );
 }
