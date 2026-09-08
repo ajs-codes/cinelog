@@ -13,8 +13,7 @@ type HeroHeaderProps = {
 export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
   const title = movie?.title ?? series?.name ?? "N/A";
   const overview = movie?.overview ?? series?.overview ?? "N/A";
-  const language =
-    movie?.spoken_languages?.[0]?.name ?? series?.spoken_languages?.[0]?.name;
+  const language = movie?.original_language ?? series?.original_language;
   const genres = movie?.genres ?? series?.genres;
   const mediaId = movie?.id ?? series?.id;
   const imdbId = movie?.imdb_id ?? series?.imdb_id;
@@ -47,7 +46,11 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
             <GenrePills genres={genres} type={series?.type ?? type} />
           </div>
 
-          <ActionBar id={mediaId} imdbId={imdbId} language={language} />
+          <ActionBar
+            id={mediaId}
+            imdbId={imdbId}
+            language={language ?? undefined}
+          />
         </div>
       </div>
     </section>

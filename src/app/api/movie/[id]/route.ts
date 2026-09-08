@@ -54,6 +54,13 @@ function getMovieFields(movie: TmdbMovie) {
     if (directingCrew.length === 5) break;
   }
 
+  const releaseResults = movie.release_dates?.results ?? [];
+  const releaseCountry = releaseResults.some(
+    (release) => release.iso_3166_1 === "IN",
+  )
+    ? "IN"
+    : movie.origin_country?.[0];
+
   return {
     backdrop_path: movie.backdrop_path,
     belongs_to_collection: movie.belongs_to_collection,
@@ -71,9 +78,11 @@ function getMovieFields(movie: TmdbMovie) {
     vote_average: movie.vote_average,
     original_language: movie.original_language,
     origin_country: movie.origin_country,
-    release_dates: (movie.release_dates?.results ?? []).filter(
-      (release) => release.iso_3166_1 === "IN",
-    ),
+    release_dates: releaseCountry
+      ? releaseResults.filter(
+          (release) => release.iso_3166_1 === releaseCountry,
+        )
+      : [],
     credits: [...cast, ...directingCrew],
   };
 }

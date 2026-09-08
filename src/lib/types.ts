@@ -16,7 +16,7 @@ type SeriesDetails = {
   overview?: string | null;
   poster_path?: string | null;
   seasons?: SeriesSeason[];
-  spoken_languages?: Array<{ name?: string; english_name?: string }>;
+  original_language?: string | null;
   status?: string;
   tagline?: string | null;
   type?: string;
@@ -41,8 +41,12 @@ type MovieDetails = {
   overview?: string | null;
   poster_path?: string | null;
   release_date?: string;
+  release_dates?: Array<{
+    iso_3166_1?: string;
+    release_dates?: Array<{ certification?: string | null }>;
+  }>;
   runtime?: number | null;
-  spoken_languages?: Array<{ name?: string; english_name?: string }>;
+  original_language?: string | null;
   status?: string;
   tagline?: string | null;
   title?: string | null;

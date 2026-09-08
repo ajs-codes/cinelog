@@ -12,13 +12,16 @@ import { ReactionButton } from "@/components/title-detail/hero-header/reaction_b
 type ActionBarProps = {
   id?: number;
   imdbId?: string | null;
-  language?: string;
+  language?: string | null;
 };
 
 export function ActionBar({ id, imdbId, language }: ActionBarProps) {
   const tmdbId = id !== undefined ? id : "N/A";
   const displayImdbId = imdbId ?? "N/A";
-  const displayLanguage = language ?? "N/A";
+  const displayLanguage = language
+    ? (new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
+      language)
+    : "N/A";
 
   return (
     <div className="mt-6 border-t border-white/10 pt-4">

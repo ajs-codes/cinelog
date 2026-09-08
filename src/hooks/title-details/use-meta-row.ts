@@ -24,6 +24,9 @@ export function useMetaRow({ movie, series, type }: MetaRowInput): MetaRowData {
       : `${firstAirYear} - ${lastAirYear}`;
   const seasonCount = series?.number_of_seasons ?? 1;
   const episodeCount = series?.number_of_episodes ?? 10;
+  const movieRating = movie?.release_dates
+    ?.flatMap((release) => release.release_dates ?? [])
+    .find((release) => release.certification)?.certification;
 
   return {
     contentType: type === "series" ? "Series" : "Movie",
@@ -32,7 +35,7 @@ export function useMetaRow({ movie, series, type }: MetaRowInput): MetaRowData {
         ? `${movie.runtime} min`
         : "N/A"
       : `${seasonCount} ${seasonCount === 1 ? "Season" : "Seasons"} (${episodeCount} ${episodeCount === 1 ? "Episode" : "Episodes"})`,
-    rating: series?.content_ratings?.rating ?? "N/A",
+    rating: movieRating ?? series?.content_ratings?.rating ?? "N/A",
     status: movie?.status ?? series?.status ?? "N/A",
     year,
   };
