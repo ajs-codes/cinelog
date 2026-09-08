@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
 import { getDb } from "@/db";
+import { WATCH_STATUS, IMPRESSION } from "@/lib/constants";
 import {
   series,
   seasons,
@@ -11,7 +12,6 @@ import {
   credits,
   productionCompanies,
 } from "@/db/schema";
-import { WATCH_STATUS, IMPRESSION } from "@/lib/constants";
 import { eq, and } from "drizzle-orm";
 import type {
   RouteContext,
@@ -392,77 +392,224 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = payload.userId;
 
-  let body: { watch_status?: number; impression?: number | null };
+  let body: {
+    watch_status?: number;
+    impression?: number | null;
+    mark_season_to_watched?: number;
+    mark_episode_to_watched?: number;
+  };
+
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const updateData: Partial<typeof series.$inferInsert> = {
-    updatedAt: String(Math.floor(Date.now() / 1000)),
-  };
-
-  if (body.watch_status !== undefined) {
-    const validStatuses: number[] = Object.values(WATCH_STATUS).map(
-      (status) => status.value,
-    );
-    if (!validStatuses.includes(body.watch_status)) {
-      return NextResponse.json(
-        { error: "Invalid watch_status" },
-        { status: 400 },
-      );
-    }
-    updateData.watchStatus = body.watch_status;
-    const completedValue =
-      Object.values(WATCH_STATUS).find(
-        (status) => status.display_value === "Completed",
-      )?.value ?? 2;
-    updateData.completedAt =
-      body.watch_status === completedValue ? updateData.updatedAt : null;
-  }
-
-  if (body.impression !== undefined) {
-    const validImpressions: number[] = Object.values(IMPRESSION).map(
-      (impression) => impression.value,
-    );
-    if (
-      body.impression !== null &&
-      !validImpressions.includes(body.impression)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid impression" },
-        { status: 400 },
-      );
-    }
-    updateData.impression = body.impression;
-  }
-
-  if (Object.keys(updateData).length === 1) {
-    return NextResponse.json(
-      { error: "No valid fields to update" },
-      { status: 400 },
-    );
-  }
+  const db = getDb();
 
   try {
-    const updated = await getDb()
-      .update(series)
-      .set(updateData)
-      .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, payload.userId)))
-      .returning();
+    const existingSeries = await db
+      .select()
+      .from(series)
+      .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId)))
+      .get();
 
-    if (updated.length === 0) {
+    if (!existingSeries) {
       return NextResponse.json(
         { error: "Series not found in library" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
+    const now = String(Math.floor(Date.now() / 1000));
+
+    await db.transaction(async (tx) => {
+      let finalWatchStatus = existingSeries.watchStatus;
+      let finalCompletedAt = existingSeries.completedAt;
+      let finalLastWatchedAt = existingSeries.lastWatchedAt;
+      let finalTotalEpsWatched =
+        existingSeries.totalNumberOfEpisodesWatched || 0;
+      let finalTotalSeasonsWatched =
+        existingSeries.totalNumberOfSeasonsWatched || 0;
+
+      let updateImpression = false;
+      let newImpressionValue: number | null = existingSeries.impression;
+
+      if (body.impression !== undefined) {
+        const validImpressions: number[] = Object.values(IMPRESSION).map(
+          (i) => i.value,
+        );
+        if (
+          body.impression !== null &&
+          !validImpressions.includes(body.impression)
+        ) {
+          throw new Error("Invalid impression");
+        }
+        updateImpression = true;
+        newImpressionValue = body.impression;
+      }
+
+      const allSeasons = await tx
+        .select()
+        .from(seasons)
+        .where(eq(seasons.seriesId, existingSeries.id))
+        .all();
+
+      let didProgressUpdate = false;
+
+      if (
+        body.mark_season_to_watched !== undefined &&
+        body.mark_episode_to_watched !== undefined
+      ) {
+        const targetSeason = allSeasons.find(
+          (s) => s.seasonNumber === body.mark_season_to_watched,
+        );
+        if (targetSeason) {
+          let epsWatched = body.mark_episode_to_watched;
+          if (epsWatched > targetSeason.episodeCount)
+            epsWatched = targetSeason.episodeCount;
+          if (epsWatched < 0) epsWatched = 0;
+
+          const seasonCompletedAt =
+            epsWatched === targetSeason.episodeCount && epsWatched > 0
+              ? now
+              : null;
+
+          await tx
+            .update(seasons)
+            .set({
+              episodesWatched: epsWatched,
+              lastWatchedAt: now,
+              completedAt: seasonCompletedAt,
+              updatedAt: now,
+            })
+            .where(eq(seasons.id, targetSeason.id));
+
+          targetSeason.episodesWatched = epsWatched;
+          targetSeason.completedAt = seasonCompletedAt;
+          targetSeason.lastWatchedAt = now;
+          didProgressUpdate = true;
+        }
+      }
+
+      if (body.watch_status !== undefined) {
+        const validStatuses: number[] = Object.values(WATCH_STATUS).map(
+          (s) => s.value,
+        );
+        if (!validStatuses.includes(body.watch_status)) {
+          throw new Error("Invalid watch_status");
+        }
+
+        finalWatchStatus = body.watch_status;
+        const planToWatchValue =
+          Object.values(WATCH_STATUS).find(
+            (s) => s.display_value === "Plan to Watch",
+          )?.value ?? 0;
+        const completedValue =
+          Object.values(WATCH_STATUS).find(
+            (s) => s.display_value === "Completed",
+          )?.value ?? 2;
+
+        if (finalWatchStatus === planToWatchValue) {
+          finalTotalEpsWatched = 0;
+          finalTotalSeasonsWatched = 0;
+          finalCompletedAt = null;
+          finalLastWatchedAt = null;
+
+          await tx
+            .update(seasons)
+            .set({
+              episodesWatched: 0,
+              completedAt: null,
+              lastWatchedAt: null,
+              updatedAt: now,
+            })
+            .where(eq(seasons.seriesId, existingSeries.id));
+        } else if (finalWatchStatus === completedValue) {
+          finalCompletedAt = now;
+          finalLastWatchedAt = now;
+          finalTotalEpsWatched = existingSeries.totalNumberOfEpisodes || 0;
+          finalTotalSeasonsWatched = existingSeries.totalNumberOfSeasons || 0;
+
+          for (const s of allSeasons) {
+            await tx
+              .update(seasons)
+              .set({
+                episodesWatched: s.episodeCount,
+                completedAt: now,
+                lastWatchedAt: now,
+                updatedAt: now,
+              })
+              .where(eq(seasons.id, s.id));
+          }
+        } else {
+          finalCompletedAt = null;
+        }
+      } else if (didProgressUpdate) {
+        finalTotalEpsWatched = allSeasons.reduce(
+          (sum, s) => sum + s.episodesWatched,
+          0,
+        );
+        finalTotalSeasonsWatched = allSeasons.filter(
+          (s) => s.episodesWatched === s.episodeCount && s.episodeCount > 0,
+        ).length;
+        finalLastWatchedAt = now;
+
+        const totalEps = existingSeries.totalNumberOfEpisodes || 0;
+        if (totalEps > 0 && finalTotalEpsWatched >= totalEps) {
+          const completedValue =
+            Object.values(WATCH_STATUS).find(
+              (s) => s.display_value === "Completed",
+            )?.value ?? 2;
+          finalWatchStatus = completedValue;
+          finalCompletedAt = now;
+        } else {
+          const watchingValue =
+            Object.values(WATCH_STATUS).find(
+              (s) => s.display_value === "Watching",
+            )?.value ?? 1;
+          finalWatchStatus = watchingValue;
+          finalCompletedAt = null;
+        }
+      }
+
+      const seriesUpdate: Partial<typeof series.$inferInsert> = {
+        watchStatus: finalWatchStatus,
+        completedAt: finalCompletedAt,
+        lastWatchedAt: finalLastWatchedAt,
+        totalNumberOfEpisodesWatched: finalTotalEpsWatched,
+        totalNumberOfSeasonsWatched: finalTotalSeasonsWatched,
+        updatedAt: now,
+      };
+
+      if (updateImpression) {
+        seriesUpdate.impression = newImpressionValue;
+      }
+
+      await tx
+        .update(series)
+        .set(seriesUpdate)
+        .where(eq(series.id, existingSeries.id));
+    });
+
+    const updatedSeries = await db
+      .select()
+      .from(series)
+      .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId)))
+      .get();
+
+    return NextResponse.json({ success: true, data: updatedSeries }, { status: 200 });
+  } catch (error: unknown) {
     console.error("Failed to update series:", error);
+    if (
+      error instanceof Error &&
+      (error.message === "Invalid impression" ||
+        error.message === "Invalid watch_status")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
