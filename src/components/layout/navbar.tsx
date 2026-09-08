@@ -40,7 +40,7 @@ export function Navbar() {
             <Button
               variant="dark"
               onClick={handleLogout}
-              className="hover:bg-status-error/60! py-4"
+              className="hover:bg-status-error/80! py-4"
               disabled={status === "loading"}
             >
               Logout

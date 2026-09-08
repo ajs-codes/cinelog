@@ -52,7 +52,7 @@ export default function LoginPage() {
             {...register("username")}
             id="username"
             className="rounded-lg border border-white/10 bg-surface-container px-3 py-2 text-on-surface focus:border-brand-primary focus:outline-none"
-            placeholder="johndoe"
+            placeholder="username"
           />
           {errors.username && (
             <span className="text-xs text-status-error">
