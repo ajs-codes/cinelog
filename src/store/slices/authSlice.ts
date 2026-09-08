@@ -26,10 +26,12 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     loginRequest: (state, action: PayloadAction<LoginInput>) => {
+      void action;
       state.status = "loading";
       state.error = null;
     },
     signupRequest: (state, action: PayloadAction<SignupInput>) => {
+      void action;
       state.status = "loading";
       state.error = null;
     },
@@ -57,7 +59,7 @@ export const authSlice = createSlice({
     },
     initAuthFailure: (state) => {
       state.status = "idle"; // Usually failing init just means they are logged out
-    }
+    },
   },
 });
 
@@ -69,7 +71,7 @@ export const {
   logoutRequest,
   logoutSuccess,
   initAuthRequest,
-  initAuthFailure
+  initAuthFailure,
 } = authSlice.actions;
 
 export default authSlice.reducer;

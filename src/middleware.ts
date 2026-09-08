@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
       try {
         await jwtVerify(token, JWT_SECRET);
         return NextResponse.redirect(new URL("/", request.url));
-      } catch (error) {
+      } catch {
         // Token invalid, allow them to view login page
         return NextResponse.next();
       }
@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
   try {
     await jwtVerify(token, JWT_SECRET);
     return NextResponse.next();
-  } catch (error) {
+  } catch {
     // Token is invalid/expired
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

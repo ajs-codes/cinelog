@@ -9,7 +9,7 @@ import {
   logoutRequest,
   logoutSuccess,
   initAuthRequest,
-  initAuthFailure
+  initAuthFailure,
 } from "./authSlice";
 import type { LoginInput, SignupInput } from "@/lib/validations/auth";
 
@@ -20,7 +20,7 @@ async function loginApi(payload: LoginInput) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const error = await res.json();
+    const error = (await res.json()) as { error?: string };
     throw new Error(error.error || "Login failed");
   }
   return res.json();
@@ -33,7 +33,7 @@ async function signupApi(payload: SignupInput) {
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const error = await res.json();
+    const error = (await res.json()) as { error?: string };
     throw new Error(error.error || "Signup failed");
   }
   return res.json();
@@ -55,9 +55,11 @@ function* handleLogin(action: PayloadAction<LoginInput>): SagaIterator {
   try {
     const data = yield call(loginApi, action.payload);
     yield put(authSuccess({ user: data.user }));
-    window.location.href = "/";
-  } catch (error: any) {
-    yield put(authFailure(error.message));
+    window.location.replace("/");
+  } catch (error: unknown) {
+    yield put(
+      authFailure(error instanceof Error ? error.message : "Login failed"),
+    );
   }
 }
 
@@ -65,9 +67,11 @@ function* handleSignup(action: PayloadAction<SignupInput>): SagaIterator {
   try {
     const data = yield call(signupApi, action.payload);
     yield put(authSuccess({ user: data.user }));
-    window.location.href = "/";
-  } catch (error: any) {
-    yield put(authFailure(error.message));
+    window.location.replace("/");
+  } catch (error: unknown) {
+    yield put(
+      authFailure(error instanceof Error ? error.message : "Signup failed"),
+    );
   }
 }
 
@@ -75,11 +79,11 @@ function* handleLogout(): SagaIterator {
   try {
     yield call(logoutApi);
     yield put(logoutSuccess());
-    window.location.href = "/login";
-  } catch (error: any) {
+    window.location.replace("/login");
+  } catch {
     // Force logout on client even if API fails
     yield put(logoutSuccess());
-    window.location.href = "/login";
+    window.location.replace("/login");
   }
 }
 
@@ -87,7 +91,7 @@ function* handleInit(): SagaIterator {
   try {
     const data = yield call(meApi);
     yield put(authSuccess({ user: data.user }));
-  } catch (error: any) {
+  } catch {
     yield put(initAuthFailure());
   }
 }
