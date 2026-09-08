@@ -3,6 +3,7 @@
 import { Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ContentErrorState } from "@/components/ui/content-error-state";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { MovieLists } from "@/components/search-popup/movie-lists";
 import { SearchGroup } from "@/components/ui/search-group";
@@ -78,12 +79,27 @@ function SearchDialogContent() {
           resultText={resultText}
         />
 
-        <MovieLists
-          mediaType={mediaType}
-          onItemClick={() => setOpen(false)}
-          results={searchState.results}
-          status={searchState.status}
-        />
+        {searchState.status === "failed" ? (
+          <ContentErrorState
+            compact
+            message={searchState.error ?? "The search request failed."}
+            onRetry={() =>
+              dispatch(
+                searchRequested({
+                  mediaType,
+                  query: searchState.query,
+                }),
+              )
+            }
+          />
+        ) : (
+          <MovieLists
+            mediaType={mediaType}
+            onItemClick={() => setOpen(false)}
+            results={searchState.results}
+            status={searchState.status}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

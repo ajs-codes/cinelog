@@ -22,10 +22,9 @@ export function MovieLists({
     <div className="movie-lists-scrollbar min-h-0 max-h-[calc(100dvh-12rem)] space-y-2 overflow-y-auto pr-2 sm:pr-1">
       {status === "loading" ? (
         <MovieItem state="loading" />
-      ) : status === "failed" ||
-        (status === "success" && results.length === 0) ? (
+      ) : status === "success" && results.length === 0 ? (
         <MovieItem state="failed" />
-      ) : (
+      ) : status === "failed" ? null : (
         results.map((result, index) => (
           <MovieItem
             genre={result.genres.join(", ")}
