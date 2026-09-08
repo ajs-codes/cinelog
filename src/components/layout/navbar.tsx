@@ -1,0 +1,63 @@
+"use client";
+
+import { RotateCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { logoutRequest } from "@/store/slices/authSlice";
+
+export function Navbar() {
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user, status } = useAppSelector(
+    (state) => state.auth,
+  );
+
+  const handleLogout = () => {
+    dispatch(logoutRequest());
+  };
+
+  return (
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-outline-alt bg-surface/90 px-5 backdrop-blur-xl sm:px-8">
+      <div className="ml-auto flex items-center gap-2 sm:gap-4">
+        <div className="hidden items-center gap-2 font-public-sans text-xs text-outline-muted lg:flex">
+          <span>Auto Synced</span>
+          <span>.</span>
+          <span>TMDB Connected</span>
+        </div>
+
+        <Button
+          aria-label="Refresh TMDB data"
+          className="hidden size-9 rounded-lg text-secondary hover:text-on-surface sm:inline-flex"
+          size="icon"
+          variant="dark"
+          type="button"
+        >
+          <RotateCw className="size-4.25" strokeWidth={1.8} />
+        </Button>
+
+        <div className="h-5 w-px bg-white/10 hidden sm:block" />
+        {isAuthenticated && user && (
+          <div className="flex items-center gap-3">
+            <Button
+              variant="dark"
+              onClick={handleLogout}
+              className="hover:bg-status-error/60! py-4"
+              disabled={status === "loading"}
+            >
+              Logout
+            </Button>
+            <div className="flex items-center gap-2.5">
+              <span className="hidden text-sm font-semibold text-on-surface sm:block">
+                {user.displayName || user.username}
+              </span>
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary-container text-white border border-white/10 shadow-sm">
+                <span className="text-xs font-bold uppercase">
+                  {(user.displayName || user.username).charAt(0)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}

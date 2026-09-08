@@ -50,22 +50,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="border-t border-outline-alt p-4">
-        <div className="mt-4 flex items-center gap-3 rounded-lg bg-surface-container px-3 py-3">
-          <div className="flex size-8 items-center justify-center rounded-full bg-brand-tertiary text-xs font-bold text-surface">
-            A
-          </div>
-          <div className="min-w-0">
-            <p className="truncate font-public-sans text-xs font-semibold text-on-surface">
-              Alex Morgan
-            </p>
-            <p className="font-public-sans text-[10px] text-outline-muted">
-              Personal archive
-            </p>
-          </div>
-        </div>
-      </div>
     </aside>
   );
 }

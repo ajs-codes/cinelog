@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { Navbar } from "@/components/ui/layout/navbar";
-import { Sidebar } from "@/components/ui/layout/sidebar";
+import { Navbar } from "@/components/layout/navbar";
+import { Sidebar } from "@/components/layout/sidebar";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
