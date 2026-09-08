@@ -18,7 +18,6 @@ export function PosterPanel({ posterPath, rating, title }: PosterPanelProps) {
           className="object-cover"
           fill
           priority
-          sizes="240px"
           src={`https://image.tmdb.org/t/p/w500${posterPath}`}
         />
       ) : null}

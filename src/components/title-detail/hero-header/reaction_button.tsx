@@ -8,6 +8,7 @@ export type ReactionButtonProps = {
   label: string;
   active?: boolean;
   className?: string;
+  onClick?: () => void;
 };
 
 export function ReactionButton({
@@ -16,10 +17,12 @@ export function ReactionButton({
   label,
   active = false,
   className = "",
+  onClick,
 }: ReactionButtonProps) {
   return (
     <Button
       type="button"
+      onClick={onClick}
       variant={active ? "primaryFilled" : "darkFilled"}
       className={[
         "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition",
