@@ -14,6 +14,7 @@ import { ReactionButton } from "@/components/content-detail/hero-header/reaction
 import { ProgressStatus } from "@/components/content-detail/progress/status";
 import { IMPRESSION } from "@/lib/constants";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
+import { formatLanguage, orFallback } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import {
   mutationRequested,
@@ -52,11 +53,8 @@ export function ActionBar({
 }: ActionBarProps) {
   const dispatch = useAppDispatch();
   const tmdbId = id !== undefined ? id : "N/A";
-  const displayImdbId = imdbId ?? "N/A";
-  const displayLanguage = language
-    ? (new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
-      language)
-    : "N/A";
+  const displayImdbId = orFallback(imdbId);
+  const displayLanguage = language?.trim() ? formatLanguage(language) : "N/A";
 
   const isMutating = mutationStatus === "loading";
 
@@ -115,7 +113,7 @@ export function ActionBar({
           />
         )}
 
-        <div className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-surface-container/70 p-1.5">
+        <div className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-surface-container/70 p-1">
           {Object.values(IMPRESSION).map((imp) => {
             const config =
               IMPRESSION_CONFIG[imp.value as keyof typeof IMPRESSION_CONFIG];

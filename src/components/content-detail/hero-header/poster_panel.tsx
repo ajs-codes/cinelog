@@ -3,12 +3,15 @@ import Image from "next/image";
 
 type PosterPanelProps = {
   posterPath?: string | null;
-  rating?: number;
+  rating?: number | null;
   title: string;
 };
 
 export function PosterPanel({ posterPath, rating, title }: PosterPanelProps) {
-  const formattedRating = rating !== undefined ? rating.toFixed(1) : "N/A";
+  const formattedRating =
+    typeof rating === "number" && Number.isFinite(rating)
+      ? rating.toFixed(1)
+      : "N/A";
 
   return (
     <div className="relative col-span-3 aspect-2/3 max-w-60 justify-self-start overflow-hidden rounded-xl bg-surface-container-high">

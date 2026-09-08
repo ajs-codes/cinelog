@@ -109,11 +109,7 @@ export function ProgressStatus({
                     disabled={isDisabled}
                     onClick={() => {
                       setIsOpen(false);
-                      if (
-                        id === undefined ||
-                        isDisabled ||
-                        ws.value === status
-                      )
+                      if (id === undefined || isDisabled || ws.value === status)
                         return;
                       dispatch(
                         mutationRequested({

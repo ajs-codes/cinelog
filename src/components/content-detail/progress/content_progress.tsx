@@ -9,7 +9,10 @@ type ContentProgressProps = {
   type?: "movie" | "series";
 };
 
-export function ContentProgress({ series, type = "series" }: ContentProgressProps) {
+export function ContentProgress({
+  series,
+  type = "series",
+}: ContentProgressProps) {
   const mediaId = series?.id;
   const entry = useAppSelector((state) =>
     mediaId === undefined

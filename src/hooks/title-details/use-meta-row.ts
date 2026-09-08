@@ -1,4 +1,5 @@
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
+import { orFallback } from "@/lib/utils";
 
 type MetaRowInput = {
   movie?: MovieDetails | null;
@@ -15,10 +16,10 @@ type MetaRowData = {
 };
 
 export function useMetaRow({ movie, series, type }: MetaRowInput): MetaRowData {
-  const firstAirYear = series?.first_air_date?.slice(0, 4) ?? "N/A";
-  const lastAirYear = series?.last_air_date?.slice(0, 4) ?? "Present";
+  const firstAirYear = orFallback(series?.first_air_date?.slice(0, 4));
+  const lastAirYear = orFallback(series?.last_air_date?.slice(0, 4), "Present");
   const year = movie
-    ? (movie.release_date?.slice(0, 4) ?? "N/A")
+    ? orFallback(movie.release_date?.slice(0, 4))
     : firstAirYear === lastAirYear
       ? lastAirYear
       : `${firstAirYear} - ${lastAirYear}`;
@@ -33,8 +34,8 @@ export function useMetaRow({ movie, series, type }: MetaRowInput): MetaRowData {
         ? `${movie.runtime} min`
         : "N/A"
       : `${seasonCount} ${seasonCount === 1 ? "Season" : "Seasons"} (${episodeCount} ${episodeCount === 1 ? "Episode" : "Episodes"})`,
-    rating: movieRating ?? series?.content_ratings?.rating ?? "N/A",
-    status: movie?.status ?? series?.status ?? "N/A",
+    rating: orFallback(movieRating || series?.content_ratings?.rating),
+    status: orFallback(movie?.status || series?.status),
     year,
   };
 }
