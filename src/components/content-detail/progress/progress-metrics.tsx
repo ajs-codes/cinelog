@@ -3,10 +3,14 @@ import type { SeriesDetails } from "@/lib/types";
 
 type ProgressStatusProps = {
   series?: SeriesDetails | null;
+  selectedSeason?: number;
 };
 
-export function ProgressMetrics({ series }: ProgressStatusProps) {
-  const metrics = useProgressMetrics(series);
+export function ProgressMetrics({
+  series,
+  selectedSeason,
+}: ProgressStatusProps) {
+  const metrics = useProgressMetrics(series, selectedSeason);
 
   return (
     <div className="space-y-5">

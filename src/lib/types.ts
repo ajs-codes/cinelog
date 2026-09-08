@@ -24,11 +24,14 @@ type SeriesDetails = {
   is_present_in_watchlist?: boolean;
   impression?: number | null;
   watch_status?: number | null;
+  total_number_of_episodes_watched?: number;
+  total_number_of_seasons_watched?: number;
 };
 
 type SeriesSeason = {
   air_date?: string | null;
   episode_count?: number;
+  episodes_watched?: number;
   id?: number;
   name?: string;
   overview?: string;

@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import { SeasonSelect } from "@/components/content-detail/progress/season-select";
+import type { SeasonOption } from "@/hooks/title-details/use-progress-seasons";
 import { useProgressStatus } from "@/hooks/title-details/use-progress-status";
 import type { SeriesDetails, BadgeIndicator } from "@/lib/types";
 import { WATCH_STATUS } from "@/lib/constants";
@@ -33,6 +35,9 @@ type ProgressStatusProps = {
   watchStatus?: number | null;
   mutationStatus?: ContentMutationStatus;
   disabled?: boolean;
+  seasons?: SeasonOption[];
+  selectedSeason?: number;
+  onSeasonChange?: (seasonNumber: number) => void;
 };
 
 export function ProgressStatus({
@@ -42,9 +47,12 @@ export function ProgressStatus({
   watchStatus = 0,
   mutationStatus = "idle",
   disabled = false,
+  seasons = [],
+  selectedSeason,
+  onSeasonChange,
 }: ProgressStatusProps) {
   const dispatch = useAppDispatch();
-  const { episodeCount, seasonCount } = useProgressStatus(series);
+  const { episodeCount } = useProgressStatus(series);
   const [isOpen, setIsOpen] = useState(false);
   const status = watchStatus ?? 0;
   const isMutating = mutationStatus === "loading";
@@ -71,6 +79,9 @@ export function ProgressStatus({
   const currentStatusObj =
     WATCH_STATUS[status as keyof typeof WATCH_STATUS] ?? WATCH_STATUS[1];
   const currentIndicator = WATCH_STATUS_INDICATOR[status] ?? "accentAlt";
+  const currentSeason = seasons.find(
+    (season) => season.seasonNumber === selectedSeason,
+  );
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -147,8 +158,17 @@ export function ProgressStatus({
 
       {type === "series" ? (
         <div className="flex flex-wrap items-center gap-3">
-          <ProgressMetadata label="SEASON" value={`1 of ${seasonCount}`} />
-          <ProgressMetadata label="EPISODE" value={`0 of ${episodeCount}`} />
+          <SeasonSelect
+            seasons={seasons}
+            selectedSeason={selectedSeason}
+            onSelect={(seasonNumber) => onSeasonChange?.(seasonNumber)}
+          />
+          <ProgressMetadata
+            label="EPISODE"
+            value={`${currentSeason?.episodesWatched ?? 0} of ${
+              currentSeason?.episodeCount ?? episodeCount
+            }`}
+          />
         </div>
       ) : null}
     </div>

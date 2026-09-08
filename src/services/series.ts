@@ -8,7 +8,6 @@ import type { SeriesPatchInput } from "@/lib/validations/library";
 import {
   deleteUserSeries,
   findUserSeries,
-  findUserSeriesImpression,
   insertUserSeries,
   listSeasonsBySeriesId,
   runInTransaction,
@@ -31,8 +30,14 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
 
   const credits = pickCastAndDirectors(seriesRecord.credits);
   const userSeries = userId
-    ? await findUserSeriesImpression(tmdbId, userId)
+    ? await findUserSeries(tmdbId, userId)
     : undefined;
+  const userSeasons = userSeries
+    ? await listSeasonsBySeriesId(userSeries.id)
+    : [];
+  const progressBySeasonNumber = new Map(
+    userSeasons.map((season) => [season.seasonNumber, season.episodesWatched]),
+  );
 
   return {
     backdrop_path: seriesRecord.backdrop_path,
@@ -48,7 +53,13 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
     overview: seriesRecord.overview,
     poster_path: seriesRecord.poster_path,
     production_companies: seriesRecord.production_companies ?? [],
-    seasons: seriesRecord.seasons ?? [],
+    seasons: (seriesRecord.seasons ?? []).map((season) => ({
+      ...season,
+      episodes_watched:
+        season.season_number === undefined
+          ? 0
+          : (progressBySeasonNumber.get(season.season_number) ?? 0),
+    })),
     status: seriesRecord.status,
     tagline: seriesRecord.tagline,
     type: seriesRecord.type,
@@ -64,6 +75,10 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
     is_present_in_watchlist: Boolean(userSeries),
     impression: userSeries?.impression ?? null,
     watch_status: userSeries?.watchStatus ?? null,
+    total_number_of_episodes_watched:
+      userSeries?.totalNumberOfEpisodesWatched ?? 0,
+    total_number_of_seasons_watched:
+      userSeries?.totalNumberOfSeasonsWatched ?? 0,
   };
 }
 
@@ -129,33 +144,32 @@ export async function updateSeriesInLibrary(
       const targetSeason = allSeasons.find(
         (s) => s.seasonNumber === body.mark_season_to_watched,
       );
-      if (targetSeason) {
-        let epsWatched = body.mark_episode_to_watched;
-        if (epsWatched > targetSeason.episodeCount)
-          epsWatched = targetSeason.episodeCount;
-        if (epsWatched < 0) epsWatched = 0;
-
-        const seasonCompletedAt =
-          epsWatched === targetSeason.episodeCount && epsWatched > 0
-            ? now
-            : null;
-
-        await updateSeasonById(
-          targetSeason.id,
-          {
-            episodesWatched: epsWatched,
-            lastWatchedAt: now,
-            completedAt: seasonCompletedAt,
-            updatedAt: now,
-          },
-          tx,
-        );
-
-        targetSeason.episodesWatched = epsWatched;
-        targetSeason.completedAt = seasonCompletedAt;
-        targetSeason.lastWatchedAt = now;
-        didProgressUpdate = true;
+      if (!targetSeason) {
+        throw new AppError("Season not found in library", 404);
       }
+
+      const epsWatched = Math.min(
+        body.mark_episode_to_watched,
+        targetSeason.episodeCount,
+      );
+      const seasonCompletedAt =
+        epsWatched === targetSeason.episodeCount && epsWatched > 0 ? now : null;
+
+      await updateSeasonById(
+        targetSeason.id,
+        {
+          episodesWatched: epsWatched,
+          lastWatchedAt: now,
+          completedAt: seasonCompletedAt,
+          updatedAt: now,
+        },
+        tx,
+      );
+
+      targetSeason.episodesWatched = epsWatched;
+      targetSeason.completedAt = seasonCompletedAt;
+      targetSeason.lastWatchedAt = now;
+      didProgressUpdate = true;
     }
 
     if (body.watch_status !== undefined) {

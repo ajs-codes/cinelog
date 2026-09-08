@@ -31,24 +31,49 @@ export const moviePatchSchema = z
     { message: "No valid fields to update" },
   );
 
-export const seriesPatchSchema = z.object({
-  watch_status: z
-    .number()
-    .refine((value) => watchStatusValues.includes(value), {
-      message: "Invalid watch_status",
-    })
-    .optional(),
-  impression: z
-    .union([
-      z.null(),
-      z.number().refine((value) => impressionValues.includes(value), {
-        message: "Invalid impression",
-      }),
-    ])
-    .optional(),
-  mark_season_to_watched: z.number().optional(),
-  mark_episode_to_watched: z.number().optional(),
-});
+export const seriesPatchSchema = z
+  .object({
+    watch_status: z
+      .number()
+      .refine((value) => watchStatusValues.includes(value), {
+        message: "Invalid watch_status",
+      })
+      .optional(),
+    impression: z
+      .union([
+        z.null(),
+        z.number().refine((value) => impressionValues.includes(value), {
+          message: "Invalid impression",
+        }),
+      ])
+      .optional(),
+    mark_season_to_watched: z.number().int().nonnegative().optional(),
+    mark_episode_to_watched: z.number().int().nonnegative().optional(),
+  })
+  .superRefine((data, context) => {
+    const hasSeason = data.mark_season_to_watched !== undefined;
+    const hasEpisode = data.mark_episode_to_watched !== undefined;
+
+    if (hasSeason !== hasEpisode) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "mark_season_to_watched and mark_episode_to_watched must be provided together",
+      });
+    }
+
+    if (
+      data.watch_status === undefined &&
+      data.impression === undefined &&
+      !hasSeason &&
+      !hasEpisode
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "No valid fields to update",
+      });
+    }
+  });
 
 export type MoviePatchInput = z.infer<typeof moviePatchSchema>;
 export type SeriesPatchInput = z.infer<typeof seriesPatchSchema>;
