@@ -14,8 +14,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-58 shrink-0 border-r border-outline-alt bg-surface-container-low lg:flex lg:flex-col">
-      <div className="flex h-20 items-center gap-3 border-b border-outline-alt px-7">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden h-screen w-58 shrink-0 border-r border-outline-alt bg-surface-container-low lg:flex lg:flex-col">
+      <div className="flex h-14 items-center gap-3 border-b border-outline-alt px-7">
         <div className="flex size-9 items-center justify-center rounded-lg bg-brand-primary text-surface">
           <Clapperboard className="size-5" strokeWidth={2.2} />
         </div>
