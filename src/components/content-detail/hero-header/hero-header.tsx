@@ -1,9 +1,9 @@
 "use client";
 
-import { ActionBar } from "@/components/content-detail/hero-header/action_bar";
-import { GenrePills } from "@/components/content-detail/hero-header/genre_pills";
-import { MetaRow } from "@/components/content-detail/hero-header/meta_row";
-import { PosterPanel } from "@/components/content-detail/hero-header/poster_panel";
+import { ActionBar } from "@/components/content-detail/hero-header/action-bar";
+import { GenrePills } from "@/components/content-detail/hero-header/genre-pills";
+import { MetaRow } from "@/components/content-detail/hero-header/meta-row";
+import { PosterPanel } from "@/components/content-detail/hero-header/poster-panel";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 import { orFallback } from "@/lib/utils";
 import { useAppSelector } from "@/store";

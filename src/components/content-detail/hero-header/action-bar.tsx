@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ReactionButton } from "@/components/content-detail/hero-header/reaction_button";
-import { ProgressStatus } from "@/components/content-detail/progress/status";
+import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
+import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
 import { IMPRESSION } from "@/lib/constants";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 import { formatLanguage, orFallback } from "@/lib/utils";

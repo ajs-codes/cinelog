@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SearchDialog } from "@/components/search-popup";
+import { SearchDialog } from "@/components/search-popup/search-dialog";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Noto_Serif, Public_Sans } from "next/font/google";

@@ -1,6 +1,6 @@
-import { ProgressActions } from "@/components/content-detail/progress/actions";
-import { ProgressMetrics } from "@/components/content-detail/progress/metrics";
-import { ProgressStatus } from "@/components/content-detail/progress/status";
+import { ProgressActions } from "@/components/content-detail/progress/progress-actions";
+import { ProgressMetrics } from "@/components/content-detail/progress/progress-metrics";
+import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
 import type { SeriesDetails } from "@/lib/types";
 import { useAppSelector } from "@/store";
 
