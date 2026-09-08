@@ -31,6 +31,7 @@ export function MovieLists({
             genre={result.genres.join(", ")}
             id={result.id}
             key={`${mediaType}-${result.id ?? index}`}
+            mediaType={mediaType}
             onItemClick={onItemClick}
             originalLanguage={result.original_language}
             poster={result.poster_path ?? undefined}

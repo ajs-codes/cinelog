@@ -17,7 +17,7 @@ function* fetchSearchResults(
   action: ReturnType<typeof searchRequested>,
 ): SagaIterator {
   const { mediaType, query } = action.payload;
-  const endpoint = mediaType === "movies" ? "movie" : "series";
+  const endpoint = mediaType;
 
   try {
     const response: Response = yield call(

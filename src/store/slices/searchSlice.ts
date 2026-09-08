@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-export type SearchMediaType = "movies" | "series";
+export type SearchMediaType = "movie" | "series";
 export type SearchStatus = "idle" | "loading" | "success" | "failed";
 
 export type SearchResult = {
@@ -30,7 +30,7 @@ const initialMediaState: SearchMediaState = {
 };
 
 const initialState: SearchState = {
-  movies: initialMediaState,
+  movie: initialMediaState,
   series: initialMediaState,
 };
 
