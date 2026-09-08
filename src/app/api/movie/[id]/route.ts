@@ -23,14 +23,14 @@ type TmdbMovie = {
   overview?: string;
   poster_path?: string | null;
   production_companies?: unknown[] | null;
-  production_countries?: unknown[] | null;
   release_date?: string;
   runtime?: number | null;
-  spoken_languages?: unknown[] | null;
   status?: string;
   tagline?: string | null;
   title?: string;
   vote_average?: number;
+  original_language?: string | null;
+  origin_country?: string[] | null;
   release_dates?: {
     results?: Array<{ iso_3166_1?: string; [key: string]: unknown }>;
   };
@@ -63,14 +63,14 @@ function getMovieFields(movie: TmdbMovie) {
     overview: movie.overview,
     poster_path: movie.poster_path,
     production_companies: movie.production_companies ?? [],
-    production_countries: movie.production_countries ?? [],
     release_date: movie.release_date,
     runtime: movie.runtime,
-    spoken_languages: movie.spoken_languages ?? [],
     status: movie.status,
     tagline: movie.tagline,
     title: movie.title,
     vote_average: movie.vote_average,
+    original_language: movie.original_language,
+    origin_country: movie.origin_country,
     release_dates: (movie.release_dates?.results ?? []).filter(
       (release) => release.iso_3166_1 === "IN",
     ),

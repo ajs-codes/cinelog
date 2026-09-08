@@ -33,13 +33,13 @@ type TmdbSeries = {
   overview?: string;
   poster_path?: string | null;
   production_companies?: unknown[] | null;
-  production_countries?: unknown[] | null;
   seasons?: unknown[] | null;
-  spoken_languages?: unknown[] | null;
   status?: string;
   tagline?: string | null;
   type?: string;
   vote_average?: number;
+  original_language?: string | null;
+  origin_country?: string[] | null;
   content_ratings?: {
     results?: TmdbContentRating[];
   };
@@ -82,13 +82,13 @@ function getSeriesFields(series: TmdbSeries) {
     overview: series.overview,
     poster_path: series.poster_path,
     production_companies: series.production_companies ?? [],
-    production_countries: series.production_countries ?? [],
     seasons: series.seasons ?? [],
-    spoken_languages: series.spoken_languages ?? [],
     status: series.status,
     tagline: series.tagline,
     type: series.type,
     vote_average: series.vote_average,
+    original_language: series.original_language,
+    origin_country: series.origin_country ?? [],
     imdb_id: series.imdb_id ?? series.external_ids?.imdb_id,
     content_ratings:
       series.content_ratings?.results?.find(
