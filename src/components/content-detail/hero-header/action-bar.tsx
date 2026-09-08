@@ -2,6 +2,7 @@
 
 import {
   BookmarkPlus,
+  Check,
   Heart,
   Share2,
   ThumbsDown,
@@ -9,10 +10,11 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ReactionButton } from "@/components/content-detail/hero-header/reaction_button";
-import { ProgressStatus } from "@/components/content-detail/progress/status";
+import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
+import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
 import { IMPRESSION } from "@/lib/constants";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
+import { formatLanguage, orFallback } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import {
   mutationRequested,
@@ -27,8 +29,8 @@ type ActionBarProps = {
   type?: "movie" | "series";
   isPresentInWatchlist?: boolean;
   impression?: number | null;
+  watchStatus?: number | null;
   mutationStatus?: ContentMutationStatus;
-  lastMutation?: ContentMutation;
   content?: MovieDetails | SeriesDetails;
 };
 
@@ -45,34 +47,23 @@ export function ActionBar({
   type,
   isPresentInWatchlist = false,
   impression = null,
+  watchStatus = null,
   mutationStatus = "idle",
-  lastMutation,
   content,
 }: ActionBarProps) {
   const dispatch = useAppDispatch();
   const tmdbId = id !== undefined ? id : "N/A";
-  const displayImdbId = imdbId ?? "N/A";
-  const displayLanguage = language
-    ? (new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
-      language)
-    : "N/A";
+  const displayImdbId = orFallback(imdbId);
+  const displayLanguage = language?.trim() ? formatLanguage(language) : "N/A";
 
   const isMutating = mutationStatus === "loading";
-  const contentLabel = type === "series" ? "Series" : "Movie";
-  const confirmation =
-    mutationStatus === "success" && lastMutation === "add-watchlist"
-      ? `${contentLabel} added to watchlist.`
-      : mutationStatus === "success" && lastMutation === "remove-watchlist"
-        ? `${contentLabel} removed from watchlist.`
-        : mutationStatus === "success" && lastMutation === "update-impression"
-          ? "Impression saved."
-          : null;
 
   const requestMutation = (
     mutation: ContentMutation,
     value?: number | null,
   ) => {
     if (id === undefined || !type || isMutating) return;
+    if (mutation !== "add-watchlist" && !isPresentInWatchlist) return;
     dispatch(
       mutationRequested({
         id: String(id),
@@ -89,17 +80,17 @@ export function ActionBar({
       <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
-          disabled={isMutating}
-          onClick={() =>
-            requestMutation(
-              isPresentInWatchlist ? "remove-watchlist" : "add-watchlist",
-            )
-          }
+          disabled={isMutating || isPresentInWatchlist}
+          onClick={() => requestMutation("add-watchlist")}
           variant="darkFilled"
           className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
         >
-          <BookmarkPlus className="h-4 w-4" />
-          {isPresentInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+          {isPresentInWatchlist ? (
+            <Check className="h-4 w-4 text-status-success" />
+          ) : (
+            <BookmarkPlus className="h-4 w-4" />
+          )}
+          {isPresentInWatchlist ? "In Watchlist" : "Add to Watchlist"}
         </Button>
 
         <button
@@ -112,9 +103,17 @@ export function ActionBar({
 
         <div className="mx-1 h-6 w-px bg-white/15" />
 
-        {type === "movie" && <ProgressStatus type="movie" />}
+        {type === "movie" && (
+          <ProgressStatus
+            id={id}
+            type="movie"
+            watchStatus={watchStatus}
+            mutationStatus={mutationStatus}
+            disabled={!isPresentInWatchlist}
+          />
+        )}
 
-        <div className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-surface-container/70 p-1.5">
+        <div className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-surface-container/70 p-1">
           {Object.values(IMPRESSION).map((imp) => {
             const config =
               IMPRESSION_CONFIG[imp.value as keyof typeof IMPRESSION_CONFIG];
@@ -129,6 +128,7 @@ export function ActionBar({
                 }
                 label={imp.display_value}
                 active={isActive}
+                disabled={!isPresentInWatchlist || isMutating}
                 className={isActive ? "text-white" : "text-on-surface"}
                 onClick={() =>
                   requestMutation(
@@ -141,12 +141,6 @@ export function ActionBar({
           })}
         </div>
       </div>
-
-      {confirmation && (
-        <p className="mt-3 text-sm text-status-success" role="status">
-          {confirmation}
-        </p>
-      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-neutral">
         <span>TMDB ID: {tmdbId}</span>

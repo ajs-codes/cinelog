@@ -10,19 +10,24 @@ type ProgressMetric = {
 
 export function useProgressMetrics(
   series?: SeriesDetails | null,
+  seasonNumber?: number,
 ): ProgressMetric[] {
   const seasons = series?.seasons ?? [];
-  const metrics: ProgressMetric[] = seasons.map((season, index) => {
-    const seasonNumber = season.season_number ?? index + 1;
+  const metrics: ProgressMetric[] = [];
 
-    return {
+  const selectedSeason = seasons.find(
+    (season, index) => (season.season_number ?? index + 1) === seasonNumber,
+  );
+
+  if (selectedSeason) {
+    metrics.push({
       colorClass: "bg-brand-tertiary-accent-alt",
-      id: season.id ?? seasonNumber,
-      label: season.name ?? `Season ${seasonNumber}`,
-      total: season.episode_count ?? 0,
-      value: 0,
-    };
-  });
+      id: selectedSeason.id ?? seasonNumber ?? "",
+      label: selectedSeason.name ?? `Season ${seasonNumber}`,
+      total: selectedSeason.episode_count ?? 0,
+      value: selectedSeason.episodes_watched ?? 0,
+    });
+  }
 
   if (series) {
     metrics.push({
@@ -30,7 +35,7 @@ export function useProgressMetrics(
       id: "overall",
       label: "Series Overall Progress",
       total: series.number_of_episodes ?? 0,
-      value: 0,
+      value: series.total_number_of_episodes_watched ?? 0,
     });
   }
 

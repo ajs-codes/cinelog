@@ -3,8 +3,8 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { ContentErrorState } from "@/components/custom/content-error-state";
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
-import { HeroHeader } from "@/components/content-detail";
-import { ContentProgress } from "@/components/content-detail/progress/content_progress";
+import { HeroHeader } from "@/components/content-detail/hero-header/hero-header";
+import { ContentProgress } from "@/components/content-detail/progress/content-progress";
 import { useContentDetails } from "@/hooks/title-details/use-content-details";
 import type { SeriesDetails } from "@/lib/types";
 import { useParams } from "next/navigation";

@@ -9,6 +9,7 @@ import {
   mutationSucceeded,
   type ContentDetailsData,
 } from "./contentDetailsSlice";
+import { libraryRequested } from "./librarySlice";
 
 type DetailsResponse = ContentDetailsData & { error?: string };
 
@@ -45,23 +46,28 @@ function* fetchContentDetails(
 function* mutateContentDetails(
   action: ReturnType<typeof mutationRequested>,
 ): SagaIterator {
-  const { id, mediaType, mutation, value, content } = action.payload;
-  const method =
-    mutation === "add-watchlist"
-      ? "POST"
-      : mutation === "remove-watchlist"
-        ? "DELETE"
-        : "PATCH";
+  const { id, mediaType, mutation, value, content, progress } = action.payload;
+  const method = mutation === "add-watchlist" ? "POST" : "PATCH";
   const body =
     mutation === "add-watchlist"
       ? content
       : mutation === "update-impression"
         ? { impression: value }
-        : undefined;
+        : mutation === "update-watch-status"
+          ? { watch_status: value }
+          : mutation === "update-progress" && progress
+            ? {
+                mark_season_to_watched: progress.seasonNumber,
+                mark_episode_to_watched: progress.episodeNumber,
+              }
+          : undefined;
 
   try {
     if (mutation === "add-watchlist" && !content) {
       throw new Error("Content details are unavailable");
+    }
+    if (mutation === "update-progress" && (!progress || mediaType !== "series")) {
+      throw new Error("Series progress details are unavailable");
     }
 
     const response: Response = yield call(fetch, `/api/${mediaType}/${id}`, {
@@ -72,6 +78,38 @@ function* mutateContentDetails(
     const data: { error?: string } = yield call([response, "json"]);
     if (!response.ok) throw new Error(data.error ?? "Content update failed");
 
+    const refreshSeriesDetails =
+      mediaType === "series" &&
+      (mutation === "update-progress" ||
+        mutation === "update-watch-status");
+
+    if (mutation === "add-watchlist") {
+      yield put(libraryRequested());
+    }
+
+    if (refreshSeriesDetails) {
+      yield put(libraryRequested());
+
+      const detailsResponse: Response = yield call(
+        fetch,
+        `/api/${mediaType}/${id}`,
+        { cache: "no-store" },
+      );
+      const detailsData: DetailsResponse = yield call([
+        detailsResponse,
+        "json",
+      ]);
+
+      if (!detailsResponse.ok) {
+        throw new Error(
+          detailsData.error ?? "Updated content details request failed",
+        );
+      }
+
+      yield put(detailsSucceeded({ data: detailsData, id, mediaType }));
+      return;
+    }
+
     yield put(
       mutationSucceeded({
         id,
@@ -79,8 +117,8 @@ function* mutateContentDetails(
         data:
           mutation === "add-watchlist"
             ? { is_present_in_watchlist: true }
-            : mutation === "remove-watchlist"
-              ? { is_present_in_watchlist: false }
+            : mutation === "update-watch-status"
+              ? { watch_status: value ?? 0 }
               : { impression: value ?? null },
       }),
     );

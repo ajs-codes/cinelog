@@ -29,6 +29,7 @@ export function MovieLists({
           <MovieItem
             genre={result.genres.join(", ")}
             id={result.id}
+            isPresentInWatchlist={result.is_present_in_watchlist}
             key={`${mediaType}-${result.id ?? index}`}
             mediaType={mediaType}
             onItemClick={onItemClick}

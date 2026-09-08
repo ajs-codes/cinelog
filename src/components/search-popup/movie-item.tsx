@@ -1,6 +1,7 @@
-import { Languages, Star } from "lucide-react";
+import { Check, Languages, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { cn, formatLanguage, formatRating } from "@/lib/utils";
 
 type MovieItemProps = {
@@ -9,6 +10,7 @@ type MovieItemProps = {
   year?: string | number;
   rating?: string | number;
   genre?: string;
+  isPresentInWatchlist?: boolean;
   mediaType?: "movie" | "series";
   originalLanguage?: string;
   synopsis?: string;
@@ -24,6 +26,7 @@ function MovieItem({
   className,
   genre,
   id,
+  isPresentInWatchlist = false,
   mediaType,
   onItemClick,
   originalLanguage,
@@ -35,13 +38,22 @@ function MovieItem({
   year,
   state = "default",
 }: MovieItemProps) {
+  const showWatchlistBadge = state === "default" && isPresentInWatchlist;
+
   return (
     <article
       className={cn(
-        "flex min-h-40 w-full items-stretch gap-2 overflow-hidden rounded-xl border border-transparent bg-surface-container-high px-2 py-2 text-on-surface hover:bg-surface sm:gap-4",
+        "relative flex min-h-40 w-full items-stretch gap-2 overflow-hidden rounded-xl border border-transparent bg-surface-container-high px-2 py-2 text-on-surface hover:bg-surface sm:gap-4",
         className,
       )}
     >
+      {showWatchlistBadge ? (
+        <Badge
+          className="pointer-events-none absolute right-3 top-3 z-10 border-status-success/30 bg-status-success/10 text-status-success"
+          inlineStart={<Check />}
+          text="In Watchlist"
+        />
+      ) : null}
       {state === "loading" ? (
         <div className="flex w-full animate-pulse items-center gap-4 px-2 py-3">
           <div className="h-36 w-24 shrink-0 rounded-lg bg-surface-container-low" />
@@ -79,7 +91,12 @@ function MovieItem({
               </div>
             </div>
 
-            <div className="flex min-w-0 flex-1 flex-col justify-start py-3">
+            <div
+              className={cn(
+                "flex min-w-0 flex-1 flex-col justify-start py-3",
+                showWatchlistBadge && "pr-32",
+              )}
+            >
               <div className="flex min-w-0 items-baseline gap-2">
                 <h3 className="truncate font-heading text-lg leading-7 font-semibold text-white">
                   {title ?? "Untitled"}

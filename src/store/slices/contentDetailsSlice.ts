@@ -17,8 +17,14 @@ export type ContentDetailsEntry = {
 
 export type ContentMutation =
   | "add-watchlist"
-  | "remove-watchlist"
-  | "update-impression";
+  | "update-impression"
+  | "update-watch-status"
+  | "update-progress";
+
+export type ContentProgressMutation = {
+  seasonNumber: number;
+  episodeNumber: number;
+};
 
 export type ContentDetailsState = Record<
   ContentMediaType,
@@ -83,6 +89,7 @@ const contentDetailsSlice = createSlice({
         mutation: ContentMutation;
         value?: number | null;
         content?: ContentDetailsData;
+        progress?: ContentProgressMutation;
       }>,
     ) => {
       const entry = state[action.payload.mediaType][action.payload.id];

@@ -1,10 +1,11 @@
 "use client";
 
-import { ActionBar } from "@/components/content-detail/hero-header/action_bar";
-import { GenrePills } from "@/components/content-detail/hero-header/genre_pills";
-import { MetaRow } from "@/components/content-detail/hero-header/meta_row";
-import { PosterPanel } from "@/components/content-detail/hero-header/poster_panel";
+import { ActionBar } from "@/components/content-detail/hero-header/action-bar";
+import { GenrePills } from "@/components/content-detail/hero-header/genre-pills";
+import { MetaRow } from "@/components/content-detail/hero-header/meta-row";
+import { PosterPanel } from "@/components/content-detail/hero-header/poster-panel";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
+import { orFallback } from "@/lib/utils";
 import { useAppSelector } from "@/store";
 
 type HeroHeaderProps = {
@@ -21,8 +22,8 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
       ? undefined
       : state.contentDetails[mediaType][String(mediaId)],
   );
-  const title = movie?.title ?? series?.name ?? "N/A";
-  const overview = movie?.overview ?? series?.overview ?? "N/A";
+  const title = orFallback(movie?.title || series?.name);
+  const overview = orFallback(movie?.overview || series?.overview);
   const language = movie?.original_language ?? series?.original_language;
   const genres = movie?.genres ?? series?.genres;
   const imdbId = movie?.imdb_id ?? series?.imdb_id;
@@ -66,8 +67,8 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
               movie?.is_present_in_watchlist ?? series?.is_present_in_watchlist
             }
             impression={movie?.impression ?? series?.impression}
+            watchStatus={movie?.watch_status ?? series?.watch_status}
             mutationStatus={entry?.mutationStatus}
-            lastMutation={entry?.lastMutation}
             content={movie ?? series ?? undefined}
           />
         </div>
