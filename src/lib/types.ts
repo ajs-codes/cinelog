@@ -40,11 +40,15 @@ type MovieDetails = {
   imdb_id?: string | null;
   overview?: string | null;
   poster_path?: string | null;
-  release_date?: string;
-  release_dates?: Array<{
-    iso_3166_1?: string;
-    release_dates?: Array<{ certification?: string | null }>;
-  }>;
+  release_date?: string | null;
+  certification?: {
+    certification?: string | null;
+    descriptors?: string[];
+    iso_639_1?: string | null;
+    note?: string | null;
+    release_date?: string;
+    type?: number;
+  } | null;
   runtime?: number | null;
   original_language?: string | null;
   status?: string;

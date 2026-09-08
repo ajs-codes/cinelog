@@ -24,9 +24,7 @@ export function useMetaRow({ movie, series, type }: MetaRowInput): MetaRowData {
       : `${firstAirYear} - ${lastAirYear}`;
   const seasonCount = series?.number_of_seasons ?? 1;
   const episodeCount = series?.number_of_episodes ?? 10;
-  const movieRating = movie?.release_dates
-    ?.flatMap((release) => release.release_dates ?? [])
-    .find((release) => release.certification)?.certification;
+  const movieRating = movie?.certification?.certification;
 
   return {
     contentType: type === "series" ? "Series" : "Movie",

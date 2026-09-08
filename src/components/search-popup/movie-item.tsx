@@ -1,7 +1,6 @@
-import { Languages, Plus, Star } from "lucide-react";
+import { Languages, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { cn, formatLanguage, formatRating } from "@/lib/utils";
 
 type MovieItemProps = {
@@ -16,19 +15,16 @@ type MovieItemProps = {
   poster?: string;
   posterAlt?: string;
   actionLabel?: string;
-  onAction?: () => void;
   onItemClick?: () => void;
   className?: string;
   state?: "default" | "loading" | "failed";
 };
 
 function MovieItem({
-  actionLabel = "Watchlist",
   className,
   genre,
   id,
   mediaType,
-  onAction,
   onItemClick,
   originalLanguage,
   poster,
@@ -122,20 +118,6 @@ function MovieItem({
               ) : null}
             </div>
           </Link>
-
-          <div className="flex shrink-0 items-center pl-1 sm:pl-2">
-            <Button
-              aria-label={actionLabel}
-              className="size-8 px-0 sm:h-8 sm:w-auto sm:px-2 sm:text-xs"
-              onClick={onAction}
-              title={actionLabel}
-              type="button"
-              variant="primaryFilled"
-            >
-              <Plus className="size-4" />
-              <span className="hidden sm:inline">{actionLabel}</span>
-            </Button>
-          </div>
         </>
       )}
     </article>
