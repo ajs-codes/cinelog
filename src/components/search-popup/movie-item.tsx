@@ -77,6 +77,7 @@ function MovieItem({
                     className="object-cover"
                     fill
                     src={poster}
+                    sizes="96px"
                   />
                 )}
               </div>

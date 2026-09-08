@@ -98,7 +98,6 @@
   --font-noto-sans: var(--font-noto-serif);
   --font-public-sans: var(--font-public-sans);
   --font-heading: var(--font-noto-serif);
-  --font-body: var(--font-public-sans);
 }
 
 :root {
@@ -201,6 +200,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-noto-sans;
+    @apply bg-background text-foreground font-public-sans;
   }
 }

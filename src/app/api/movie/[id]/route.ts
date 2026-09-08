@@ -23,14 +23,14 @@ type TmdbMovie = {
   overview?: string;
   poster_path?: string | null;
   production_companies?: unknown[] | null;
-  production_countries?: unknown[] | null;
   release_date?: string;
   runtime?: number | null;
-  spoken_languages?: unknown[] | null;
   status?: string;
   tagline?: string | null;
   title?: string;
   vote_average?: number;
+  original_language?: string | null;
+  origin_country?: string[] | null;
   release_dates?: {
     results?: Array<{ iso_3166_1?: string; [key: string]: unknown }>;
   };
@@ -54,6 +54,13 @@ function getMovieFields(movie: TmdbMovie) {
     if (directingCrew.length === 5) break;
   }
 
+  const releaseResults = movie.release_dates?.results ?? [];
+  const releaseCountry = releaseResults.some(
+    (release) => release.iso_3166_1 === "IN",
+  )
+    ? "IN"
+    : movie.origin_country?.[0];
+
   return {
     backdrop_path: movie.backdrop_path,
     belongs_to_collection: movie.belongs_to_collection,
@@ -63,17 +70,19 @@ function getMovieFields(movie: TmdbMovie) {
     overview: movie.overview,
     poster_path: movie.poster_path,
     production_companies: movie.production_companies ?? [],
-    production_countries: movie.production_countries ?? [],
     release_date: movie.release_date,
     runtime: movie.runtime,
-    spoken_languages: movie.spoken_languages ?? [],
     status: movie.status,
     tagline: movie.tagline,
     title: movie.title,
     vote_average: movie.vote_average,
-    release_dates: (movie.release_dates?.results ?? []).filter(
-      (release) => release.iso_3166_1 === "IN",
-    ),
+    original_language: movie.original_language,
+    origin_country: movie.origin_country,
+    release_dates: releaseCountry
+      ? releaseResults.filter(
+          (release) => release.iso_3166_1 === releaseCountry,
+        )
+      : [],
     credits: [...cast, ...directingCrew],
   };
 }

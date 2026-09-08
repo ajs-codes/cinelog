@@ -1,15 +1,25 @@
-const genres = ["Action", "Sci-Fi", "Cyberpunk", "Animation", "Dystopian"];
-// TODO: Make this dynamic based on the title's genres
+import { useGenrePills } from "@/hooks/title-details/use-genre-pills";
 
-export function GenrePills() {
+type GenrePillsProps = {
+  genres?: Array<{ name?: string }>;
+  type?: string;
+};
+
+export function GenrePills({ genres, type }: GenrePillsProps) {
+  const genrePills = useGenrePills({ genres, type });
+
   return (
     <div className="mt-1 flex flex-wrap gap-2 pt-2">
-      {genres.map((genre) => (
+      {genrePills.map(({ isType, label }) => (
         <span
-          key={genre}
-          className="rounded-full border border-white/10 bg-surface-container/60 px-3.5 py-1.5 text-[12px] font-medium text-on-surface transition hover:bg-surface-container-high"
+          key={label}
+          className={`rounded-full px-3.5 py-1.5 text-[12px] font-medium transition ${
+            isType
+              ? "border border-brand-tertiary-accent bg-brand-tertiary-accent/10 text-brand-tertiary-accent-alt"
+              : "border border-white/10 bg-surface-container/60 text-on-surface"
+          }`}
         >
-          {genre}
+          {label}
         </span>
       ))}
     </div>

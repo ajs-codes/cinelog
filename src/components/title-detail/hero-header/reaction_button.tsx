@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export type ReactionButtonProps = {
   icon: LucideIcon;
+  iconClassName?: string;
   label: string;
   active?: boolean;
   className?: string;
@@ -11,6 +12,7 @@ export type ReactionButtonProps = {
 
 export function ReactionButton({
   icon: Icon,
+  iconClassName = "",
   label,
   active = false,
   className = "",
@@ -32,7 +34,7 @@ export function ReactionButton({
       <Icon
         className={`h-4 w-4 ${
           active ? "fill-current text-brand-primary-container" : ""
-        }`}
+        } ${iconClassName}`}
       />
       {label}
     </Button>

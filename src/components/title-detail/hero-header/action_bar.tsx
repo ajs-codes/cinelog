@@ -9,7 +9,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/title-detail/hero-header/reaction_button";
 
-export function ActionBar() {
+type ActionBarProps = {
+  id?: number;
+  imdbId?: string | null;
+  language?: string | null;
+};
+
+export function ActionBar({ id, imdbId, language }: ActionBarProps) {
+  const tmdbId = id !== undefined ? id : "N/A";
+  const displayImdbId = imdbId ?? "N/A";
+  const displayLanguage = language
+    ? (new Intl.DisplayNames(["en"], { type: "language" }).of(language) ??
+      language)
+    : "N/A";
+
   return (
     <div className="mt-6 border-t border-white/10 pt-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -45,6 +58,7 @@ export function ActionBar() {
           />
           <ReactionButton
             icon={Heart}
+            iconClassName="fill-status-error text-status-error"
             label="Love"
             active
             className="text-white"
@@ -53,9 +67,11 @@ export function ActionBar() {
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-neutral">
-        <span>Database ID: #EP-48201</span>
-        <span className="text-neutral">|</span>
-        <span>Language: Japanese (5.1 Atmos)</span>
+        <span>TMDB ID: {tmdbId}</span>
+        <span className="text-outline-muted">•</span>
+        <span>IMDB ID: {displayImdbId}</span>
+        <span className="text-outline-muted">•</span>
+        <span>Language: {displayLanguage}</span>
       </div>
     </div>
   );
