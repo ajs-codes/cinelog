@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   creators,
@@ -33,6 +33,15 @@ export async function findUserSeriesImpression(tmdbId: number, userId: number) {
     .from(series)
     .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId)))
     .get();
+}
+
+export async function findUserSeriesTmdbIds(userId: number, tmdbIds: number[]) {
+  if (tmdbIds.length === 0) return [];
+
+  return getDb()
+    .select({ tmdbId: series.tmdbId })
+    .from(series)
+    .where(and(eq(series.userId, userId), inArray(series.tmdbId, tmdbIds)));
 }
 
 export async function findUserSeries(tmdbId: number, userId: number) {

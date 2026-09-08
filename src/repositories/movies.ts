@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   credits,
@@ -18,6 +18,15 @@ export async function findUserMovieImpression(tmdbId: number, userId: number) {
     .from(movies)
     .where(and(eq(movies.tmdbId, tmdbId), eq(movies.userId, userId)))
     .get();
+}
+
+export async function findUserMovieTmdbIds(userId: number, tmdbIds: number[]) {
+  if (tmdbIds.length === 0) return [];
+
+  return getDb()
+    .select({ tmdbId: movies.tmdbId })
+    .from(movies)
+    .where(and(eq(movies.userId, userId), inArray(movies.tmdbId, tmdbIds)));
 }
 
 export async function findUserMovie(tmdbId: number, userId: number) {

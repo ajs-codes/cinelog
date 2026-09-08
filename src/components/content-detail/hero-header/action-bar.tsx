@@ -90,7 +90,7 @@ export function ActionBar({
           ) : (
             <BookmarkPlus className="h-4 w-4" />
           )}
-          {isPresentInWatchlist ? "Added to Watchlist" : "Add to Watchlist"}
+          {isPresentInWatchlist ? "In Watchlist" : "Add to Watchlist"}
         </Button>
 
         <button

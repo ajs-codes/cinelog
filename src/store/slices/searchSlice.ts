@@ -6,6 +6,7 @@ export type SearchStatus = "idle" | "loading" | "success" | "failed";
 export type SearchResult = {
   genres: string[];
   id?: number;
+  is_present_in_watchlist?: boolean;
   original_language?: string;
   overview?: string;
   poster_path?: string | null;

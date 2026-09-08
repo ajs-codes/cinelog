@@ -83,6 +83,10 @@ function* mutateContentDetails(
       (mutation === "update-progress" ||
         mutation === "update-watch-status");
 
+    if (mutation === "add-watchlist") {
+      yield put(libraryRequested());
+    }
+
     if (refreshSeriesDetails) {
       yield put(libraryRequested());
 

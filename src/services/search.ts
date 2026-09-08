@@ -3,8 +3,29 @@ import { getYearString } from "@/lib/media/display";
 import { tmdbFetch } from "@/lib/tmdb/client";
 import type { SearchType, TmdbSearchResponse } from "@/lib/types";
 import { findGenreNamesByTmdbIds } from "@/repositories/genres";
+import { findUserMovieTmdbIds } from "@/repositories/movies";
+import { findUserSeriesTmdbIds } from "@/repositories/series";
 
-export async function searchTitles(query: string, type: SearchType) {
+async function findWatchlistedTmdbIds(
+  type: SearchType,
+  tmdbIds: number[],
+  userId?: number,
+) {
+  if (!userId) return new Set<number>();
+
+  const rows =
+    type === "movie"
+      ? await findUserMovieTmdbIds(userId, tmdbIds)
+      : await findUserSeriesTmdbIds(userId, tmdbIds);
+
+  return new Set(rows.map((row) => row.tmdbId));
+}
+
+export async function searchTitles(
+  query: string,
+  type: SearchType,
+  userId?: number,
+) {
   const endpoint = type === "movie" ? "movie" : "tv";
   const params = new URLSearchParams({
     query,
@@ -23,7 +44,13 @@ export async function searchTitles(query: string, type: SearchType) {
       (data.results ?? []).flatMap((result) => result.genre_ids ?? []),
     ),
   ];
-  const genreRows = await findGenreNamesByTmdbIds(genreIds);
+  const tmdbIds = (data.results ?? []).flatMap((result) =>
+    result.id === undefined ? [] : [result.id],
+  );
+  const [genreRows, watchlistedTmdbIds] = await Promise.all([
+    findGenreNamesByTmdbIds(genreIds),
+    findWatchlistedTmdbIds(type, tmdbIds, userId),
+  ]);
   const genreNamesByTmdbId = new Map(
     genreRows.map((genre) => [genre.tmdbId, genre.name]),
   );
@@ -43,6 +70,8 @@ export async function searchTitles(query: string, type: SearchType) {
       release_date: getYearString(result.release_date ?? result.first_air_date),
       title: result.title ?? result.name,
       vote_average: result.vote_average,
+      is_present_in_watchlist:
+        result.id !== undefined && watchlistedTmdbIds.has(result.id),
     })),
   };
 }
