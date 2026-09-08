@@ -36,7 +36,6 @@ export default function MoviePage() {
       ) : (
         <main>
           <HeroHeader movie={movie} type="movie" />
-          <ContentProgress type="movie" />
         </main>
       )}
     </AppShell>
