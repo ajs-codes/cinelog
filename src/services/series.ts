@@ -63,6 +63,7 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
     credits,
     is_present_in_watchlist: Boolean(userSeries),
     impression: userSeries?.impression ?? null,
+    watch_status: userSeries?.watchStatus ?? null,
   };
 }
 

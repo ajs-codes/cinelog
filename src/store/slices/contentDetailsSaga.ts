@@ -46,18 +46,15 @@ function* mutateContentDetails(
   action: ReturnType<typeof mutationRequested>,
 ): SagaIterator {
   const { id, mediaType, mutation, value, content } = action.payload;
-  const method =
-    mutation === "add-watchlist"
-      ? "POST"
-      : mutation === "remove-watchlist"
-        ? "DELETE"
-        : "PATCH";
+  const method = mutation === "add-watchlist" ? "POST" : "PATCH";
   const body =
     mutation === "add-watchlist"
       ? content
       : mutation === "update-impression"
         ? { impression: value }
-        : undefined;
+        : mutation === "update-watch-status"
+          ? { watch_status: value }
+          : undefined;
 
   try {
     if (mutation === "add-watchlist" && !content) {
@@ -79,8 +76,8 @@ function* mutateContentDetails(
         data:
           mutation === "add-watchlist"
             ? { is_present_in_watchlist: true }
-            : mutation === "remove-watchlist"
-              ? { is_present_in_watchlist: false }
+            : mutation === "update-watch-status"
+              ? { watch_status: value ?? 0 }
               : { impression: value ?? null },
       }),
     );

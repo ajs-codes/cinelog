@@ -23,6 +23,7 @@ type SeriesDetails = {
   vote_average?: number;
   is_present_in_watchlist?: boolean;
   impression?: number | null;
+  watch_status?: number | null;
 };
 
 type SeriesSeason = {
@@ -59,6 +60,7 @@ type MovieDetails = {
   vote_average?: number;
   is_present_in_watchlist?: boolean;
   impression?: number | null;
+  watch_status?: number | null;
 };
 
 type BadgeIndicator = "success" | "info" | "error" | "accentAlt";

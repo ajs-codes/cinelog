@@ -2,6 +2,7 @@
 
 import {
   BookmarkPlus,
+  Check,
   Heart,
   Share2,
   ThumbsDown,
@@ -27,6 +28,7 @@ type ActionBarProps = {
   type?: "movie" | "series";
   isPresentInWatchlist?: boolean;
   impression?: number | null;
+  watchStatus?: number | null;
   mutationStatus?: ContentMutationStatus;
   content?: MovieDetails | SeriesDetails;
 };
@@ -44,6 +46,7 @@ export function ActionBar({
   type,
   isPresentInWatchlist = false,
   impression = null,
+  watchStatus = null,
   mutationStatus = "idle",
   content,
 }: ActionBarProps) {
@@ -78,17 +81,17 @@ export function ActionBar({
       <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
-          disabled={isMutating}
-          onClick={() =>
-            requestMutation(
-              isPresentInWatchlist ? "remove-watchlist" : "add-watchlist",
-            )
-          }
+          disabled={isMutating || isPresentInWatchlist}
+          onClick={() => requestMutation("add-watchlist")}
           variant="darkFilled"
           className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
         >
-          <BookmarkPlus className="h-4 w-4" />
-          {isPresentInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+          {isPresentInWatchlist ? (
+            <Check className="h-4 w-4 text-status-success" />
+          ) : (
+            <BookmarkPlus className="h-4 w-4" />
+          )}
+          {isPresentInWatchlist ? "Added to Watchlist" : "Add to Watchlist"}
         </Button>
 
         <button
@@ -101,7 +104,14 @@ export function ActionBar({
 
         <div className="mx-1 h-6 w-px bg-white/15" />
 
-        {type === "movie" && <ProgressStatus type="movie" />}
+        {type === "movie" && (
+          <ProgressStatus
+            id={id}
+            type="movie"
+            watchStatus={watchStatus}
+            mutationStatus={mutationStatus}
+          />
+        )}
 
         <div className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-surface-container/70 p-1.5">
           {Object.values(IMPRESSION).map((imp) => {

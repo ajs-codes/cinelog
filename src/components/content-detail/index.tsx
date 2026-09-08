@@ -66,6 +66,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
               movie?.is_present_in_watchlist ?? series?.is_present_in_watchlist
             }
             impression={movie?.impression ?? series?.impression}
+            watchStatus={movie?.watch_status ?? series?.watch_status}
             mutationStatus={entry?.mutationStatus}
             content={movie ?? series ?? undefined}
           />

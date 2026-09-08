@@ -58,6 +58,7 @@ export async function getMovieDetails(tmdbId: number, userId?: number) {
     credits,
     is_present_in_watchlist: Boolean(userMovie),
     impression: userMovie?.impression ?? null,
+    watch_status: userMovie?.watchStatus ?? null,
   };
 }
 

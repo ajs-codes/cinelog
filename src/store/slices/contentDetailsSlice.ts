@@ -17,8 +17,8 @@ export type ContentDetailsEntry = {
 
 export type ContentMutation =
   | "add-watchlist"
-  | "remove-watchlist"
-  | "update-impression";
+  | "update-impression"
+  | "update-watch-status";
 
 export type ContentDetailsState = Record<
   ContentMediaType,

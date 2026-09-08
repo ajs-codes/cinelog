@@ -26,7 +26,10 @@ export async function runInTransaction<T>(
 
 export async function findUserSeriesImpression(tmdbId: number, userId: number) {
   return getDb()
-    .select({ impression: series.impression })
+    .select({
+      impression: series.impression,
+      watchStatus: series.watchStatus,
+    })
     .from(series)
     .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId)))
     .get();

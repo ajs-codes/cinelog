@@ -11,7 +11,10 @@ import type { MoviePayload } from "@/lib/types";
 
 export async function findUserMovieImpression(tmdbId: number, userId: number) {
   return getDb()
-    .select({ impression: movies.impression })
+    .select({
+      impression: movies.impression,
+      watchStatus: movies.watchStatus,
+    })
     .from(movies)
     .where(and(eq(movies.tmdbId, tmdbId), eq(movies.userId, userId)))
     .get();

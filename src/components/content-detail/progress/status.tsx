@@ -6,6 +6,11 @@ import { useProgressStatus } from "@/hooks/title-details/use-progress-status";
 import type { SeriesDetails, BadgeIndicator } from "@/lib/types";
 import { WATCH_STATUS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useAppDispatch } from "@/store";
+import {
+  mutationRequested,
+  type ContentMutationStatus,
+} from "@/store/slices/contentDetailsSlice";
 
 const indicatorClasses: Record<BadgeIndicator, string> = {
   success: "bg-status-success",
@@ -22,19 +27,25 @@ const WATCH_STATUS_INDICATOR: Record<number, BadgeIndicator> = {
 };
 
 type ProgressStatusProps = {
+  id?: number;
   series?: SeriesDetails | null;
   type?: "movie" | "series";
-  initialStatus?: number;
+  watchStatus?: number | null;
+  mutationStatus?: ContentMutationStatus;
 };
 
 export function ProgressStatus({
+  id,
   series,
   type = "series",
-  initialStatus = 0,
+  watchStatus = 0,
+  mutationStatus = "idle",
 }: ProgressStatusProps) {
+  const dispatch = useAppDispatch();
   const { episodeCount, seasonCount } = useProgressStatus(series);
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<number>(initialStatus);
+  const status = watchStatus ?? 0;
+  const isMutating = mutationStatus === "loading";
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,6 +70,7 @@ export function ProgressStatus({
       <div className="relative" ref={dropdownRef}>
         <button
           type="button"
+          disabled={isMutating}
           onClick={() => setIsOpen(!isOpen)}
           className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors"
         >
@@ -86,9 +98,20 @@ export function ProgressStatus({
                 return (
                   <button
                     key={ws.value}
+                    type="button"
+                    disabled={isMutating}
                     onClick={() => {
-                      setStatus(ws.value);
                       setIsOpen(false);
+                      if (id === undefined || isMutating || ws.value === status)
+                        return;
+                      dispatch(
+                        mutationRequested({
+                          id: String(id),
+                          mediaType: type,
+                          mutation: "update-watch-status",
+                          value: ws.value,
+                        }),
+                      );
                     }}
                     className={cn(
                       "inline-flex items-center justify-between px-3.5 py-2.5 text-sm text-on-surface hover:bg-surface-container-high transition-colors text-left",
