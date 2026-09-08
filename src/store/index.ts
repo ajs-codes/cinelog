@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import createSagaMiddleware from "redux-saga";
 import rootSaga from "./rootSaga";
+import contentDetailsReducer from "./slices/contentDetailsSlice";
 import searchReducer from "./slices/searchSlice";
 import authReducer from "./slices/authSlice";
 
@@ -9,6 +10,7 @@ const sagaMiddleware = createSagaMiddleware();
 
 export const store = configureStore({
   reducer: {
+    contentDetails: contentDetailsReducer,
     search: searchReducer,
     auth: authReducer,
   },

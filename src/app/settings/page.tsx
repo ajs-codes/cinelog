@@ -1,4 +1,4 @@
-import { AppShell } from "@/components/ui/app-shell";
+import { AppShell } from "@/components/ui/layout/app-shell";
 
 export default function SettingsPage() {
   return (

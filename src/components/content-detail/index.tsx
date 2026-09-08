@@ -1,7 +1,7 @@
-import { ActionBar } from "@/components/title-detail/hero-header/action_bar";
-import { GenrePills } from "@/components/title-detail/hero-header/genre_pills";
-import { MetaRow } from "@/components/title-detail/hero-header/meta_row";
-import { PosterPanel } from "@/components/title-detail/hero-header/poster_panel";
+import { ActionBar } from "@/components/content-detail/hero-header/action_bar";
+import { GenrePills } from "@/components/content-detail/hero-header/genre_pills";
+import { MetaRow } from "@/components/content-detail/hero-header/meta_row";
+import { PosterPanel } from "@/components/content-detail/hero-header/poster_panel";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 
 type HeroHeaderProps = {
