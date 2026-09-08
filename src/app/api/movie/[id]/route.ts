@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/jwt";
 import { getDb } from "@/db";
+import { WATCH_STATUS, IMPRESSION } from "@/lib/constants";
+
 import {
   movies,
   genres,
@@ -352,12 +354,121 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       .returning();
 
     if (deleted.length === 0) {
-      return NextResponse.json({ error: "Movie not found in library" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Movie not found in library" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to delete movie:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(request: Request, { params }: RouteContext) {
+  const { id } = await params;
+  const tmdbId = Number(id);
+
+  if (!Number.isInteger(tmdbId) || tmdbId <= 0) {
+    return NextResponse.json({ error: "Invalid movie ID" }, { status: 400 });
+  }
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const payload = await verifyToken(token);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const userId = payload.userId;
+
+  let body: { watch_status?: number; impression?: number | null };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const db = getDb();
+
+  try {
+    const updateData: Partial<typeof movies.$inferInsert> = {};
+    const now = String(Math.floor(Date.now() / 1000));
+    updateData.updatedAt = now;
+
+    if (body.watch_status !== undefined) {
+      const validStatuses: number[] = Object.values(WATCH_STATUS).map(
+        (s) => s.value,
+      );
+      if (!validStatuses.includes(body.watch_status)) {
+        return NextResponse.json(
+          { error: "Invalid watch_status" },
+          { status: 400 },
+        );
+      }
+      updateData.watchStatus = body.watch_status;
+
+      const completedValue =
+        Object.values(WATCH_STATUS).find((s) => s.display_value === "Completed")
+          ?.value ?? 2;
+      if (body.watch_status === completedValue) {
+        updateData.completedAt = now;
+      } else {
+        updateData.completedAt = null;
+      }
+    }
+
+    if (body.impression !== undefined) {
+      const validImpressions: number[] = Object.values(IMPRESSION).map(
+        (i) => i.value,
+      );
+      if (
+        body.impression !== null &&
+        !validImpressions.includes(body.impression)
+      ) {
+        return NextResponse.json(
+          { error: "Invalid impression" },
+          { status: 400 },
+        );
+      }
+      updateData.impression = body.impression;
+    }
+
+    if (Object.keys(updateData).length === 1) {
+      // Only updatedAt is present, meaning no valid fields were passed
+      return NextResponse.json(
+        { error: "No valid fields to update" },
+        { status: 400 },
+      );
+    }
+
+    const updated = await db
+      .update(movies)
+      .set(updateData)
+      .where(and(eq(movies.tmdbId, tmdbId), eq(movies.userId, userId)))
+      .returning();
+
+    if (updated.length === 0) {
+      return NextResponse.json(
+        { error: "Movie not found in library" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to update movie:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
