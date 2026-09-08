@@ -11,83 +11,24 @@ import {
   credits,
   productionCompanies,
 } from "@/db/schema";
+import { WATCH_STATUS, IMPRESSION } from "@/lib/constants";
 import { eq, and } from "drizzle-orm";
+import type {
+  RouteContext,
+  TmdbCrewMember,
+  TmdbSeries,
+} from "@/lib/types";
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+export const dynamic = "force-dynamic";
 
-type TmdbCastMember = {
-  id?: number;
-  name?: string;
-  order?: number;
-  known_for_department?: string;
-  [key: string]: unknown;
-};
-
-type TmdbCrewMember = {
-  id?: number;
-  name?: string;
-  known_for_department?: string;
-  [key: string]: unknown;
-};
-
-type TmdbContentRating = {
-  iso_3166_1?: string;
-  rating?: string;
-  [key: string]: unknown;
-};
-
-type TmdbSeries = {
-  backdrop_path?: string | null;
-  created_by?: Array<{ id?: number; name?: string }> | null;
-  first_air_date?: string;
-  genres?: Array<{ id?: number; name?: string }> | null;
-  id?: number;
-  last_air_date?: string;
-  name?: string;
-  networks?: unknown[] | null;
-  number_of_episodes?: number;
-  number_of_seasons?: number;
-  overview?: string;
-  poster_path?: string | null;
-  production_companies?: Array<{
-    id?: number;
-    name?: string;
-    origin_country?: string;
-  }> | null;
-  seasons?: Array<{
-    id?: number;
-    name?: string;
-    season_number?: number;
-    episode_count?: number;
-    air_date?: string;
-  }> | null;
-  status?: string;
-  tagline?: string | null;
-  type?: string;
-  vote_average?: number;
-  original_language?: string | null;
-  origin_country?: string[] | null;
-  content_ratings?: {
-    results?: TmdbContentRating[];
-  };
-  imdb_id?: string | null;
-  external_ids?: {
-    imdb_id?: string | null;
-  };
-  credits?:
-    | {
-        cast?: TmdbCastMember[];
-        crew?: TmdbCrewMember[];
-      }
-    | Array<{ id?: number; name?: string; known_for_department?: string }>;
-};
-
-function getSeriesFields(series: TmdbSeries) {
+async function getSeriesFields(
+  seriesRecord: TmdbSeries,
+  tmdbId: number,
+  userId?: number,
+) {
   const creditsObj =
-    series.credits && !Array.isArray(series.credits)
-      ? series.credits
+    seriesRecord.credits && !Array.isArray(seriesRecord.credits)
+      ? seriesRecord.credits
       : undefined;
   const cast = [...(creditsObj?.cast ?? [])]
     .sort(
@@ -103,33 +44,43 @@ function getSeriesFields(series: TmdbSeries) {
     if (directingCrew.length === 5) break;
   }
 
+  const userSeries = userId
+    ? await getDb()
+        .select({ impression: series.impression })
+        .from(series)
+        .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId)))
+        .get()
+    : undefined;
+
   return {
-    backdrop_path: series.backdrop_path,
-    created_by: series.created_by ?? [],
-    first_air_date: series.first_air_date,
-    genres: series.genres ?? [],
-    id: series.id,
-    last_air_date: series.last_air_date,
-    name: series.name,
-    networks: series.networks ?? [],
-    number_of_episodes: series.number_of_episodes,
-    number_of_seasons: series.number_of_seasons,
-    overview: series.overview,
-    poster_path: series.poster_path,
-    production_companies: series.production_companies ?? [],
-    seasons: series.seasons ?? [],
-    status: series.status,
-    tagline: series.tagline,
-    type: series.type,
-    vote_average: series.vote_average,
-    original_language: series.original_language,
-    origin_country: series.origin_country ?? [],
-    imdb_id: series.imdb_id ?? series.external_ids?.imdb_id,
+    backdrop_path: seriesRecord.backdrop_path,
+    created_by: seriesRecord.created_by ?? [],
+    first_air_date: seriesRecord.first_air_date,
+    genres: seriesRecord.genres ?? [],
+    id: seriesRecord.id,
+    last_air_date: seriesRecord.last_air_date,
+    name: seriesRecord.name,
+    networks: seriesRecord.networks ?? [],
+    number_of_episodes: seriesRecord.number_of_episodes,
+    number_of_seasons: seriesRecord.number_of_seasons,
+    overview: seriesRecord.overview,
+    poster_path: seriesRecord.poster_path,
+    production_companies: seriesRecord.production_companies ?? [],
+    seasons: seriesRecord.seasons ?? [],
+    status: seriesRecord.status,
+    tagline: seriesRecord.tagline,
+    type: seriesRecord.type,
+    vote_average: seriesRecord.vote_average,
+    original_language: seriesRecord.original_language,
+    origin_country: seriesRecord.origin_country ?? [],
+    imdb_id: seriesRecord.imdb_id ?? seriesRecord.external_ids?.imdb_id,
     content_ratings:
-      series.content_ratings?.results?.find(
+      seriesRecord.content_ratings?.results?.find(
         (rating) => rating.iso_3166_1 === "IN",
       ) ?? {},
     credits: [...cast, ...directingCrew],
+    is_present_in_watchlist: Boolean(userSeries),
+    impression: userSeries?.impression ?? null,
   };
 }
 
@@ -173,8 +124,13 @@ export async function GET(_request: Request, { params }: RouteContext) {
       );
     }
 
-    const series = (await response.json()) as TmdbSeries;
-    return NextResponse.json(getSeriesFields(series));
+    const seriesData = (await response.json()) as TmdbSeries;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const payload = token ? await verifyToken(token) : null;
+    return NextResponse.json(
+      await getSeriesFields(seriesData, seriesId, payload?.userId),
+    );
   } catch {
     return NextResponse.json(
       { error: "TMDB series request failed" },
@@ -402,12 +358,114 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       .returning();
 
     if (deleted.length === 0) {
-      return NextResponse.json({ error: "Series not found in library" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Series not found in library" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to delete series:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(request: Request, { params }: RouteContext) {
+  const { id } = await params;
+  const tmdbId = Number(id);
+
+  if (!Number.isInteger(tmdbId) || tmdbId <= 0) {
+    return NextResponse.json({ error: "Invalid series ID" }, { status: 400 });
+  }
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const payload = await verifyToken(token);
+  if (!payload) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: { watch_status?: number; impression?: number | null };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const updateData: Partial<typeof series.$inferInsert> = {
+    updatedAt: String(Math.floor(Date.now() / 1000)),
+  };
+
+  if (body.watch_status !== undefined) {
+    const validStatuses: number[] = Object.values(WATCH_STATUS).map(
+      (status) => status.value,
+    );
+    if (!validStatuses.includes(body.watch_status)) {
+      return NextResponse.json(
+        { error: "Invalid watch_status" },
+        { status: 400 },
+      );
+    }
+    updateData.watchStatus = body.watch_status;
+    const completedValue =
+      Object.values(WATCH_STATUS).find(
+        (status) => status.display_value === "Completed",
+      )?.value ?? 2;
+    updateData.completedAt =
+      body.watch_status === completedValue ? updateData.updatedAt : null;
+  }
+
+  if (body.impression !== undefined) {
+    const validImpressions: number[] = Object.values(IMPRESSION).map(
+      (impression) => impression.value,
+    );
+    if (
+      body.impression !== null &&
+      !validImpressions.includes(body.impression)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid impression" },
+        { status: 400 },
+      );
+    }
+    updateData.impression = body.impression;
+  }
+
+  if (Object.keys(updateData).length === 1) {
+    return NextResponse.json(
+      { error: "No valid fields to update" },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const updated = await getDb()
+      .update(series)
+      .set(updateData)
+      .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, payload.userId)))
+      .returning();
+
+    if (updated.length === 0) {
+      return NextResponse.json(
+        { error: "Series not found in library" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to update series:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

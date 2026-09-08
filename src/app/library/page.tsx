@@ -1,9 +1,10 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { LibraryView } from "./library-view";
 
 export default function LibraryPage() {
   return (
     <AppShell>
-      <main />
+      <LibraryView />
     </AppShell>
   );
 }

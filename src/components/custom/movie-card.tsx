@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 export type MovieCardData = {
+  tmdbId?: number;
   releaseYear: number;
   posterImage: string;
   rating: number;
@@ -21,10 +23,11 @@ export function MovieCard({ movie }: { movie: MovieCardData }) {
     title,
     completion,
     type,
+    tmdbId,
   } = movie;
   const isLongTitle = title.length > 18;
 
-  return (
+  const card = (
     <Card className="group/card h-[352.5px] w-60 min-w-60 gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
       <CardContent className="p-0">
         <div
@@ -93,5 +96,17 @@ export function MovieCard({ movie }: { movie: MovieCardData }) {
         </div>
       </CardFooter>
     </Card>
+  );
+
+  if (!tmdbId) return card;
+
+  return (
+    <Link
+      aria-label={`View ${title} details`}
+      className="block rounded-[8px] transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+      href={`/${type === "Movie" ? "movie" : "series"}/${tmdbId}`}
+    >
+      {card}
+    </Link>
   );
 }

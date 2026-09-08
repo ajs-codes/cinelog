@@ -5,6 +5,7 @@ import rootSaga from "./rootSaga";
 import contentDetailsReducer from "./slices/contentDetailsSlice";
 import searchReducer from "./slices/searchSlice";
 import authReducer from "./slices/authSlice";
+import libraryReducer from "./slices/librarySlice";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -13,6 +14,7 @@ export const store = configureStore({
     contentDetails: contentDetailsReducer,
     search: searchReducer,
     auth: authReducer,
+    library: libraryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),

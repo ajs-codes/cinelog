@@ -1,8 +1,11 @@
+"use client";
+
 import { ActionBar } from "@/components/content-detail/hero-header/action_bar";
 import { GenrePills } from "@/components/content-detail/hero-header/genre_pills";
 import { MetaRow } from "@/components/content-detail/hero-header/meta_row";
 import { PosterPanel } from "@/components/content-detail/hero-header/poster_panel";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
+import { useAppSelector } from "@/store";
 
 type HeroHeaderProps = {
   movie?: MovieDetails | null;
@@ -11,11 +14,17 @@ type HeroHeaderProps = {
 };
 
 export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
+  const mediaType = type ?? (movie ? "movie" : "series");
+  const mediaId = movie?.id ?? series?.id;
+  const entry = useAppSelector((state) =>
+    mediaId === undefined
+      ? undefined
+      : state.contentDetails[mediaType][String(mediaId)],
+  );
   const title = movie?.title ?? series?.name ?? "N/A";
   const overview = movie?.overview ?? series?.overview ?? "N/A";
   const language = movie?.original_language ?? series?.original_language;
   const genres = movie?.genres ?? series?.genres;
-  const mediaId = movie?.id ?? series?.id;
   const imdbId = movie?.imdb_id ?? series?.imdb_id;
   const posterPath = movie?.poster_path ?? series?.poster_path;
   const rating = movie?.vote_average ?? series?.vote_average;
@@ -53,6 +62,13 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
             imdbId={imdbId}
             language={language ?? undefined}
             type={type}
+            isPresentInWatchlist={
+              movie?.is_present_in_watchlist ?? series?.is_present_in_watchlist
+            }
+            impression={movie?.impression ?? series?.impression}
+            mutationStatus={entry?.mutationStatus}
+            lastMutation={entry?.lastMutation}
+            content={movie ?? series ?? undefined}
           />
         </div>
       </div>

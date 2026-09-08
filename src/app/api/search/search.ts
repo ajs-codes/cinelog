@@ -3,29 +3,11 @@ import { inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { genres } from "@/db/schema";
 import { TMDB_POSTER_BASE_URL } from "@/lib/constants";
+import type { SearchType, TmdbSearchResponse } from "@/lib/types";
 
 const searchQuerySchema = z.object({
   query: z.string().trim().min(1).max(100),
 });
-
-type SearchType = "movie" | "tv";
-
-type TmdbResult = {
-  genre_ids?: number[];
-  id?: number;
-  original_language?: string;
-  overview?: string;
-  poster_path?: string | null;
-  release_date?: string;
-  first_air_date?: string;
-  title?: string;
-  name?: string;
-  vote_average?: number;
-};
-
-type TmdbSearchResponse = {
-  results?: TmdbResult[];
-};
 
 function getYear(date: string | undefined) {
   return date?.slice(0, 4) ?? "";
