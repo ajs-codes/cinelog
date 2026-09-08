@@ -65,6 +65,7 @@ export function ActionBar({
     value?: number | null,
   ) => {
     if (id === undefined || !type || isMutating) return;
+    if (mutation !== "add-watchlist" && !isPresentInWatchlist) return;
     dispatch(
       mutationRequested({
         id: String(id),
@@ -110,6 +111,7 @@ export function ActionBar({
             type="movie"
             watchStatus={watchStatus}
             mutationStatus={mutationStatus}
+            disabled={!isPresentInWatchlist}
           />
         )}
 
@@ -128,6 +130,7 @@ export function ActionBar({
                 }
                 label={imp.display_value}
                 active={isActive}
+                disabled={!isPresentInWatchlist || isMutating}
                 className={isActive ? "text-white" : "text-on-surface"}
                 onClick={() =>
                   requestMutation(

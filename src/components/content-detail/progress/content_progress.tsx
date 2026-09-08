@@ -27,6 +27,7 @@ export function ContentProgress({ series, type = "series" }: ContentProgressProp
             type={type}
             watchStatus={series?.watch_status}
             mutationStatus={entry?.mutationStatus}
+            disabled={!series?.is_present_in_watchlist}
           />
           <div className="mt-5 h-px w-full bg-white/15" />
           <div className="mt-5">

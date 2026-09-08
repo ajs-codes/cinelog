@@ -32,6 +32,7 @@ type ProgressStatusProps = {
   type?: "movie" | "series";
   watchStatus?: number | null;
   mutationStatus?: ContentMutationStatus;
+  disabled?: boolean;
 };
 
 export function ProgressStatus({
@@ -40,13 +41,19 @@ export function ProgressStatus({
   type = "series",
   watchStatus = 0,
   mutationStatus = "idle",
+  disabled = false,
 }: ProgressStatusProps) {
   const dispatch = useAppDispatch();
   const { episodeCount, seasonCount } = useProgressStatus(series);
   const [isOpen, setIsOpen] = useState(false);
   const status = watchStatus ?? 0;
   const isMutating = mutationStatus === "loading";
+  const isDisabled = disabled || isMutating;
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  if (isDisabled && isOpen) {
+    setIsOpen(false);
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -70,9 +77,9 @@ export function ProgressStatus({
       <div className="relative" ref={dropdownRef}>
         <button
           type="button"
-          disabled={isMutating}
+          disabled={isDisabled}
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors"
+          className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
           <span
             className={cn(
@@ -99,10 +106,14 @@ export function ProgressStatus({
                   <button
                     key={ws.value}
                     type="button"
-                    disabled={isMutating}
+                    disabled={isDisabled}
                     onClick={() => {
                       setIsOpen(false);
-                      if (id === undefined || isMutating || ws.value === status)
+                      if (
+                        id === undefined ||
+                        isDisabled ||
+                        ws.value === status
+                      )
                         return;
                       dispatch(
                         mutationRequested({

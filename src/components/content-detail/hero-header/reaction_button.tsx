@@ -7,6 +7,7 @@ export type ReactionButtonProps = {
   iconClassName?: string;
   label: string;
   active?: boolean;
+  disabled?: boolean;
   className?: string;
   onClick?: () => void;
 };
@@ -16,12 +17,14 @@ export function ReactionButton({
   iconClassName = "",
   label,
   active = false,
+  disabled = false,
   className = "",
   onClick,
 }: ReactionButtonProps) {
   return (
     <Button
       type="button"
+      disabled={disabled}
       onClick={onClick}
       variant={active ? "primaryFilled" : "darkFilled"}
       className={[
