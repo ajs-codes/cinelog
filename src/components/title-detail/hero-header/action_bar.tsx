@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   BookmarkPlus,
   Heart,
@@ -8,14 +11,23 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/title-detail/hero-header/reaction_button";
+import { ProgressStatus } from "@/components/title-detail/progress/status";
+import { IMPRESSION } from "@/lib/constants";
 
 type ActionBarProps = {
   id?: number;
   imdbId?: string | null;
   language?: string | null;
+  type?: "movie" | "series";
 };
 
-export function ActionBar({ id, imdbId, language }: ActionBarProps) {
+const IMPRESSION_CONFIG = {
+  0: { icon: ThumbsDown, iconClassName: "" }, // Dislike
+  1: { icon: ThumbsUp, iconClassName: "" }, // Like
+  2: { icon: Heart, iconClassName: "fill-status-error text-status-error" }, // Love
+} as const;
+
+export function ActionBar({ id, imdbId, language, type }: ActionBarProps) {
   const tmdbId = id !== undefined ? id : "N/A";
   const displayImdbId = imdbId ?? "N/A";
   const displayLanguage = language
@@ -23,16 +35,20 @@ export function ActionBar({ id, imdbId, language }: ActionBarProps) {
       language)
     : "N/A";
 
+  const [selectedImpression, setSelectedImpression] = useState<number | null>(
+    null,
+  );
+
   return (
     <div className="mt-6 border-t border-white/10 pt-4">
       <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
           variant="darkFilled"
-          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high"
+          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
         >
           <BookmarkPlus className="h-4 w-4" />
-          Add to Vault
+          Add to Watchlist
         </Button>
 
         <button
@@ -45,24 +61,30 @@ export function ActionBar({ id, imdbId, language }: ActionBarProps) {
 
         <div className="mx-1 h-6 w-px bg-white/15" />
 
+        {type === "movie" && <ProgressStatus type="movie" />}
+
         <div className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-surface-container/70 p-1.5">
-          <ReactionButton
-            icon={ThumbsDown}
-            label="Dislike"
-            className="text-on-surface"
-          />
-          <ReactionButton
-            icon={ThumbsUp}
-            label="Like"
-            className="text-on-surface"
-          />
-          <ReactionButton
-            icon={Heart}
-            iconClassName="fill-status-error text-status-error"
-            label="Love"
-            active
-            className="text-white"
-          />
+          {Object.values(IMPRESSION).map((imp) => {
+            const config =
+              IMPRESSION_CONFIG[imp.value as keyof typeof IMPRESSION_CONFIG];
+            const isActive = selectedImpression === imp.value;
+
+            return (
+              <ReactionButton
+                key={imp.value}
+                icon={config.icon}
+                iconClassName={
+                  isActive && config.iconClassName ? config.iconClassName : ""
+                }
+                label={imp.display_value}
+                active={isActive}
+                className={isActive ? "text-white" : "text-on-surface"}
+                onClick={() =>
+                  setSelectedImpression(isActive ? null : imp.value)
+                }
+              />
+            );
+          })}
         </div>
       </div>
 

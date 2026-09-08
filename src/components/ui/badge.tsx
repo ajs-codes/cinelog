@@ -1,7 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-
-type BadgeIndicator = "success" | "info" | "error" | "accentAlt";
+import type { BadgeIndicator } from "@/lib/types";
 
 type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
   text?: ReactNode;

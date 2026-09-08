@@ -53,4 +53,6 @@ type MovieDetails = {
   vote_average?: number;
 };
 
-export type { MovieDetails, SeriesDetails };
+type BadgeIndicator = "success" | "info" | "error" | "accentAlt";
+
+export type { MovieDetails, SeriesDetails, BadgeIndicator, SeriesSeason };
