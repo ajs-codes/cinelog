@@ -12,76 +12,20 @@ import {
   productionCompanies,
 } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import type {
+  MoviePayload,
+  RouteContext,
+  TmdbCrewMember,
+  TmdbMovie,
+} from "@/lib/types";
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+export const dynamic = "force-dynamic";
 
-type TmdbCastMember = {
-  id?: number;
-  name?: string;
-  order?: number;
-  known_for_department?: string;
-  [key: string]: unknown;
-};
-
-type TmdbCrewMember = {
-  id?: number;
-  name?: string;
-  known_for_department?: string;
-  [key: string]: unknown;
-};
-
-type TmdbReleaseDate = {
-  certification?: string | null;
-  descriptors?: string[];
-  iso_639_1?: string | null;
-  note?: string | null;
-  release_date?: string;
-  type?: number;
-};
-
-type TmdbMovie = {
-  backdrop_path?: string | null;
-  belongs_to_collection?: unknown;
-  genres?: Array<{ id?: number; name?: string }> | null;
-  id?: number;
-  imdb_id?: string | null;
-  overview?: string;
-  poster_path?: string | null;
-  production_companies?: Array<{
-    id?: number;
-    name?: string;
-    origin_country?: string;
-  }> | null;
-  release_date?: string;
-  runtime?: number | null;
-  status?: string;
-  tagline?: string | null;
-  title?: string;
-  vote_average?: number;
-  original_language?: string | null;
-  origin_country?: string[] | null;
-  release_dates?: {
-    results?: Array<{
-      iso_3166_1?: string;
-      release_dates?: TmdbReleaseDate[];
-      [key: string]: unknown;
-    }>;
-  };
-  credits?:
-    | {
-        cast?: TmdbCastMember[];
-        crew?: TmdbCrewMember[];
-      }
-    | Array<{ id?: number; name?: string; known_for_department?: string }>;
-};
-
-type MoviePayload = Omit<TmdbMovie, "release_dates"> & {
-  certification?: TmdbReleaseDate | null;
-};
-
-function getMovieFields(movie: TmdbMovie) {
+async function getMovieFields(
+  movie: TmdbMovie,
+  tmdbId: number,
+  userId?: number,
+) {
   const creditsObj =
     movie.credits && !Array.isArray(movie.credits) ? movie.credits : undefined;
   const cast = [...(creditsObj?.cast ?? [])]
@@ -104,6 +48,14 @@ function getMovieFields(movie: TmdbMovie) {
       (release) => release.iso_3166_1 === movie.origin_country?.[0],
     );
 
+  const userMovie = userId
+    ? await getDb()
+        .select({ impression: movies.impression })
+        .from(movies)
+        .where(and(eq(movies.tmdbId, tmdbId), eq(movies.userId, userId)))
+        .get()
+    : undefined;
+
   return {
     backdrop_path: movie.backdrop_path,
     belongs_to_collection: movie.belongs_to_collection,
@@ -123,6 +75,8 @@ function getMovieFields(movie: TmdbMovie) {
     original_language: movie.original_language,
     origin_country: movie.origin_country,
     credits: [...cast, ...directingCrew],
+    is_present_in_watchlist: Boolean(userMovie),
+    impression: userMovie?.impression ?? null,
   };
 }
 
@@ -167,7 +121,12 @@ export async function GET(_request: Request, { params }: RouteContext) {
     }
 
     const movie = (await response.json()) as TmdbMovie;
-    return NextResponse.json(getMovieFields(movie));
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const payload = token ? await verifyToken(token) : null;
+    return NextResponse.json(
+      await getMovieFields(movie, movieId, payload?.userId),
+    );
   } catch {
     return NextResponse.json(
       { error: "TMDB movie request failed" },

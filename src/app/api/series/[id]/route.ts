@@ -13,82 +13,22 @@ import {
   productionCompanies,
 } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import type {
+  RouteContext,
+  TmdbCrewMember,
+  TmdbSeries,
+} from "@/lib/types";
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+export const dynamic = "force-dynamic";
 
-type TmdbCastMember = {
-  id?: number;
-  name?: string;
-  order?: number;
-  known_for_department?: string;
-  [key: string]: unknown;
-};
-
-type TmdbCrewMember = {
-  id?: number;
-  name?: string;
-  known_for_department?: string;
-  [key: string]: unknown;
-};
-
-type TmdbContentRating = {
-  iso_3166_1?: string;
-  rating?: string;
-  [key: string]: unknown;
-};
-
-type TmdbSeries = {
-  backdrop_path?: string | null;
-  created_by?: Array<{ id?: number; name?: string }> | null;
-  first_air_date?: string;
-  genres?: Array<{ id?: number; name?: string }> | null;
-  id?: number;
-  last_air_date?: string;
-  name?: string;
-  networks?: unknown[] | null;
-  number_of_episodes?: number;
-  number_of_seasons?: number;
-  overview?: string;
-  poster_path?: string | null;
-  production_companies?: Array<{
-    id?: number;
-    name?: string;
-    origin_country?: string;
-  }> | null;
-  seasons?: Array<{
-    id?: number;
-    name?: string;
-    season_number?: number;
-    episode_count?: number;
-    air_date?: string;
-  }> | null;
-  status?: string;
-  tagline?: string | null;
-  type?: string;
-  vote_average?: number;
-  original_language?: string | null;
-  origin_country?: string[] | null;
-  content_ratings?: {
-    results?: TmdbContentRating[];
-  };
-  imdb_id?: string | null;
-  external_ids?: {
-    imdb_id?: string | null;
-  };
-  credits?:
-    | {
-        cast?: TmdbCastMember[];
-        crew?: TmdbCrewMember[];
-      }
-    | Array<{ id?: number; name?: string; known_for_department?: string }>;
-};
-
-function getSeriesFields(series: TmdbSeries) {
+async function getSeriesFields(
+  seriesRecord: TmdbSeries,
+  tmdbId: number,
+  userId?: number,
+) {
   const creditsObj =
-    series.credits && !Array.isArray(series.credits)
-      ? series.credits
+    seriesRecord.credits && !Array.isArray(seriesRecord.credits)
+      ? seriesRecord.credits
       : undefined;
   const cast = [...(creditsObj?.cast ?? [])]
     .sort(
@@ -104,33 +44,43 @@ function getSeriesFields(series: TmdbSeries) {
     if (directingCrew.length === 5) break;
   }
 
+  const userSeries = userId
+    ? await getDb()
+        .select({ impression: series.impression })
+        .from(series)
+        .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId)))
+        .get()
+    : undefined;
+
   return {
-    backdrop_path: series.backdrop_path,
-    created_by: series.created_by ?? [],
-    first_air_date: series.first_air_date,
-    genres: series.genres ?? [],
-    id: series.id,
-    last_air_date: series.last_air_date,
-    name: series.name,
-    networks: series.networks ?? [],
-    number_of_episodes: series.number_of_episodes,
-    number_of_seasons: series.number_of_seasons,
-    overview: series.overview,
-    poster_path: series.poster_path,
-    production_companies: series.production_companies ?? [],
-    seasons: series.seasons ?? [],
-    status: series.status,
-    tagline: series.tagline,
-    type: series.type,
-    vote_average: series.vote_average,
-    original_language: series.original_language,
-    origin_country: series.origin_country ?? [],
-    imdb_id: series.imdb_id ?? series.external_ids?.imdb_id,
+    backdrop_path: seriesRecord.backdrop_path,
+    created_by: seriesRecord.created_by ?? [],
+    first_air_date: seriesRecord.first_air_date,
+    genres: seriesRecord.genres ?? [],
+    id: seriesRecord.id,
+    last_air_date: seriesRecord.last_air_date,
+    name: seriesRecord.name,
+    networks: seriesRecord.networks ?? [],
+    number_of_episodes: seriesRecord.number_of_episodes,
+    number_of_seasons: seriesRecord.number_of_seasons,
+    overview: seriesRecord.overview,
+    poster_path: seriesRecord.poster_path,
+    production_companies: seriesRecord.production_companies ?? [],
+    seasons: seriesRecord.seasons ?? [],
+    status: seriesRecord.status,
+    tagline: seriesRecord.tagline,
+    type: seriesRecord.type,
+    vote_average: seriesRecord.vote_average,
+    original_language: seriesRecord.original_language,
+    origin_country: seriesRecord.origin_country ?? [],
+    imdb_id: seriesRecord.imdb_id ?? seriesRecord.external_ids?.imdb_id,
     content_ratings:
-      series.content_ratings?.results?.find(
+      seriesRecord.content_ratings?.results?.find(
         (rating) => rating.iso_3166_1 === "IN",
       ) ?? {},
     credits: [...cast, ...directingCrew],
+    is_present_in_watchlist: Boolean(userSeries),
+    impression: userSeries?.impression ?? null,
   };
 }
 
@@ -174,8 +124,13 @@ export async function GET(_request: Request, { params }: RouteContext) {
       );
     }
 
-    const series = (await response.json()) as TmdbSeries;
-    return NextResponse.json(getSeriesFields(series));
+    const seriesData = (await response.json()) as TmdbSeries;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const payload = token ? await verifyToken(token) : null;
+    return NextResponse.json(
+      await getSeriesFields(seriesData, seriesId, payload?.userId),
+    );
   } catch {
     return NextResponse.json(
       { error: "TMDB series request failed" },
