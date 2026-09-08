@@ -52,7 +52,17 @@ export const movies = sqliteTable(
     originCountry: text("origin_country"),
     certificate: text("certificate"),
   },
-  (table) => [index("movies_tmdb_id_index").on(table.tmdbId)],
+  (table) => [
+    check(
+      "movies_watch_status_check",
+      sql`${table.watchStatus} IN (0, 1, 2, 3)`,
+    ),
+    check(
+      "movies_impression_check",
+      sql`${table.impression} IN (0, 1, 2)`,
+    ),
+    index("movies_tmdb_id_index").on(table.tmdbId),
+  ],
 );
 
 export const moviesToGenres = sqliteTable(
@@ -108,7 +118,17 @@ export const series = sqliteTable(
     certificate: text("certificate"),
     type: text("type"),
   },
-  (table) => [index("series_tmdb_id_index").on(table.tmdbId)],
+  (table) => [
+    check(
+      "series_watch_status_check",
+      sql`${table.watchStatus} IN (0, 1, 2, 3)`,
+    ),
+    check(
+      "series_impression_check",
+      sql`${table.impression} IN (0, 1, 2)`,
+    ),
+    index("series_tmdb_id_index").on(table.tmdbId),
+  ],
 );
 
 export const seasons = sqliteTable(
@@ -234,6 +254,77 @@ export const productionCompanies = sqliteTable(
   ],
 );
 
+export const customCollections = sqliteTable(
+  "custom_collections",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    mediaType: integer("media_type").notNull(),
+    showInDashboard: integer("show_in_dashboard", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    showInLibrary: integer("show_in_library", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    groupBy: integer("group_by"),
+    displayOrder: integer("display_order").notNull().default(0),
+    createdAt: numeric("created_at")
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: numeric("updated_at"),
+  },
+  (table) => [
+    check(
+      "custom_collections_group_by_check",
+      sql`${table.groupBy} IS NULL OR (${table.showInDashboard} = 0 AND ${table.showInLibrary} = 1)`,
+    ),
+    check(
+      "custom_collections_media_type_check",
+      sql`${table.mediaType} IN (0, 1)`,
+    ),
+    index("custom_collections_user_id_index").on(table.userId),
+  ],
+);
+
+export const customCollectionFilters = sqliteTable(
+  "custom_collection_filters",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    customCollectionId: integer("custom_collection_id")
+      .notNull()
+      .references(() => customCollections.id, { onDelete: "cascade" }),
+    field: text("field").notNull(),
+    operator: integer("operator").notNull(),
+    value: text("value").notNull(),
+  },
+  (table) => [
+    index("custom_collection_filters_collection_id_index").on(
+      table.customCollectionId,
+    ),
+  ],
+);
+
+export const customCollectionSorts = sqliteTable(
+  "custom_collection_sorts",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    customCollectionId: integer("custom_collection_id")
+      .notNull()
+      .references(() => customCollections.id, { onDelete: "cascade" }),
+    field: text("field").notNull(),
+    direction: integer("direction").notNull(),
+    priority: integer("priority").notNull(),
+  },
+  (table) => [
+    index("custom_collection_sorts_collection_id_index").on(
+      table.customCollectionId,
+    ),
+  ],
+);
+
 export type Genre = typeof genres.$inferSelect;
 export type NewGenre = typeof genres.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -254,3 +345,11 @@ export type Credit = typeof credits.$inferSelect;
 export type NewCredit = typeof credits.$inferInsert;
 export type ProductionCompany = typeof productionCompanies.$inferSelect;
 export type NewProductionCompany = typeof productionCompanies.$inferInsert;
+export type CustomCollection = typeof customCollections.$inferSelect;
+export type NewCustomCollection = typeof customCollections.$inferInsert;
+export type CustomCollectionFilter =
+  typeof customCollectionFilters.$inferSelect;
+export type NewCustomCollectionFilter =
+  typeof customCollectionFilters.$inferInsert;
+export type CustomCollectionSort = typeof customCollectionSorts.$inferSelect;
+export type NewCustomCollectionSort = typeof customCollectionSorts.$inferInsert;

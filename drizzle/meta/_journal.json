@@ -92,6 +92,20 @@
       "when": 1788860039286,
       "tag": "0012_update_created_at_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1788863067389,
+      "tag": "0013_create_custom_collections_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1788864052322,
+      "tag": "0014_add_movie_series_enum_checks",
+      "breakpoints": true
     }
   ]
 }
