@@ -1,7 +1,7 @@
 "use client";
 
 import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
-import { AppShell } from "@/components/ui/layout/app-shell";
+import { AppShell } from "@/components/layout/app-shell";
 // import { UserStats } from "@/components/dashboard/user-stats";
 
 const posterImages = [

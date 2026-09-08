@@ -1,6 +1,6 @@
 "use client";
 
-import { AppShell } from "@/components/ui/layout/app-shell";
+import { AppShell } from "@/components/layout/app-shell";
 import { ContentErrorState } from "@/components/custom/content-error-state";
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { HeroHeader } from "@/components/content-detail";
