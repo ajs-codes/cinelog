@@ -1,4 +1,5 @@
 import { TvMinimal } from "lucide-react";
+import { useMetaRow } from "@/hooks/title-details/use-meta-row";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 
 type MetaRowProps = {
@@ -8,34 +9,21 @@ type MetaRowProps = {
 };
 
 export function MetaRow({ movie, series, type }: MetaRowProps) {
-  const firstAirYear = series?.first_air_date?.slice(0, 4) ?? "N/A";
-  const lastAirYear = series?.last_air_date?.slice(0, 4) ?? "Present";
-  const year = movie
-    ? (movie.release_date?.slice(0, 4) ?? "N/A")
-    : firstAirYear === lastAirYear
-      ? lastAirYear
-      : `${firstAirYear} - ${lastAirYear}`;
-  const seasonCount = series?.number_of_seasons ?? 1;
-  const episodeCount = series?.number_of_episodes ?? 10;
-  const rating = series?.content_ratings?.rating ?? "N/A";
-  const status = movie?.status ?? series?.status ?? "N/A";
-  const duration = movie?.runtime ? `${movie.runtime} min` : null;
+  const { contentType, duration, rating, status, year } = useMetaRow({
+    movie,
+    series,
+    type,
+  });
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-xs text-on-surface">
       <span className="inline-flex items-center gap-2 rounded-md border border-brand-primary-container/40 bg-brand-primary-container/10 px-2.5 py-1.5 font-semibold uppercase tracking-[0.08em] text-brand-primary-container">
         <TvMinimal className="h-3.5 w-3.5 text-brand-primary" />
-        <span className="font-bold">
-          {type === "series" ? "Series" : "Movie"}
-        </span>
+        <span className="font-bold">{contentType}</span>
       </span>
       <span className="text-outline-muted">{year}</span>
       <span className="text-outline-muted">•</span>
-      <span className="text-outline-muted">
-        {movie
-          ? (duration ?? "N/A")
-          : `${seasonCount} ${seasonCount === 1 ? "Season" : "Seasons"} (${episodeCount} ${episodeCount === 1 ? "Episode" : "Episodes"})`}
-      </span>
+      <span className="text-outline-muted">{duration}</span>
       <span className="text-outline-muted">•</span>
       <span className="inline-flex items-center rounded-md border border-white/10 bg-surface-container px-2 py-1 text-[11px] font-semibold text-secondary">
         {rating}

@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import { useProgressStatus } from "@/hooks/title-details/use-progress-status";
 import type { SeriesDetails } from "@/lib/types";
 
 type ProgressStatusProps = {
@@ -10,8 +11,7 @@ export function ProgressStatus({
   series,
   type = "series",
 }: ProgressStatusProps) {
-  const seasonCount = series?.number_of_seasons ?? 3;
-  const episodeCount = series?.number_of_episodes ?? 10;
+  const { episodeCount, seasonCount } = useProgressStatus(series);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">

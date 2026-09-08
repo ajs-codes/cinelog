@@ -1,28 +1,25 @@
+import { useGenrePills } from "@/hooks/title-details/use-genre-pills";
+
 type GenrePillsProps = {
   genres?: Array<{ name?: string }>;
   type?: string;
 };
 
-export function GenrePills({ genres: seriesGenres, type }: GenrePillsProps) {
-  const genres = [
-    type,
-    ...(seriesGenres?.map((genre) => genre.name) ?? []),
-  ].filter((genre): genre is string => Boolean(genre));
+export function GenrePills({ genres, type }: GenrePillsProps) {
+  const genrePills = useGenrePills({ genres, type });
 
   return (
     <div className="mt-1 flex flex-wrap gap-2 pt-2">
-      {genres.map((genre, index) => (
+      {genrePills.map(({ isType, label }) => (
         <span
-          key={genre}
+          key={label}
           className={`rounded-full px-3.5 py-1.5 text-[12px] font-medium transition ${
-            index === 0
+            isType
               ? "border border-brand-tertiary-accent bg-brand-tertiary-accent/10 text-brand-tertiary-accent-alt"
               : "border border-white/10 bg-surface-container/60 text-on-surface"
           }`}
         >
-          {index === 0
-            ? `${genre.charAt(0).toUpperCase()}${genre.slice(1)}`
-            : genre}
+          {label}
         </span>
       ))}
     </div>

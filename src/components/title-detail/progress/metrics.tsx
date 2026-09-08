@@ -1,3 +1,4 @@
+import { useProgressMetrics } from "@/hooks/title-details/use-progress-metrics";
 import type { SeriesDetails } from "@/lib/types";
 
 type ProgressStatusProps = {
@@ -5,34 +6,19 @@ type ProgressStatusProps = {
 };
 
 export function ProgressMetrics({ series }: ProgressStatusProps) {
-  const seasons = series?.seasons ?? [];
-  const totalEpisodes = series?.number_of_episodes ?? 0;
+  const metrics = useProgressMetrics(series);
 
   return (
     <div className="space-y-5">
-      {seasons.map((season, index) => {
-        const seasonNumber = season.season_number ?? index + 1;
-        const episodeCount = season.episode_count ?? 0;
-
-        return (
-          <ProgressRow
-            key={season.id ?? seasonNumber}
-            label={season.name ?? `Season ${seasonNumber}`}
-            value={0}
-            total={episodeCount}
-            colorClass="bg-brand-tertiary-accent-alt"
-          />
-        );
-      })}
-
-      {series ? (
+      {metrics.map((metric) => (
         <ProgressRow
-          label="Series Overall Progress"
-          value={0}
-          total={totalEpisodes}
-          colorClass="bg-brand-primary"
+          key={metric.id}
+          label={metric.label}
+          value={metric.value}
+          total={metric.total}
+          colorClass={metric.colorClass}
         />
-      ) : null}
+      ))}
     </div>
   );
 }
