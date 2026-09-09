@@ -64,11 +64,6 @@ export function SpecificationsMeta({
   // Lead Studio
   const leadStudio = media.production_companies?.[0]?.name ?? "N/A";
 
-  // Composer
-  const composerMember = media.credits?.find(
-    (c) => c.job && c.job.toLowerCase().includes("composer"),
-  );
-  const composer = composerMember?.name ?? "N/A";
 
   // Archival Status / Status
   const status = media.status ? media.status : "Released";
@@ -156,15 +151,6 @@ export function SpecificationsMeta({
             </span>
             <span className="mt-1 block text-sm font-semibold text-on-surface truncate">
               {leadStudio}
-            </span>
-          </div>
-
-          <div>
-            <span className="block text-xs font-medium text-outline-muted">
-              Composer
-            </span>
-            <span className="mt-1 block text-sm font-semibold text-on-surface truncate">
-              {composer}
             </span>
           </div>
 
