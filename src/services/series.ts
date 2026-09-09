@@ -1,5 +1,6 @@
 import { WATCH_STATUS } from "@/lib/constants";
 import { AppError } from "@/lib/http/errors";
+import { hasAiredOnOrBeforeToday } from "@/lib/media/air-date";
 import { nowUnixSeconds } from "@/lib/media/display";
 import {
   canUpdateSeriesWatchActivity,
@@ -166,6 +167,13 @@ export async function updateSeriesInLibrary(
       );
       if (!targetSeason) {
         throw new AppError("Season not found in library", 404);
+      }
+
+      if (!hasAiredOnOrBeforeToday(targetSeason.airDate)) {
+        throw new AppError(
+          "Cannot mark a season that has not aired yet",
+          400,
+        );
       }
 
       const epsWatched = Math.min(
