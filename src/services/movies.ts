@@ -1,7 +1,10 @@
 import { WATCH_STATUS } from "@/lib/constants";
 import { AppError } from "@/lib/http/errors";
 import { nowUnixSeconds } from "@/lib/media/display";
-import { toMovieStatusDisplay } from "@/lib/media/status";
+import {
+  canUpdateMovieWatchActivity,
+  toMovieStatusDisplay,
+} from "@/lib/media/status";
 import { pickCastAndDirectors } from "@/lib/tmdb/credits";
 import { tmdbFetch } from "@/lib/tmdb/client";
 import type { MoviePayload, TmdbMovie } from "@/lib/types";
@@ -90,6 +93,22 @@ export async function updateMovieInLibrary(
   userId: number,
   body: MoviePatchInput,
 ) {
+  const existingMovie = await findUserMovie(tmdbId, userId);
+
+  if (!existingMovie) {
+    throw new AppError("Movie not found in library", 404);
+  }
+
+  if (
+    (body.watch_status !== undefined || body.impression !== undefined) &&
+    !canUpdateMovieWatchActivity(existingMovie.status)
+  ) {
+    throw new AppError(
+      "Cannot update watch activity until the movie is released",
+      400,
+    );
+  }
+
   const updateData: Partial<NewMovie> = {};
   const now = nowUnixSeconds();
   updateData.updatedAt = now;

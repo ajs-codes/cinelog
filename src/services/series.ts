@@ -1,7 +1,10 @@
 import { WATCH_STATUS } from "@/lib/constants";
 import { AppError } from "@/lib/http/errors";
 import { nowUnixSeconds } from "@/lib/media/display";
-import { toSeriesStatusDisplay } from "@/lib/media/status";
+import {
+  canUpdateSeriesWatchActivity,
+  toSeriesStatusDisplay,
+} from "@/lib/media/status";
 import { pickCastAndDirectors } from "@/lib/tmdb/credits";
 import { tmdbFetch } from "@/lib/tmdb/client";
 import type { TmdbSeries } from "@/lib/types";
@@ -114,6 +117,22 @@ export async function updateSeriesInLibrary(
 
   if (!existingSeries) {
     throw new AppError("Series not found in library", 404);
+  }
+
+  const isWatchActivityUpdate =
+    body.watch_status !== undefined ||
+    body.impression !== undefined ||
+    body.mark_season_to_watched !== undefined ||
+    body.mark_episode_to_watched !== undefined;
+
+  if (
+    isWatchActivityUpdate &&
+    !canUpdateSeriesWatchActivity(existingSeries.status)
+  ) {
+    throw new AppError(
+      "Cannot update watch activity for this series status",
+      400,
+    );
   }
 
   const now = nowUnixSeconds();

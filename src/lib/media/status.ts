@@ -60,3 +60,29 @@ export function toSeriesStatusDisplay(
     null
   );
 }
+
+export const WATCHABLE_MOVIE_STATUSES: ReadonlySet<MovieStatusValue> = new Set([
+  MOVIE_STATUS.released.value,
+]);
+
+export const WATCHABLE_SERIES_STATUSES: ReadonlySet<SeriesStatusValue> =
+  new Set([
+    SERIES_STATUS.returning_series.value,
+    SERIES_STATUS.ended.value,
+    SERIES_STATUS.canceled.value,
+    SERIES_STATUS.pilot.value,
+  ]);
+
+export function canUpdateMovieWatchActivity(
+  status: string | null | undefined,
+): boolean {
+  const normalized = normalizeMovieStatus(status);
+  return normalized !== null && WATCHABLE_MOVIE_STATUSES.has(normalized);
+}
+
+export function canUpdateSeriesWatchActivity(
+  status: string | null | undefined,
+): boolean {
+  const normalized = normalizeSeriesStatus(status);
+  return normalized !== null && WATCHABLE_SERIES_STATUSES.has(normalized);
+}
