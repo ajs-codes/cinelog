@@ -41,6 +41,7 @@ export async function listUserSeries(userId: number) {
       totalNumberOfSeasons: series.totalNumberOfSeasons,
       totalNumberOfEpisodesWatched: series.totalNumberOfEpisodesWatched,
       posterPath: series.posterPath,
+      voteAverage: series.voteAverage,
       originalLanguage: series.originalLanguage,
     })
     .from(series)
