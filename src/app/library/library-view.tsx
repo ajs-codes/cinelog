@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
-import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
+import { MovieCard } from "@/components/custom/movie-card";
+import { SeriesCard } from "@/components/custom/series-card";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { libraryRequested } from "@/store/slices/librarySlice";
 
@@ -45,8 +46,20 @@ export function LibraryView() {
           </div>
         ) : (
           <>
-            <LibrarySection title="Movies" movies={movies} />
-            <LibrarySection title="Series" movies={series} />
+            <LibrarySection title="Movies" count={movies.length}>
+              {movies.map((movie) => (
+                <div className="w-60" key={movie.tmdb_id}>
+                  <MovieCard movie={movie} />
+                </div>
+              ))}
+            </LibrarySection>
+            <LibrarySection title="Series" count={series.length}>
+              {series.map((show) => (
+                <div className="w-60" key={show.tmdb_id}>
+                  <SeriesCard series={show} />
+                </div>
+              ))}
+            </LibrarySection>
           </>
         )}
       </div>
@@ -57,10 +70,12 @@ export function LibraryView() {
 
 function LibrarySection({
   title,
-  movies,
+  count,
+  children,
 }: {
   title: string;
-  movies: MovieCardData[];
+  count: number;
+  children: React.ReactNode;
 }) {
   return (
     <section aria-labelledby={`${title.toLowerCase()}-heading`}>
@@ -72,17 +87,13 @@ function LibrarySection({
           {title}
         </h2>
         <span className="font-public-sans text-[10px] text-outline-muted">
-          {movies.length} {movies.length === 1 ? "title" : "titles"}
+          {count} {count === 1 ? "title" : "titles"}
         </span>
       </div>
 
-      {movies.length > 0 ? (
+      {count > 0 ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
-          {movies.map((movie, index) => (
-            <div key={`${movie.type}-${movie.title}-${index}`} className="w-60">
-              <MovieCard movie={movie} />
-            </div>
-          ))}
+          {children}
         </div>
       ) : (
         <p className="rounded-lg border border-white/10 bg-surface-container-low px-4 py-8 text-center font-public-sans text-sm text-secondary">
