@@ -1,144 +1,94 @@
 "use client";
 
-import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
+import { useEffect, useMemo } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-// import { UserStats } from "@/components/dashboard/user-stats";
-
-const posterImages = [
-  "https://www.figma.com/api/mcp/asset/3fd27b50-b02b-4c77-ab7a-eb88e7a6e75a.png",
-  "https://www.figma.com/api/mcp/asset/1bce3ee3-069b-4914-8c1c-179c0dd92c28.png",
-  "https://www.figma.com/api/mcp/asset/e70e21d5-2d5a-4c82-a5e2-727f9c03b734.png",
-  "https://www.figma.com/api/mcp/asset/5e9497f8-630e-4212-83ba-5a75007729ea.png",
-];
-
-const continuing: MovieCardData[] = [
-  {
-    title: "Severance",
-    releaseYear: 2022,
-    rating: 4.9,
-    episodeInfo: "S2 : E4 • EP 4 OF 10",
-    completion: 40,
-    type: "Series",
-    posterImage: posterImages[0],
-  },
-  {
-    title: "Frieren: Journey's End",
-    releaseYear: 2023,
-    rating: 5,
-    episodeInfo: "EP 21 OF 28",
-    completion: 78,
-    type: "Series",
-    posterImage: posterImages[1],
-  },
-  {
-    title: "The Bear",
-    releaseYear: 2022,
-    rating: 4.8,
-    episodeInfo: "S3 : E2",
-    completion: 65,
-    type: "Series",
-    posterImage: posterImages[2],
-  },
-  {
-    title: "Shogun",
-    releaseYear: 2024,
-    rating: 4.8,
-    episodeInfo: "EP 8 OF 10",
-    completion: 80,
-    type: "Series",
-    posterImage: posterImages[3],
-  },
-];
+import { ContinueWatching } from "@/components/dashboard/continue-watching";
+import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { libraryRequested } from "@/store/slices/librarySlice";
+import { Sparkles, Film, Tv } from "lucide-react";
 
 export default function Home() {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+  const { movies, series, status } = useAppSelector((state) => state.library);
+
+  useEffect(() => {
+    dispatch(libraryRequested());
+  }, [dispatch]);
+
+  const watchingItems = useMemo(() => {
+    const allTitles = [...movies, ...series];
+    return allTitles.filter(
+      (item) =>
+        item.watchStatus === 1 ||
+        (item.completion > 0 && item.completion < 100),
+    );
+  }, [movies, series]);
+
+  const displayName = user?.displayName || user?.username;
+  const isLoading = status === "idle" || status === "loading";
+
   return (
     <AppShell>
-      <main className="mx-auto flex w-full max-w-[1720px] flex-col gap-9 px-5 py-10 sm:px-8 lg:py-14">
-        <section className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="font-heading text-3xl leading-tight tracking-tight sm:text-4xl">
-              Welcome back,{" "}
-              <em className="font-normal text-brand-primary">AJS</em>
-            </h1>
-            <p className="mt-2 font-public-sans text-xs text-secondary">
-              3,482 titles cataloged across 12 archives{" "}
-              <span className="px-2 text-outline-muted">•</span> All cloud
-              backups verified immutable
-            </p>
-          </div>
-          <p className="font-public-sans text-xs text-outline-muted">
-            Last synced 2 minutes ago
-          </p>
-        </section>
+      <main className="relative min-h-[calc(100vh-3.5rem)] px-5 py-8 sm:px-8 lg:py-10">
+        <div
+          aria-hidden={isLoading}
+          className={`mx-auto max-w-[1720px] space-y-10 ${
+            isLoading ? "blur-sm transition-all duration-300" : ""
+          }`}
+        >
+          {/* Welcome Banner */}
+          <header className="relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-r from-surface-container-low via-surface-container to-surface-container-low p-6 sm:p-8">
+            <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-brand-primary-container/10 blur-3xl" />
+            <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary-container/10 px-3 py-1 text-xs font-semibold text-brand-primary">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Welcome Back</span>
+                </div>
+                <h1 className="mt-3 font-heading text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
+                  {displayName
+                    ? `Welcome back, ${displayName}!`
+                    : "Welcome to CineLog"}
+                </h1>
+                <p className="mt-2 max-w-xl font-public-sans text-xs text-secondary sm:text-sm">
+                  Track your movies, binge series, and continue right where you
+                  left off.
+                </p>
+              </div>
 
-        {/* TODO: will implement later */}
-        {/* <UserStats /> */}
+              <div className="flex items-center gap-3 self-start sm:self-auto">
+                <div className="flex items-center gap-2 rounded-lg bg-surface-container-high px-3 py-2">
+                  <Film className="h-4 w-4 text-brand-primary" />
+                  <span className="font-public-sans text-xs text-on-surface">
+                    {movies.length} Movies
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg bg-surface-container-high px-3 py-2">
+                  <Tv className="h-4 w-4 text-brand-tertiary" />
+                  <span className="font-public-sans text-xs text-on-surface">
+                    {series.length} Series
+                  </span>
+                </div>
+              </div>
+            </div>
+          </header>
 
-        <Shelf
-          title="Continue watching"
-          meta="4 sessions in progress"
-          action="View active queue"
-          movies={continuing}
-        />
-        <Shelf
-          title="World Cinema & Classics"
-          meta="128 curated titles"
-          action="Browse all 128"
-          movies={continuing.slice().reverse()}
-        />
-        <Shelf
-          title="Anime Series & OVAs"
-          meta="86 vaulted series"
-          action="Open Vault"
-          movies={continuing}
-        />
+          {/* Continue Watching Section */}
+          <ContinueWatching items={watchingItems} />
+
+          {/* User Stats / Dashboard Summary
+          <section className="space-y-4 pt-2">
+            <h2 className="font-heading text-xl font-semibold tracking-tight text-on-surface">
+              Library Insights
+            </h2>
+            <UserStats />
+          </section> */}
+        </div>
+
+        {isLoading && <ContentLoadingOverlay />}
       </main>
     </AppShell>
-  );
-}
-
-function Shelf({
-  title,
-  meta,
-  action,
-  movies,
-}: {
-  title: string;
-  meta: string;
-  action: string;
-  movies: MovieCardData[];
-}) {
-  return (
-    <section className="min-w-0" aria-labelledby={title}>
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <div className="flex min-w-0 items-baseline gap-2">
-          <h2
-            id={title}
-            className="truncate font-heading text-xl tracking-tight text-on-surface"
-          >
-            {title}
-          </h2>
-          <span className="shrink-0 font-public-sans text-[10px] text-outline-muted">
-            {meta}
-          </span>
-        </div>
-        <button
-          className="shrink-0 font-public-sans text-[10px] text-brand-primary transition-colors hover:text-on-surface"
-          type="button"
-        >
-          {action} <span aria-hidden="true">→</span>
-        </button>
-      </div>
-      <div className="flex snap-x gap-4 overflow-x-auto pb-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
-        {movies.map((movie) => (
-          <div
-            key={`${title}-${movie.title}`}
-            className="w-60 min-w-60 shrink-0 snap-start"
-          >
-            <MovieCard movie={movie} />
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }

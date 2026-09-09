@@ -32,6 +32,7 @@ export async function getLibrary(userId: number) {
     title: movie.title,
     completion: getCompletion(movie.watchStatus),
     type: "Movie",
+    watchStatus: movie.watchStatus,
   }));
 
   const seriesCards: MovieCardData[] = seriesRows.map((show) => ({
@@ -49,6 +50,7 @@ export async function getLibrary(userId: number) {
       show.totalNumberOfEpisodes,
     ),
     type: "Series",
+    watchStatus: show.watchStatus,
   }));
 
   return { movies: movieCards, series: seriesCards };

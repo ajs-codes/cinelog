@@ -1,16 +1,10 @@
 "use client";
 
-import {
-  BookmarkPlus,
-  Check,
-  Heart,
-  Share2,
-  ThumbsDown,
-  ThumbsUp,
-} from "lucide-react";
+import { BookmarkPlus, Check, Heart, ThumbsDown, ThumbsUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
+import { ShareButton } from "@/components/content-detail/hero-header/share-button";
 import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
 import { IMPRESSION } from "@/lib/constants";
 import {
@@ -106,13 +100,7 @@ export function ActionBar({
           {isPresentInWatchlist ? "In Watchlist" : "Add to Watchlist"}
         </Button>
 
-        <button
-          type="button"
-          aria-label="Share title"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-surface-container text-slate-200 transition hover:bg-surface-container-high"
-        >
-          <Share2 className="h-4 w-4" />
-        </button>
+        <ShareButton id={id} imdbId={imdbId} type={type} />
 
         <div className="mx-1 h-6 w-px bg-white/15" />
 
