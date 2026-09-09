@@ -9,6 +9,13 @@ export function formatLanguage(languageCode: string) {
   );
 }
 
+export function formatCountry(countryCode: string) {
+  return (
+    new Intl.DisplayNames(["en"], { type: "region" }).of(countryCode) ??
+    countryCode
+  );
+}
+
 export function orFallback(value: string | null | undefined, fallback = "N/A") {
   return value?.trim() ? value : fallback;
 }

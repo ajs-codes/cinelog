@@ -33,9 +33,9 @@ type ActionBarProps = {
 };
 
 const IMPRESSION_CONFIG = {
-  0: { icon: ThumbsDown, iconClassName: "" }, // Dislike
-  1: { icon: ThumbsUp, iconClassName: "" }, // Like
-  2: { icon: Heart, iconClassName: "fill-status-error text-status-error" }, // Love
+  0: { icon: ThumbsDown, iconClassName: "text-outline-muted" },
+  1: { icon: ThumbsUp, iconClassName: "" },
+  2: { icon: Heart, iconClassName: "text-status-error" },
 } as const;
 
 export function ActionBar({

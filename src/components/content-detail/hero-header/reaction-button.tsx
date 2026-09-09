@@ -37,11 +37,7 @@ export function ReactionButton({
         .filter(Boolean)
         .join(" ")}
     >
-      <Icon
-        className={`h-4 w-4 ${
-          active ? "fill-current text-brand-primary-container" : ""
-        } ${iconClassName}`}
-      />
+      <Icon className={`h-4 w-4 ${iconClassName}`} />
       {label}
     </Button>
   );
