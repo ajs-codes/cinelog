@@ -53,13 +53,17 @@ GET /api/search/series?query={{query}}
 #
 # LibraryMovie: tmdb_id, watch_status, impression, created_at, updated_at,
 #   completed_at, title, poster_path, release_date, vote_average, status,
-#   original_language, origin_country
+#   original_language, origin_country, certificate, genres
 #
 # LibrarySeries: tmdb_id, watch_status, impression, created_at, updated_at,
-#   last_watched_at, completed_at, name, first_air_date, last_air_date,
-#   total_number_of_episodes, total_number_of_seasons,
-#   total_number_of_episodes_watched, poster_path, original_language
+#   last_watched_at, completed_at, vote_average, name, first_air_date,
+#   last_air_date, total_number_of_episodes, total_number_of_seasons,
+#   total_number_of_seasons_watched, total_number_of_episodes_watched,
+#   poster_path, status, original_language, origin_country, certificate,
+#   genres, seasons_info
 #
+# seasons_info[]: season_number, episode_count, episodes_watched, air_date
+# genres is a string array of genre names.
 # vote_average is stored as the TMDB rating times 10 (84 means 8.4).
 GET /api/library
 
@@ -107,6 +111,8 @@ DELETE /api/movie/{{movieId}}
 
 ### Get series details
 # Optional cookie. `seriesId` is the TMDB id.
+# Logged-in users get library flags plus episodes_watched on each season,
+# total_number_of_episodes_watched, and total_number_of_seasons_watched.
 GET /api/series/{{seriesId}}
 
 ### Add series to library
@@ -144,6 +150,11 @@ Content-Type: application/json
 ### Update series in library
 # Requires cookie. Send at least one of watch_status, impression,
 # or both mark_season_to_watched and mark_episode_to_watched together.
+# Response: { "success": true, "data": SeriesRow }
+# SeriesRow is the DB row (camelCase): tmdbId, watchStatus, impression,
+#   totalNumberOfEpisodesWatched, totalNumberOfSeasonsWatched, lastWatchedAt, …
+# 400 if the series status does not allow watch activity updates,
+# or if the marked season has not aired yet.
 PATCH /api/series/{{seriesId}}
 Content-Type: application/json
 
@@ -157,3 +168,107 @@ Content-Type: application/json
 ### Remove series from library
 # Requires cookie
 DELETE /api/series/{{seriesId}}
+
+### Update profile
+# Requires cookie. Send at least one field.
+# Username: 3-10 chars, letters/numbers/underscore
+# newPassword uses the same rules as signup; currentPassword is required with it.
+# Changing username refreshes the auth_token cookie.
+# 409 if username or email is already in use.
+PATCH /api/user/profile
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "email": "{{email}}",
+  "displayName": "{{displayName}}",
+  "currentPassword": "{{password}}",
+  "newPassword": "{{password}}"
+}
+
+### List collections
+# Requires cookie
+# Response: { "collections": CustomCollection[] }
+#
+# CustomCollection: id, userId, name, mediaType, showInDashboard,
+#   showInLibrary, groupBy, displayOrder, createdAt, updatedAt,
+#   filters[], sorts[]
+#
+# mediaType: 0 Movie, 1 Series
+# groupBy: 0 Watch Status, 1 Year, 2 Status (or null)
+# filter operator: 0 eq, 1 neq, 2 gt, 3 lt, 4 in, 5 contains
+# sort direction: 0 asc, 1 desc
+GET /api/collections
+
+### Create collection
+# Requires cookie. At least one filter is required.
+# filter.field: release_year, certification, original_language,
+#   origin_country, genre
+# sort.field examples: created_at, release_date, title, vote_average,
+#   last_watched_at, completed_at
+# Response 201: { "collection": CustomCollection }
+POST /api/collections
+Content-Type: application/json
+
+{
+  "name": "2010s dramas",
+  "mediaType": 0,
+  "showInDashboard": false,
+  "showInLibrary": true,
+  "groupBy": 0,
+  "displayOrder": 0,
+  "filters": [
+    {
+      "field": "release_year",
+      "operator": 2,
+      "value": "2009"
+    },
+    {
+      "field": "genre",
+      "operator": 5,
+      "value": "Drama"
+    }
+  ],
+  "sorts": [
+    {
+      "field": "vote_average",
+      "direction": 1,
+      "priority": 0
+    }
+  ]
+}
+
+### Get collection
+# Requires cookie. 404 if missing or not owned by the current user.
+GET /api/collections/{{collectionId}}
+
+### Update collection
+# Requires cookie. All body fields are optional; if filters is sent it
+# must have at least one item. Sending filters or sorts replaces the
+# full list (existing ids are not reused).
+# Response: { "collection": CustomCollection }
+PUT /api/collections/{{collectionId}}
+Content-Type: application/json
+
+{
+  "name": "2010s dramas",
+  "showInLibrary": true,
+  "filters": [
+    {
+      "field": "release_year",
+      "operator": 2,
+      "value": "2009"
+    }
+  ],
+  "sorts": [
+    {
+      "field": "title",
+      "direction": 0,
+      "priority": 0
+    }
+  ]
+}
+
+### Delete collection
+# Requires cookie. 404 if missing or not owned by the current user.
+DELETE /api/collections/{{collectionId}}

@@ -204,7 +204,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply bg-surface;
+  }
   body {
-    @apply bg-background text-foreground font-public-sans;
+    @apply bg-surface text-foreground font-public-sans;
   }
 }
