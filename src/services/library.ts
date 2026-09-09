@@ -21,6 +21,8 @@ export async function getLibrary(userId: number) {
     status: movie.status,
     original_language: movie.originalLanguage,
     origin_country: movie.originCountry,
+    certificate: movie.certificate,
+    genres: movie.genres,
   }));
 
   const series: LibrarySeries[] = seriesRows.map((show) => ({
@@ -40,6 +42,9 @@ export async function getLibrary(userId: number) {
     total_number_of_episodes_watched: show.totalNumberOfEpisodesWatched,
     poster_path: show.posterPath,
     original_language: show.originalLanguage,
+    origin_country: show.originCountry,
+    certificate: show.certificate,
+    genres: show.genres,
   }));
 
   return { movies, series };

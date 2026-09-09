@@ -24,7 +24,22 @@ export async function findUserById(id: number) {
   });
 }
 
+export async function findUserByEmail(email: string) {
+  return getDb().query.users.findFirst({
+    where: eq(users.email, email),
+  });
+}
+
 export async function insertUser(values: NewUser) {
   const [user] = await getDb().insert(users).values(values).returning();
+  return user;
+}
+
+export async function updateUser(id: number, values: Partial<NewUser>) {
+  const [user] = await getDb()
+    .update(users)
+    .set(values)
+    .where(eq(users.id, id))
+    .returning();
   return user;
 }

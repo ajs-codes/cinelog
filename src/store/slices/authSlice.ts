@@ -4,6 +4,7 @@ import type { LoginInput, SignupInput } from "@/lib/validations/auth";
 export type User = {
   id: number;
   username: string;
+  email?: string;
   displayName?: string | null;
 };
 
@@ -41,6 +42,9 @@ export const authSlice = createSlice({
       state.isAuthenticated = true;
       state.error = null;
     },
+    userUpdated: (state, action: PayloadAction<{ user: User }>) => {
+      state.user = action.payload.user;
+    },
     authFailure: (state, action: PayloadAction<string>) => {
       state.status = "failed";
       state.error = action.payload;
@@ -67,6 +71,7 @@ export const {
   loginRequest,
   signupRequest,
   authSuccess,
+  userUpdated,
   authFailure,
   logoutRequest,
   logoutSuccess,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, RotateCw } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { logoutRequest } from "@/store/slices/authSlice";

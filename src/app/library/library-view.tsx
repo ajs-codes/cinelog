@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { MovieCard } from "@/components/custom/movie-card";
 import { SeriesCard } from "@/components/custom/series-card";
+import { CollectionCarousel } from "@/components/library/collection-carousel";
+import type { CustomCollectionWithFilters } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { libraryRequested } from "@/store/slices/librarySlice";
 
@@ -13,13 +15,36 @@ export function LibraryView() {
   const { movies, series, status, error } = useAppSelector(
     (state) => state.library,
   );
+  const [collections, setCollections] = useState<CustomCollectionWithFilters[]>(
+    [],
+  );
 
   useEffect(() => {
     dispatch(libraryRequested());
   }, [dispatch]);
 
+  useEffect(() => {
+    async function fetchCollections() {
+      try {
+        const res = await fetch("/api/collections");
+        if (res.ok) {
+          const data = await res.json();
+          const cols = data.collections ?? data.data?.collections;
+          if (cols) {
+            setCollections(cols);
+          }
+        }
+      } catch (_error) {
+        // Fallback: collections won't display if network fails
+      }
+    }
+
+    fetchCollections();
+  }, []);
+
   const total = movies.length + series.length;
   const isLoading = status === "idle" || status === "loading";
+  const activeLibraryCollections = collections.filter((c) => c.showInLibrary);
 
   return (
     <main className="relative min-h-[calc(100vh-3.5rem)]">
@@ -46,6 +71,20 @@ export function LibraryView() {
           </div>
         ) : (
           <>
+            {activeLibraryCollections.length > 0 && (
+              <div className="flex flex-col gap-10">
+                {activeLibraryCollections.map((collection) => (
+                  <CollectionCarousel
+                    key={collection.id}
+                    collection={collection}
+                    movies={movies}
+                    series={series}
+                  />
+                ))}
+                <div className="h-px w-full bg-outline-alt/60" />
+              </div>
+            )}
+
             <LibrarySection title="Movies" count={movies.length}>
               {movies.map((movie) => (
                 <div className="w-60" key={movie.tmdb_id}>

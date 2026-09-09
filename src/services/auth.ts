@@ -1,22 +1,30 @@
 import { compare, hash } from "bcryptjs";
 import { AppError } from "@/lib/http/errors";
 import { createSessionToken } from "@/lib/auth/session";
-import type { LoginInput, SignupInput } from "@/lib/validations/auth";
+import type {
+  LoginInput,
+  SignupInput,
+  UpdateProfileInput,
+} from "@/lib/validations/auth";
 import {
+  findUserByEmail,
   findUserById,
   findUserByUsername,
   findUserByUsernameOrEmail,
   insertUser,
+  updateUser,
 } from "@/repositories/users";
 
 function toPublicUser(user: {
   id: number;
   username: string;
+  email?: string;
   displayName: string | null;
 }) {
   return {
     id: user.id,
     username: user.username,
+    email: user.email,
     displayName: user.displayName,
   };
 }
@@ -76,4 +84,70 @@ export async function getCurrentUser(userId: number) {
   }
 
   return toPublicUser(user);
+}
+
+export async function updateUserProfile(
+  userId: number,
+  input: UpdateProfileInput,
+) {
+  const user = await findUserById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const updates: Partial<typeof user> = {
+    updatedAt: String(Math.floor(Date.now() / 1000)),
+  };
+
+  if (input.username && input.username !== user.username) {
+    const existing = await findUserByUsername(input.username);
+    if (existing && existing.id !== userId) {
+      throw new AppError("Username already in use", 409);
+    }
+    updates.username = input.username;
+  }
+
+  if (input.email && input.email !== user.email) {
+    const existing = await findUserByEmail(input.email);
+    if (existing && existing.id !== userId) {
+      throw new AppError("Email already in use", 409);
+    }
+    updates.email = input.email;
+  }
+
+  if (input.displayName !== undefined) {
+    updates.displayName = input.displayName;
+  }
+
+  if (input.newPassword) {
+    if (!input.currentPassword) {
+      throw new AppError(
+        "Current password is required to set a new password",
+        400,
+      );
+    }
+    const isCurrentValid = await compare(
+      input.currentPassword,
+      user.passwordHash,
+    );
+    if (!isCurrentValid) {
+      throw new AppError("Current password is incorrect", 400);
+    }
+    updates.passwordHash = await hash(input.newPassword, 10);
+  }
+
+  const updatedUser = await updateUser(userId, updates);
+  if (!updatedUser) {
+    throw new AppError("Failed to update user", 500);
+  }
+
+  let token: string | undefined;
+  if (updates.username) {
+    token = await createSessionToken({
+      userId: updatedUser.id,
+      username: updatedUser.username,
+    });
+  }
+
+  return { token, publicUser: toPublicUser(updatedUser) };
 }
