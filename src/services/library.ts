@@ -1,11 +1,31 @@
 import type { LibraryMovie, LibrarySeries } from "@/lib/types";
-import { listUserMovies, listUserSeries } from "@/repositories/library";
+import {
+  listUserMovies,
+  listUserSeries,
+  listUserSeriesSeasons,
+} from "@/repositories/library";
 
 export async function getLibrary(userId: number) {
-  const [movieRows, seriesRows] = await Promise.all([
+  const [movieRows, seriesRows, seasonRows] = await Promise.all([
     listUserMovies(userId),
     listUserSeries(userId),
+    listUserSeriesSeasons(userId),
   ]);
+
+  const seasonsBySeries = new Map<
+    number,
+    LibrarySeries["seasons_info"]
+  >();
+  for (const season of seasonRows) {
+    const seasons = seasonsBySeries.get(season.tmdbId) ?? [];
+    seasons.push({
+      season_number: season.seasonNumber,
+      episode_count: season.episodeCount,
+      episodes_watched: season.episodesWatched,
+      air_date: season.airDate,
+    });
+    seasonsBySeries.set(season.tmdbId, seasons);
+  }
 
   const movies: LibraryMovie[] = movieRows.map((movie) => ({
     tmdb_id: movie.tmdbId,
@@ -39,12 +59,15 @@ export async function getLibrary(userId: number) {
     last_air_date: show.lastAirDate,
     total_number_of_episodes: show.totalNumberOfEpisodes,
     total_number_of_seasons: show.totalNumberOfSeasons,
+    total_number_of_seasons_watched: show.totalNumberOfSeasonsWatched,
     total_number_of_episodes_watched: show.totalNumberOfEpisodesWatched,
     poster_path: show.posterPath,
+    status: show.status,
     original_language: show.originalLanguage,
     origin_country: show.originCountry,
     certificate: show.certificate,
     genres: show.genres,
+    seasons_info: seasonsBySeries.get(show.tmdbId) ?? [],
   }));
 
   return { movies, series };

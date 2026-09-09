@@ -1,9 +1,10 @@
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray, asc } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   genres,
   movies,
   moviesToGenres,
+  seasons,
   series,
   seriesToGenres,
 } from "@/db/schema";
@@ -42,11 +43,13 @@ export type UserSeriesRow = {
   totalNumberOfEpisodes: number | null;
   totalNumberOfSeasons: number | null;
   totalNumberOfEpisodesWatched: number | null;
+  totalNumberOfSeasonsWatched: number | null;
   posterPath: string | null;
   voteAverage: number | null;
   originalLanguage: string | null;
   originCountry: string | null;
   certificate: string | null;
+  status: string | null;
   genres: string[];
 };
 
@@ -118,9 +121,11 @@ export async function listUserSeries(
       lastAirDate: series.lastAirDate,
       totalNumberOfEpisodes: series.totalNumberOfEpisodes,
       totalNumberOfSeasons: series.totalNumberOfSeasons,
+      totalNumberOfSeasonsWatched: series.totalNumberOfSeasonsWatched,
       totalNumberOfEpisodesWatched: series.totalNumberOfEpisodesWatched,
       posterPath: series.posterPath,
       voteAverage: series.voteAverage,
+      status: series.status,
       originalLanguage: series.originalLanguage,
       originCountry: series.originCountry,
       certificate: series.certificate,
@@ -152,4 +157,19 @@ export async function listUserSeries(
     ...s,
     genres: genreMap.get(s.id) || [],
   }));
+}
+
+export async function listUserSeriesSeasons(userId: number) {
+  return getDb()
+    .select({
+      tmdbId: series.tmdbId,
+      seasonNumber: seasons.seasonNumber,
+      episodeCount: seasons.episodeCount,
+      episodesWatched: seasons.episodesWatched,
+      airDate: seasons.airDate,
+    })
+    .from(seasons)
+    .innerJoin(series, eq(seasons.seriesId, series.id))
+    .where(eq(series.userId, userId))
+    .orderBy(asc(series.tmdbId), asc(seasons.seasonNumber));
 }

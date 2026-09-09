@@ -101,6 +101,13 @@ type LibraryMovie = {
   genres?: string[];
 };
 
+type LibrarySeriesSeason = {
+  season_number: number;
+  episode_count: number;
+  episodes_watched: number;
+  air_date: string | null;
+};
+
 type LibrarySeries = {
   tmdb_id: number;
   watch_status: number;
@@ -115,12 +122,15 @@ type LibrarySeries = {
   last_air_date: string | null;
   total_number_of_episodes: number | null;
   total_number_of_seasons: number | null;
+  total_number_of_seasons_watched: number | null;
   total_number_of_episodes_watched: number | null;
   poster_path: string | null;
+  status: string | null;
   original_language: string | null;
   origin_country?: string | null;
   certificate?: string | null;
   genres?: string[];
+  seasons_info: LibrarySeriesSeason[];
 };
 
 type CollectionFilterItem = {
@@ -317,6 +327,7 @@ export type {
   CustomCollectionWithFilters,
   LibraryMovie,
   LibrarySeries,
+  LibrarySeriesSeason,
   MovieDetails,
   MoviePayload,
   RouteContext,
