@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, PlayCircle } from "lucide-react";
 import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
+import { Button } from "@/components/ui/button";
 
 export function ContinueWatching({ items }: { items: MovieCardData[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
