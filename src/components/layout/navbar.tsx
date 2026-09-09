@@ -32,23 +32,6 @@ export function Navbar({ onMenuOpen }: NavbarProps) {
         <Menu className="size-4.5" strokeWidth={1.8} />
       </Button>
       <div className="ml-auto flex items-center gap-2 sm:gap-4">
-        <div className="hidden items-center gap-2 font-public-sans text-xs text-outline-muted lg:flex">
-          <span>Auto Synced</span>
-          <span>.</span>
-          <span>TMDB Connected</span>
-        </div>
-
-        <Button
-          aria-label="Refresh TMDB data"
-          className="hidden size-9 rounded-lg text-secondary hover:text-on-surface sm:inline-flex"
-          size="icon"
-          variant="dark"
-          type="button"
-        >
-          <RotateCw className="size-4.25" strokeWidth={1.8} />
-        </Button>
-
-        <div className="h-5 w-px bg-white/10 hidden sm:block" />
         {isAuthenticated && user && (
           <div className="flex items-center gap-3">
             <Button
