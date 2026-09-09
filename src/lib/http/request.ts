@@ -38,3 +38,11 @@ export function parseSchema<T>(schema: ZodType<T>, data: unknown): T {
 
   return result.data;
 }
+
+export async function readJsonBody<T>(
+  req: Request,
+  schema: ZodType<T>,
+): Promise<T> {
+  const json = await parseJson(req);
+  return parseSchema(schema, json);
+}

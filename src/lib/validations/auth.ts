@@ -42,5 +42,22 @@ export const loginSchema = z.object({
   password: passwordSchema,
 });
 
+export const updateProfileSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(10, "Username cannot exceed 10 characters")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores",
+    )
+    .optional(),
+  email: z.string().email("Invalid email format").optional(),
+  displayName: z.string().nullable().optional(),
+  currentPassword: z.string().optional(),
+  newPassword: passwordSchema.optional(),
+});
+
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

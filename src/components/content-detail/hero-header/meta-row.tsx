@@ -21,10 +21,10 @@ export function MetaRow({ movie, series, type }: MetaRowProps) {
         <TvMinimal className="h-3.5 w-3.5 text-brand-primary" />
         <span className="font-bold">{contentType}</span>
       </span>
-      <span className="text-outline-muted">{year}</span>
-      <span className="text-outline-muted">•</span>
-      <span className="text-outline-muted">{duration}</span>
-      <span className="text-outline-muted">•</span>
+      <span className="text-secondary">{year}</span>
+      <span className="text-secondary">•</span>
+      <span className="text-secondary">{duration}</span>
+      <span className="text-secondary">•</span>
       <span className="inline-flex items-center rounded-md border border-white/10 bg-surface-container px-2 py-1 text-[11px] font-semibold text-secondary">
         {rating}
       </span>

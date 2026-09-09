@@ -51,6 +51,7 @@ type SeriesSeason = {
 };
 
 type MovieDetails = {
+  backdrop_path?: string | null;
   genres?: Array<{ id?: number; name?: string }>;
   id?: number;
   imdb_id?: string | null;
@@ -96,6 +97,8 @@ type LibraryMovie = {
   status: string | null;
   original_language: string | null;
   origin_country: string | null;
+  certificate?: string | null;
+  genres?: string[];
 };
 
 type LibrarySeriesSeason = {
@@ -124,8 +127,41 @@ type LibrarySeries = {
   poster_path: string | null;
   status: string | null;
   original_language: string | null;
-  origin_country: string | null;
+  origin_country?: string | null;
+  certificate?: string | null;
+  genres?: string[];
   seasons_info: LibrarySeriesSeason[];
+};
+
+type CollectionFilterItem = {
+  id?: number;
+  customCollectionId?: number;
+  field: string;
+  operator: number;
+  value: string;
+};
+
+type CollectionSortItem = {
+  id?: number;
+  customCollectionId?: number;
+  field: string;
+  direction: number;
+  priority: number;
+};
+
+type CustomCollectionWithFilters = {
+  id: number;
+  userId: number;
+  name: string;
+  mediaType: number;
+  showInDashboard: boolean;
+  showInLibrary: boolean;
+  groupBy: number | null;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string | null;
+  filters: CollectionFilterItem[];
+  sorts?: CollectionSortItem[];
 };
 
 type BadgeIndicator = "success" | "info" | "error" | "accentAlt";
@@ -285,7 +321,10 @@ type TmdbSearchResponse = {
 
 export type {
   BadgeIndicator,
+  CollectionFilterItem,
+  CollectionSortItem,
   CreditMember,
+  CustomCollectionWithFilters,
   LibraryMovie,
   LibrarySeries,
   LibrarySeriesSeason,
