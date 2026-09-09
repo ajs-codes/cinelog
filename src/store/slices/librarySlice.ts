@@ -11,6 +11,10 @@ export type LibraryItemMutation = {
   mediaType: LibraryMediaType;
   watch_status?: number;
   impression?: number | null;
+  progress?: {
+    seasonNumber: number;
+    episodeNumber: number;
+  };
 };
 
 type LibraryItemSnapshot = {

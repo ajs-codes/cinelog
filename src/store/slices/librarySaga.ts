@@ -46,10 +46,17 @@ function* fetchLibrary(): SagaIterator {
 function* mutateLibraryItem(
   action: ReturnType<typeof libraryItemMutationRequested>,
 ): SagaIterator {
-  const { mediaType, tmdbId, watch_status, impression } = action.payload;
+  const { mediaType, tmdbId, watch_status, impression, progress } =
+    action.payload;
 
-  const body =
-    watch_status !== undefined ? { watch_status } : { impression };
+  const body = progress
+    ? {
+        mark_season_to_watched: progress.seasonNumber,
+        mark_episode_to_watched: progress.episodeNumber,
+      }
+    : watch_status !== undefined
+      ? { watch_status }
+      : { impression };
 
   try {
     const response: Response = yield call(
@@ -68,6 +75,9 @@ function* mutateLibraryItem(
     }
 
     yield put(libraryItemMutationSucceeded({ mediaType, tmdbId }));
+    if (progress) {
+      yield put(libraryRequested());
+    }
   } catch (error) {
     yield put(
       libraryItemMutationFailed({
