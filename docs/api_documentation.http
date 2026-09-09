@@ -1,0 +1,147 @@
+# Cinelog API
+#
+# Auth is cookie-based (httpOnly `auth_token`), not Bearer.
+# Send Login (or Signup) first. httpYac stores the cookie and sends it on later requests.
+# Select the `dev` environment, then fill docs/http-client.private.env.json with credentials.
+#
+# @host = {{host}}
+
+### Signup
+# Username: 3-10 chars, letters/numbers/underscore
+# Password: 6-20 chars, upper, lower, number, and one of @ # & ! _
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "displayName": "{{displayName}}"
+}
+
+### Login
+# @name login
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Current user
+# Requires cookie from Login or Signup
+GET /api/auth/me
+
+### Logout
+POST /api/auth/logout
+
+### Search movies (anonymous)
+# Optional cookie: logged-in users get library flags on results
+# @no-cookie-jar
+GET /api/search/movie?query={{query}}
+
+### Search movies (with session)
+GET /api/search/movie?query={{query}}
+
+### Search series
+GET /api/search/series?query={{query}}
+
+### Get library
+# Requires cookie
+GET /api/library
+
+### Get movie details
+# Optional cookie. `movieId` is the TMDB id.
+GET /api/movie/{{movieId}}
+
+### Add movie to library
+# Requires cookie. Body is a compact TMDB-shaped MoviePayload (the app sends a fuller object).
+POST /api/movie/{{movieId}}
+Content-Type: application/json
+
+{
+  "id": {{movieId}},
+  "title": "Fight Club",
+  "poster_path": "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+  "release_date": "1999-10-15",
+  "vote_average": 8.4,
+  "status": "Released",
+  "original_language": "en",
+  "origin_country": ["US"],
+  "certification": {
+    "certification": "R"
+  },
+  "genres": [
+    { "id": 18, "name": "Drama" }
+  ]
+}
+
+### Update movie in library
+# Requires cookie. Send at least one of watch_status or impression.
+# watch_status: 0 Plan to Watch, 1 Watching, 2 Completed, 3 Dropped
+# impression: 0 Dislike, 1 Like, 2 Love (or null)
+PATCH /api/movie/{{movieId}}
+Content-Type: application/json
+
+{
+  "watch_status": 1,
+  "impression": 1
+}
+
+### Remove movie from library
+# Requires cookie
+DELETE /api/movie/{{movieId}}
+
+### Get series details
+# Optional cookie. `seriesId` is the TMDB id.
+GET /api/series/{{seriesId}}
+
+### Add series to library
+# Requires cookie. Body is a compact TMDB-shaped TmdbSeries.
+POST /api/series/{{seriesId}}
+Content-Type: application/json
+
+{
+  "id": {{seriesId}},
+  "name": "Breaking Bad",
+  "poster_path": "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+  "first_air_date": "2008-01-20",
+  "last_air_date": "2013-09-29",
+  "number_of_episodes": 62,
+  "number_of_seasons": 5,
+  "vote_average": 8.9,
+  "status": "Ended",
+  "original_language": "en",
+  "origin_country": ["US"],
+  "type": "Scripted",
+  "genres": [
+    { "id": 18, "name": "Drama" }
+  ],
+  "seasons": [
+    {
+      "id": 3572,
+      "name": "Season 1",
+      "season_number": 1,
+      "episode_count": 7,
+      "air_date": "2008-01-20"
+    }
+  ]
+}
+
+### Update series in library
+# Requires cookie. Send at least one of watch_status, impression,
+# or both mark_season_to_watched and mark_episode_to_watched together.
+PATCH /api/series/{{seriesId}}
+Content-Type: application/json
+
+{
+  "watch_status": 1,
+  "impression": 2,
+  "mark_season_to_watched": 1,
+  "mark_episode_to_watched": 3
+}
+
+### Remove series from library
+# Requires cookie
+DELETE /api/series/{{seriesId}}
