@@ -1,1 +1,0 @@
-ALTER TABLE `genres` DROP COLUMN `type`;
