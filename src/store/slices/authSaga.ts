@@ -93,6 +93,10 @@ function* handleInit(): SagaIterator {
     yield put(authSuccess({ user: data.user }));
   } catch {
     yield put(initAuthFailure());
+    const pathname = window.location.pathname;
+    if (!pathname.startsWith("/login") && !pathname.startsWith("/signup")) {
+      window.location.replace("/login");
+    }
   }
 }
 
