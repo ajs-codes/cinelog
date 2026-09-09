@@ -38,7 +38,7 @@ export function MovieCard({ movie }: { movie: LibraryMovie }) {
   );
 
   const releaseYear = getYearString(movie.release_date ?? undefined);
-  const rating = ((movie.vote_average ?? 0) / 10).toFixed(1);
+  const rating = (movie.vote_average ?? 0).toFixed(1);
   const canUpdateWatchActivity = canUpdateMovieWatchActivity(movie.status);
   const meta = movieMeta(movie);
 
