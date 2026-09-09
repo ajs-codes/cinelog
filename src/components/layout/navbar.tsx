@@ -1,11 +1,15 @@
 "use client";
 
-import { RotateCw } from "lucide-react";
+import { Menu, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { logoutRequest } from "@/store/slices/authSlice";
 
-export function Navbar() {
+type NavbarProps = {
+  onMenuOpen: () => void;
+};
+
+export function Navbar({ onMenuOpen }: NavbarProps) {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user, status } = useAppSelector(
     (state) => state.auth,
@@ -17,6 +21,16 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-outline-alt bg-surface/90 px-5 backdrop-blur-xl sm:px-8">
+      <Button
+        aria-label="Open navigation"
+        className="size-9 rounded-lg text-secondary hover:text-on-surface lg:hidden"
+        size="icon"
+        variant="dark"
+        type="button"
+        onClick={onMenuOpen}
+      >
+        <Menu className="size-4.5" strokeWidth={1.8} />
+      </Button>
       <div className="ml-auto flex items-center gap-2 sm:gap-4">
         <div className="hidden items-center gap-2 font-public-sans text-xs text-outline-muted lg:flex">
           <span>Auto Synced</span>

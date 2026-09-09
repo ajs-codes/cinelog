@@ -39,15 +39,15 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
         <div className="absolute bottom-22 left-[26%] right-[42%] h-80 rounded-full bg-status-info/10 blur-[32px]" />
       </div>
 
-      <div className="relative grid grid-cols-12 gap-x-8 gap-y-8">
+      <div className="relative grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-8">
         <PosterPanel posterPath={posterPath} rating={rating} title={title} />
 
-        <div className="col-span-9 flex flex-col justify-between">
+        <div className="col-span-1 flex min-w-0 flex-col justify-between md:col-span-9">
           <div className="flex flex-col gap-3">
             <MetaRow movie={movie} series={series} type={type} />
 
             <div className="space-y-2">
-              <h1 className="font-heading text-[48px] leading-[0.96] tracking-[-1.2px] text-white">
+              <h1 className="font-heading text-3xl leading-[0.96] text-white sm:text-4xl md:text-[48px]">
                 {title}
               </h1>
               <p className="max-w-230 text-[16px] font-medium text-outline-muted">
