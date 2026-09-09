@@ -5,28 +5,19 @@ import { ChevronDown, Check } from "lucide-react";
 import { SeasonSelect } from "@/components/content-detail/progress/season-select";
 import type { SeasonOption } from "@/hooks/title-details/use-progress-seasons";
 import { useProgressStatus } from "@/hooks/title-details/use-progress-status";
-import type { SeriesDetails, BadgeIndicator } from "@/lib/types";
+import type { SeriesDetails } from "@/lib/types";
 import { WATCH_STATUS } from "@/lib/constants";
+import {
+  WATCH_STATUS_ICONS,
+  WATCH_STATUS_INDICATOR,
+  WATCH_STATUS_INDICATOR_TEXT,
+} from "@/lib/media/watch-status";
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import {
   mutationRequested,
   type ContentMutationStatus,
 } from "@/store/slices/contentDetailsSlice";
-
-const indicatorClasses: Record<BadgeIndicator, string> = {
-  success: "bg-status-success",
-  info: "bg-status-info",
-  error: "bg-status-error",
-  accentAlt: "bg-brand-tertiary-accent-alt",
-};
-
-const WATCH_STATUS_INDICATOR: Record<number, BadgeIndicator> = {
-  0: "info",
-  1: "accentAlt",
-  2: "success",
-  3: "error",
-};
 
 type ProgressStatusProps = {
   id?: number;
@@ -79,6 +70,9 @@ export function ProgressStatus({
   const currentStatusObj =
     WATCH_STATUS[status as keyof typeof WATCH_STATUS] ?? WATCH_STATUS[1];
   const currentIndicator = WATCH_STATUS_INDICATOR[status] ?? "accentAlt";
+  const CurrentStatusIcon =
+    WATCH_STATUS_ICONS[status as keyof typeof WATCH_STATUS_ICONS] ??
+    WATCH_STATUS_ICONS[0];
   const currentSeason = seasons.find(
     (season) => season.seasonNumber === selectedSeason,
   );
@@ -92,11 +86,8 @@ export function ProgressStatus({
           onClick={() => setIsOpen(!isOpen)}
           className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
-          <span
-            className={cn(
-              "h-2.5 w-2.5 rounded-full",
-              indicatorClasses[currentIndicator],
-            )}
+          <CurrentStatusIcon
+            className={cn("h-4 w-4", WATCH_STATUS_INDICATOR_TEXT[currentIndicator])}
           />
           <span className="font-medium">{currentStatusObj.display_value}</span>
           <ChevronDown
@@ -112,7 +103,8 @@ export function ProgressStatus({
             <div className="flex flex-col py-1.5">
               {Object.values(WATCH_STATUS).map((ws) => {
                 const isSelected = ws.value === status;
-                const ind = WATCH_STATUS_INDICATOR[ws.value];
+                const indicator = WATCH_STATUS_INDICATOR[ws.value];
+                const Icon = WATCH_STATUS_ICONS[ws.value];
                 return (
                   <button
                     key={ws.value}
@@ -137,10 +129,10 @@ export function ProgressStatus({
                     )}
                   >
                     <div className="inline-flex items-center gap-3">
-                      <span
+                      <Icon
                         className={cn(
-                          "h-2.5 w-2.5 rounded-full",
-                          indicatorClasses[ind],
+                          "h-4 w-4",
+                          WATCH_STATUS_INDICATOR_TEXT[indicator],
                         )}
                       />
                       <span className="font-medium">{ws.display_value}</span>

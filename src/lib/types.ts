@@ -82,6 +82,40 @@ type MovieDetails = {
   credits?: CreditMember[];
 };
 
+type LibraryMovie = {
+  tmdb_id: number;
+  watch_status: number;
+  impression: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  completed_at: string | null;
+  title: string;
+  poster_path: string | null;
+  release_date: string | null;
+  vote_average: number | null;
+  status: string | null;
+  original_language: string | null;
+  origin_country: string | null;
+};
+
+type LibrarySeries = {
+  tmdb_id: number;
+  watch_status: number;
+  impression: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  last_watched_at: string | null;
+  completed_at: string | null;
+  name: string;
+  first_air_date: string | null;
+  last_air_date: string | null;
+  total_number_of_episodes: number | null;
+  total_number_of_seasons: number | null;
+  total_number_of_episodes_watched: number | null;
+  poster_path: string | null;
+  original_language: string | null;
+};
+
 type BadgeIndicator = "success" | "info" | "error" | "accentAlt";
 
 type RouteContext = {
@@ -240,6 +274,8 @@ type TmdbSearchResponse = {
 export type {
   BadgeIndicator,
   CreditMember,
+  LibraryMovie,
+  LibrarySeries,
   MovieDetails,
   MoviePayload,
   RouteContext,

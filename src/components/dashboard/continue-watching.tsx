@@ -3,11 +3,20 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, PlayCircle } from "lucide-react";
-import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
+import { MovieCard } from "@/components/custom/movie-card";
+import { SeriesCard } from "@/components/custom/series-card";
 import { Button } from "@/components/ui/button";
+import type { LibraryMovie, LibrarySeries } from "@/lib/types";
 
-export function ContinueWatching({ items }: { items: MovieCardData[] }) {
+export function ContinueWatching({
+  movies,
+  series,
+}: {
+  movies: LibraryMovie[];
+  series: LibrarySeries[];
+}) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const totalItems = movies.length + series.length;
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -37,14 +46,14 @@ export function ContinueWatching({ items }: { items: MovieCardData[] }) {
               Continue Watching
             </h2>
             <p className="font-public-sans text-xs text-secondary">
-              {items.length > 0
-                ? `${items.length} ${items.length === 1 ? "title" : "titles"} in progress`
+              {totalItems > 0
+                ? `${totalItems} ${totalItems === 1 ? "title" : "titles"} in progress`
                 : "Resume your active movies and series"}
             </p>
           </div>
         </div>
 
-        {items.length > 0 && (
+        {totalItems > 0 && (
           <div className="flex items-center gap-1.5">
             <Button
               variant="darkFilled"
@@ -68,17 +77,19 @@ export function ContinueWatching({ items }: { items: MovieCardData[] }) {
         )}
       </div>
 
-      {items.length > 0 ? (
+      {totalItems > 0 ? (
         <div
           ref={scrollContainerRef}
           className="movie-lists-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-4 pt-1"
         >
-          {items.map((item, index) => (
-            <div
-              key={`${item.type}-${item.tmdbId ?? item.title}-${index}`}
-              className="w-60 shrink-0 transition-transform duration-200 hover:scale-[1.02]"
-            >
-              <MovieCard movie={item} />
+          {movies.map((movie) => (
+            <div key={`movie-${movie.tmdb_id}`} className="w-60 shrink-0">
+              <MovieCard movie={movie} />
+            </div>
+          ))}
+          {series.map((show) => (
+            <div key={`series-${show.tmdb_id}`} className="w-60 shrink-0">
+              <SeriesCard series={show} />
             </div>
           ))}
         </div>

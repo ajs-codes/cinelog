@@ -49,6 +49,18 @@ GET /api/search/series?query={{query}}
 
 ### Get library
 # Requires cookie
+# Response: { "movies": LibraryMovie[], "series": LibrarySeries[] }
+#
+# LibraryMovie: tmdb_id, watch_status, impression, created_at, updated_at,
+#   completed_at, title, poster_path, release_date, vote_average, status,
+#   original_language, origin_country
+#
+# LibrarySeries: tmdb_id, watch_status, impression, created_at, updated_at,
+#   last_watched_at, completed_at, name, first_air_date, last_air_date,
+#   total_number_of_episodes, total_number_of_seasons,
+#   total_number_of_episodes_watched, poster_path, original_language
+#
+# vote_average is stored as the TMDB rating times 10 (84 means 8.4).
 GET /api/library
 
 ### Get movie details

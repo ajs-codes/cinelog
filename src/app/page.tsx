@@ -17,14 +17,22 @@ export default function Home() {
     dispatch(libraryRequested());
   }, [dispatch]);
 
-  const watchingItems = useMemo(() => {
-    const allTitles = [...movies, ...series];
-    return allTitles.filter(
-      (item) =>
-        item.watchStatus === 1 ||
-        (item.completion > 0 && item.completion < 100),
-    );
-  }, [movies, series]);
+  const watchingMovies = useMemo(
+    () => movies.filter((movie) => movie.watch_status === 1),
+    [movies],
+  );
+
+  const watchingSeries = useMemo(
+    () =>
+      series.filter((show) => {
+        if (show.watch_status === 1) return true;
+
+        const watched = show.total_number_of_episodes_watched ?? 0;
+        const total = show.total_number_of_episodes ?? 0;
+        return watched > 0 && watched < total;
+      }),
+    [series],
+  );
 
   const displayName = user?.displayName || user?.username;
   const isLoading = status === "idle" || status === "loading";
@@ -76,7 +84,7 @@ export default function Home() {
           </header>
 
           {/* Continue Watching Section */}
-          <ContinueWatching items={watchingItems} />
+          <ContinueWatching movies={watchingMovies} series={watchingSeries} />
 
           {/* User Stats / Dashboard Summary
           <section className="space-y-4 pt-2">
