@@ -85,7 +85,7 @@ function UserProfileForm({ user }: { user: User | null }) {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (_error) {
+    } catch {
       setErrorMessage("A network error occurred. Please try again.");
     } finally {
       setIsLoading(false);

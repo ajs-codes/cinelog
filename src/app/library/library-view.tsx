@@ -34,7 +34,7 @@ export function LibraryView() {
             setCollections(cols);
           }
         }
-      } catch (_error) {
+      } catch {
         // Fallback: collections won't display if network fails
       }
     }
