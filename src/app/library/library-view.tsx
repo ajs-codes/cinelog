@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { MovieCard } from "@/components/custom/movie-card";
 import { SeriesCard } from "@/components/custom/series-card";
 import { CollectionCarousel } from "@/components/library/collection-carousel";
+import {
+  LibraryFilterControls,
+  type LibraryMediaType,
+} from "@/components/library/library-filter-controls";
 import type { CustomCollectionWithFilters } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { libraryRequested } from "@/store/slices/librarySlice";
+
+const COLLECTION_MEDIA_TYPE: Record<LibraryMediaType, number> = {
+  movie: 0,
+  series: 1,
+};
 
 export function LibraryView() {
   const dispatch = useAppDispatch();
@@ -18,6 +27,7 @@ export function LibraryView() {
   const [collections, setCollections] = useState<CustomCollectionWithFilters[]>(
     [],
   );
+  const [mediaType, setMediaType] = useState<LibraryMediaType>("movie");
 
   useEffect(() => {
     dispatch(libraryRequested());
@@ -44,25 +54,46 @@ export function LibraryView() {
 
   const total = movies.length + series.length;
   const isLoading = status === "idle" || status === "loading";
-  const activeLibraryCollections = collections.filter((c) => c.showInLibrary);
+  const isMovies = mediaType === "movie";
+  const activeCount = isMovies ? movies.length : series.length;
+  const activeCountText = isMovies
+    ? `${activeCount} ${activeCount === 1 ? "movie" : "movies"}`
+    : `${activeCount} series`;
+  const activeLibraryCollections = useMemo(
+    () =>
+      collections.filter(
+        (collection) =>
+          collection.showInLibrary &&
+          collection.mediaType === COLLECTION_MEDIA_TYPE[mediaType],
+      ),
+    [collections, mediaType],
+  );
 
   return (
-    <main className="relative min-h-[calc(100vh-3.5rem)]">
+    <main className="relative min-h-[calc(100vh-3.5rem)] px-5 py-8 sm:px-8 lg:py-10">
       <div
         aria-hidden={isLoading}
-        className={`mx-auto flex w-full max-w-[1720px] flex-col gap-10 px-5 py-10 sm:px-8 lg:py-14 ${
+        className={`mx-auto flex w-full max-w-[1720px] flex-col gap-8 ${
           isLoading ? "blur-sm" : ""
         }`}
       >
-        <header>
-          <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
-            My library
-          </h1>
-          <p className="mt-2 font-public-sans text-xs text-secondary">
-            {isLoading
-              ? "Loading your watchlist"
-              : `${total} titles in your watchlist`}
-          </p>
+        <header className="flex flex-col gap-5">
+          <div>
+            <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
+              My library
+            </h1>
+            <p className="mt-2 font-public-sans text-xs text-secondary">
+              {isLoading
+                ? "Loading your watchlist"
+                : `${total} titles in your watchlist`}
+            </p>
+          </div>
+
+          <LibraryFilterControls
+            countText={activeCountText}
+            mediaType={mediaType}
+            onMediaTypeChange={setMediaType}
+          />
         </header>
 
         {status === "failed" ? (
@@ -72,7 +103,7 @@ export function LibraryView() {
         ) : (
           <>
             {activeLibraryCollections.length > 0 && (
-              <div className="flex flex-col gap-10">
+              <div className="flex flex-col gap-8">
                 {activeLibraryCollections.map((collection) => (
                   <CollectionCarousel
                     key={collection.id}
@@ -85,20 +116,19 @@ export function LibraryView() {
               </div>
             )}
 
-            <LibrarySection title="Movies" count={movies.length}>
-              {movies.map((movie) => (
-                <div className="w-60" key={movie.tmdb_id}>
-                  <MovieCard movie={movie} />
-                </div>
-              ))}
-            </LibrarySection>
-            <LibrarySection title="Series" count={series.length}>
-              {series.map((show) => (
-                <div className="w-60" key={show.tmdb_id}>
-                  <SeriesCard series={show} />
-                </div>
-              ))}
-            </LibrarySection>
+            {isMovies ? (
+              <LibrarySection title="Movies" count={movies.length}>
+                {movies.map((movie) => (
+                  <MovieCard key={movie.tmdb_id} movie={movie} />
+                ))}
+              </LibrarySection>
+            ) : (
+              <LibrarySection title="Series" count={series.length}>
+                {series.map((show) => (
+                  <SeriesCard key={show.tmdb_id} series={show} />
+                ))}
+              </LibrarySection>
+            )}
           </>
         )}
       </div>
@@ -116,22 +146,19 @@ function LibrarySection({
   count: number;
   children: React.ReactNode;
 }) {
+  const headingId = `${title.toLowerCase()}-heading`;
+
   return (
-    <section aria-labelledby={`${title.toLowerCase()}-heading`}>
-      <div className="mb-4 flex items-baseline gap-2">
-        <h2
-          className="font-heading text-xl tracking-tight text-on-surface"
-          id={`${title.toLowerCase()}-heading`}
-        >
-          {title}
-        </h2>
-        <span className="font-public-sans text-[10px] text-outline-muted">
-          {count} {count === 1 ? "title" : "titles"}
-        </span>
-      </div>
+    <section aria-labelledby={headingId} className="flex flex-col gap-4">
+      <h2
+        className="font-heading text-xl tracking-tight text-on-surface"
+        id={headingId}
+      >
+        {title}
+      </h2>
 
       {count > 0 ? (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+        <div className="grid grid-cols-[repeat(auto-fill,15rem)] gap-x-4 gap-y-6">
           {children}
         </div>
       ) : (

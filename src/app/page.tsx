@@ -39,31 +39,32 @@ export default function Home() {
 
   return (
     <AppShell>
-      <main className="relative min-h-[calc(100vh-3.5rem)] px-5 py-8 sm:px-8 lg:py-10">
+      <main className="relative min-h-[calc(100vh-3.5rem)] px-5 pt-6 pb-8 sm:px-8 lg:pt-8 lg:pb-10">
         <div
           aria-hidden={isLoading}
-          className={`mx-auto max-w-[1720px] space-y-10 ${
+          className={`mx-auto flex w-full max-w-[1720px] flex-col gap-8 ${
             isLoading ? "blur-sm transition-all duration-300" : ""
           }`}
         >
-          {/* Welcome Banner */}
-          <header className="relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-r from-surface-container-low via-surface-container to-surface-container-low p-6 sm:p-8">
+          <header className="relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-r from-surface-container-low via-surface-container to-surface-container-low px-6 py-5 sm:px-8 sm:py-6">
             <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-brand-primary-container/10 blur-3xl" />
-            <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary-container/10 px-3 py-1 text-xs font-semibold text-brand-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
+            <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-2">
+                <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-brand-primary/20 bg-brand-primary-container/10 px-2 py-0.5 text-[11px] font-semibold text-brand-primary">
+                  <Sparkles className="h-3 w-3" />
                   <span>Welcome Back</span>
                 </div>
-                <h1 className="mt-3 font-heading text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
-                  {displayName
-                    ? `Welcome back, ${displayName}!`
-                    : "Welcome to CineLog"}
-                </h1>
-                <p className="mt-2 max-w-xl font-public-sans text-xs text-secondary sm:text-sm">
-                  Track your movies, binge series, and continue right where you
-                  left off.
-                </p>
+                <div>
+                  <h1 className="font-heading text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
+                    {displayName
+                      ? `Welcome back, ${displayName}!`
+                      : "Welcome to CineLog"}
+                  </h1>
+                  <p className="mt-2 max-w-xl font-public-sans text-xs text-secondary sm:text-sm">
+                    Track your movies, binge series, and continue right where
+                    you left off.
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-3 self-start sm:self-auto">
@@ -83,7 +84,6 @@ export default function Home() {
             </div>
           </header>
 
-          {/* Continue Watching Section */}
           <ContinueWatching movies={watchingMovies} series={watchingSeries} />
 
           {/* User Stats / Dashboard Summary
