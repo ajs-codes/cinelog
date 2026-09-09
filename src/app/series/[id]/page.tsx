@@ -40,8 +40,10 @@ export default function SeriesPage() {
         <main>
           <HeroHeader series={series} type="series" />
           <ContentProgress series={series} type="series" />
-          <SpecificationsMeta series={series} type="series" />
-          <CastCrew credits={series.credits} createdBy={series.created_by} />
+          <div className="grid grid-cols-1 items-start lg:grid-cols-2">
+            <SpecificationsMeta series={series} type="series" />
+            <CastCrew credits={series.credits} createdBy={series.created_by} />
+          </div>
         </main>
       )}
     </AppShell>

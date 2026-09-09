@@ -63,7 +63,6 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
           <ActionBar
             id={mediaId}
             imdbId={imdbId}
-            language={language ?? undefined}
             type={type}
             isPresentInWatchlist={
               movie?.is_present_in_watchlist ?? series?.is_present_in_watchlist
