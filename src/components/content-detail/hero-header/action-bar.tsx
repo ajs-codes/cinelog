@@ -12,7 +12,7 @@ import {
   canUpdateSeriesWatchActivity,
 } from "@/lib/media/status";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
-import { formatLanguage, orFallback } from "@/lib/utils";
+import { orFallback } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import {
   mutationRequested,

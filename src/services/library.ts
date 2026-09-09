@@ -27,7 +27,7 @@ export async function getLibrary(userId: number) {
     tmdbId: movie.tmdbId,
     releaseYear: getYearNumber(movie.releaseDate),
     posterImage: posterUrl(movie.posterPath, FALLBACK_POSTER),
-    rating: (movie.voteAverage ?? 0) / 10,
+    rating: movie.voteAverage ?? 0,
     episodeInfo: "Movie",
     title: movie.title,
     completion: getCompletion(movie.watchStatus),
@@ -39,7 +39,7 @@ export async function getLibrary(userId: number) {
     tmdbId: show.tmdbId,
     releaseYear: getYearNumber(show.firstAirDate),
     posterImage: posterUrl(show.posterPath, FALLBACK_POSTER),
-    rating: (show.voteAverage ?? 0) / 10,
+    rating: show.voteAverage ?? 0,
     episodeInfo: show.totalNumberOfEpisodes
       ? `EP ${show.totalNumberOfEpisodesWatched ?? 0} OF ${show.totalNumberOfEpisodes}`
       : "Series",

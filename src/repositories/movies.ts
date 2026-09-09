@@ -48,9 +48,7 @@ export async function insertUserMovie(
   await db.transaction(async (tx) => {
     const certificate = body.certification?.certification || null;
     const voteAvg =
-      typeof body.vote_average === "number"
-        ? Math.round(body.vote_average * 10)
-        : null;
+      typeof body.vote_average === "number" ? body.vote_average : null;
     const releaseDateRaw = body.release_date || null;
 
     const [newMovie] = await tx

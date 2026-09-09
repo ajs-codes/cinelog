@@ -1,6 +1,7 @@
 "use client";
 
 import { Link, Share2 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 import {
@@ -80,10 +81,12 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
               }}
               className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
             >
-              <img
+              <Image
                 src={TMDB_LOGO_URL}
                 alt="TMDB Logo"
                 className="h-8 w-auto object-contain"
+                width={48}
+                height={32}
               />
               <span className="font-medium text-xs">TMDB</span>
             </button>
@@ -99,10 +102,12 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
               }}
               className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
             >
-              <img
+              <Image
                 src={IMDB_LOGO_URL}
                 alt="IMDB Logo"
                 className="h-8 w-auto object-contain"
+                width={48}
+                height={32}
               />
               <span className="font-medium text-xs">IMDb</span>
             </button>
