@@ -47,6 +47,14 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
   );
   const progress = calculateSeriesProgress(series.seasons_info);
   const nextEpisode = progress.nextEpisode;
+  const totalSeasons = series.total_number_of_seasons ?? 0;
+  const completedSeasons = series.total_number_of_seasons_watched ?? 0;
+  const totalEpisodes = series.total_number_of_episodes ?? 0;
+  const episodesWatched = series.total_number_of_episodes_watched ?? 0;
+  const percentage =
+    totalEpisodes > 0
+      ? Math.min(100, Math.round((episodesWatched / totalEpisodes) * 100))
+      : 0;
   const canUpdateWatchActivity = canUpdateSeriesWatchActivity(series.status);
   const status =
     WATCH_STATUS[series.watch_status as keyof typeof WATCH_STATUS] ??
@@ -121,15 +129,15 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
           <div className="absolute inset-x-3 bottom-0 flex flex-col gap-1.5">
             <div className="flex items-center justify-between font-public-sans text-[10px] uppercase tracking-[0.35px] text-secondary font-semibold">
               <span>
-                {progress.completedSeasons}/{progress.totalSeasons} seasons
+                {completedSeasons}/{totalSeasons} seasons
               </span>
               <span>
-                {progress.episodesWatched}/{progress.totalEpisodes} episodes
+                {episodesWatched}/{totalEpisodes} episodes
               </span>
             </div>
             <Progress
               className="h-1.5 rounded-[12px] bg-surface-container-high"
-              value={progress.percentage}
+              value={percentage}
             />
           </div>
         </Link>

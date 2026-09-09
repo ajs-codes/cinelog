@@ -63,7 +63,9 @@ export function ContentProgress({
 
       <div className={type === "series" ? "mt-6" : ""}>
         <ProgressActions
-          disabled={isWatchActivityDisabled}
+          disabled={
+            isWatchActivityDisabled || !selectedSeasonDetails?.hasAired
+          }
           episodeCount={selectedSeasonDetails?.episodeCount}
           episodesWatched={selectedSeasonDetails?.episodesWatched}
           id={mediaId}
