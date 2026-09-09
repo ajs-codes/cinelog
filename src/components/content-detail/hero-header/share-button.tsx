@@ -1,6 +1,7 @@
 "use client";
 
-import { ExternalLink, Link, Share2 } from "lucide-react";
+import { Link, Share2 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 import {
@@ -12,6 +13,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Toast } from "@/components/ui/toast";
+
+const TMDB_LOGO_URL = "/tmdb_logo.svg";
+const IMDB_LOGO_URL = "/imdb_logo.svg";
 
 type ShareButtonProps = {
   id?: number;
@@ -65,7 +69,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="-mx-4 flex flex-col">
+          <div className="mt-6 grid grid-cols-3 gap-3">
             <button
               type="button"
               disabled={!tmdbUrl}
@@ -75,17 +79,16 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
                   setIsOpen(false);
                 }
               }}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface transition hover:bg-white/5 disabled:pointer-events-none disabled:opacity-40"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
             >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary-container/15">
-                <ExternalLink className="size-4 text-brand-primary" />
-              </span>
-              <span className="flex flex-col items-start">
-                <span className="font-medium">TMDB page</span>
-                <span className="text-xs text-secondary">
-                  View on TheMovieDB
-                </span>
-              </span>
+              <Image
+                src={TMDB_LOGO_URL}
+                alt="TMDB Logo"
+                className="h-8 w-auto object-contain"
+                width={48}
+                height={32}
+              />
+              <span className="font-medium text-xs">TMDB</span>
             </button>
 
             <button
@@ -97,33 +100,27 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
                   setIsOpen(false);
                 }
               }}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface transition hover:bg-white/5 disabled:pointer-events-none disabled:opacity-40"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
             >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15">
-                <ExternalLink className="size-4 text-amber-400" />
-              </span>
-              <span className="flex flex-col items-start">
-                <span className="font-medium">IMDb page</span>
-                <span className="text-xs text-secondary">View on IMDb</span>
-              </span>
+              <Image
+                src={IMDB_LOGO_URL}
+                alt="IMDB Logo"
+                className="h-8 w-auto object-contain"
+                width={48}
+                height={32}
+              />
+              <span className="font-medium text-xs">IMDb</span>
             </button>
-
-            <div className="mx-4 border-t border-white/5" />
 
             <button
               type="button"
               onClick={handleCopyLink}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface transition hover:bg-white/5"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10"
             >
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-status-info/15">
                 <Link className="size-4 text-status-info" />
               </span>
-              <span className="flex flex-col items-start">
-                <span className="font-medium">Copy link</span>
-                <span className="text-xs text-secondary">
-                  Copy to clipboard
-                </span>
-              </span>
+              <span className="font-medium text-xs">Copy link</span>
             </button>
           </div>
         </DialogContent>

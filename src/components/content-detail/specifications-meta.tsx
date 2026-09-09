@@ -64,14 +64,10 @@ export function SpecificationsMeta({
   // Lead Studio
   const leadStudio = media.production_companies?.[0]?.name ?? "N/A";
 
-
-  // Archival Status / Status
-  const status = media.status ? media.status : "Released";
-
   return (
     <section className="m-4 space-y-6 rounded-[22px] border border-outline-variant bg-surface-container p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
       {/* Section Header */}
-      <h2 className="text-xs font-bold uppercase tracking-wider text-outline-muted">
+      <h2 className="font-bold uppercase tracking-wider font-noto-sans">
         Specifications & Meta
       </h2>
 
@@ -99,7 +95,7 @@ export function SpecificationsMeta({
           </div>
           <div className="flex flex-col">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-outline-muted">
-              Runtime / Ep
+              {isMovie ? "Runtime" : "Seasons • Episodes"}
             </span>
             <span className="text-sm font-bold text-on-surface">
               {runtimeOrEp}
@@ -151,15 +147,6 @@ export function SpecificationsMeta({
             </span>
             <span className="mt-1 block text-sm font-semibold text-on-surface truncate">
               {leadStudio}
-            </span>
-          </div>
-
-          <div>
-            <span className="block text-xs font-medium text-outline-muted">
-              Archival Status
-            </span>
-            <span className="mt-1 block text-sm font-semibold text-status-success truncate">
-              {status}
             </span>
           </div>
         </div>
