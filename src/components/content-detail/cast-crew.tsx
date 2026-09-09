@@ -38,14 +38,12 @@ export function CastCrew({ credits, createdBy }: CastCrewProps) {
     return [...creatorMembers, ...filtered];
   }, [credits, createdBy]);
 
-  if (mergedCredits.length === 0) return null;
-
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     function handleWheel(e: WheelEvent) {
-      if (e.deltaY === 0) return;
+      if (!el || e.deltaY === 0) return;
       e.preventDefault();
       el.scrollLeft += e.deltaY;
     }
@@ -55,6 +53,8 @@ export function CastCrew({ credits, createdBy }: CastCrewProps) {
       el.removeEventListener("wheel", handleWheel);
     };
   }, []);
+
+  if (mergedCredits.length === 0) return null;
 
   return (
     <section className="m-4 rounded-[22px] border border-outline-variant bg-surface-container p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">

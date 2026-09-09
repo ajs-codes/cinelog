@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, ExternalLink, Link, Share2 } from "lucide-react";
+import { ExternalLink, Link, Share2 } from "lucide-react";
 import { useState } from "react";
 
 import {

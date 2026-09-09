@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, PlayCircle } from "lucide-react";
 import { MovieCard, type MovieCardData } from "@/components/custom/movie-card";
-import { Button } from "@/components/ui/button";
 
 export function ContinueWatching({ items }: { items: MovieCardData[] }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +46,7 @@ export function ContinueWatching({ items }: { items: MovieCardData[] }) {
         {items.length > 0 && (
           <div className="flex items-center gap-1.5">
             <Button
-              variant="outline"
+              variant="darkFilled"
               size="icon"
               onClick={() => scroll("left")}
               aria-label="Scroll left"
@@ -56,7 +55,7 @@ export function ContinueWatching({ items }: { items: MovieCardData[] }) {
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button
-              variant="outline"
+              variant="darkFilled"
               size="icon"
               onClick={() => scroll("right")}
               aria-label="Scroll right"
@@ -76,7 +75,7 @@ export function ContinueWatching({ items }: { items: MovieCardData[] }) {
           {items.map((item, index) => (
             <div
               key={`${item.type}-${item.tmdbId ?? item.title}-${index}`}
-              className="w-60 flex-shrink-0 transition-transform duration-200 hover:scale-[1.02]"
+              className="w-60 shrink-0 transition-transform duration-200 hover:scale-[1.02]"
             >
               <MovieCard movie={item} />
             </div>
@@ -95,13 +94,12 @@ export function ContinueWatching({ items }: { items: MovieCardData[] }) {
             will appear here for quick access.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button
-              asChild
-              size="sm"
-              className="bg-brand-primary-container text-white hover:bg-brand-primary-container/80"
+            <Link
+              href="/library"
+              className="group/button inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-transparent bg-brand-primary-container bg-clip-padding px-2.5 text-sm font-medium whitespace-nowrap text-white transition-all outline-none select-none hover:bg-brand-primary-container/80 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px"
             >
-              <Link href="/library">Browse My Library</Link>
-            </Button>
+              Browse My Library
+            </Link>
           </div>
         </div>
       )}

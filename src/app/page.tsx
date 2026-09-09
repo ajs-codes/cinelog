@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { UserStats } from "@/components/dashboard/user-stats";
 import { ContinueWatching } from "@/components/dashboard/continue-watching";
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { useAppDispatch, useAppSelector } from "@/store";
