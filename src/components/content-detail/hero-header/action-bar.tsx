@@ -13,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
 import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
 import { IMPRESSION } from "@/lib/constants";
+import {
+  canUpdateMovieWatchActivity,
+  canUpdateSeriesWatchActivity,
+} from "@/lib/media/status";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 import { formatLanguage, orFallback } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
@@ -57,6 +61,12 @@ export function ActionBar({
   const displayLanguage = language?.trim() ? formatLanguage(language) : "N/A";
 
   const isMutating = mutationStatus === "loading";
+  const canUpdateWatchActivity =
+    type === "movie"
+      ? canUpdateMovieWatchActivity(content?.status)
+      : type === "series"
+        ? canUpdateSeriesWatchActivity(content?.status)
+        : false;
 
   const requestMutation = (
     mutation: ContentMutation,
@@ -64,6 +74,9 @@ export function ActionBar({
   ) => {
     if (id === undefined || !type || isMutating) return;
     if (mutation !== "add-watchlist" && !isPresentInWatchlist) return;
+    if (mutation !== "add-watchlist" && !canUpdateWatchActivity) {
+      return;
+    }
     dispatch(
       mutationRequested({
         id: String(id),
@@ -109,7 +122,7 @@ export function ActionBar({
             type="movie"
             watchStatus={watchStatus}
             mutationStatus={mutationStatus}
-            disabled={!isPresentInWatchlist}
+            disabled={!isPresentInWatchlist || !canUpdateWatchActivity}
           />
         )}
 
@@ -128,7 +141,9 @@ export function ActionBar({
                 }
                 label={imp.display_value}
                 active={isActive}
-                disabled={!isPresentInWatchlist || isMutating}
+                disabled={
+                  !isPresentInWatchlist || isMutating || !canUpdateWatchActivity
+                }
                 className={isActive ? "text-white" : "text-on-surface"}
                 onClick={() =>
                   requestMutation(
