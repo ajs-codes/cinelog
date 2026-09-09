@@ -17,7 +17,7 @@ type SeriesDetails = {
   poster_path?: string | null;
   seasons?: SeriesSeason[];
   original_language?: string | null;
-  status?: string;
+  status?: string | null;
   tagline?: string | null;
   type?: string;
   vote_average?: number;
@@ -57,7 +57,7 @@ type MovieDetails = {
   } | null;
   runtime?: number | null;
   original_language?: string | null;
-  status?: string;
+  status?: string | null;
   tagline?: string | null;
   title?: string | null;
   vote_average?: number;

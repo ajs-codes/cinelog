@@ -77,19 +77,13 @@ export const MOVIE_STATUS = {
 } as const;
 
 export const SERIES_STATUS = {
-  rumored: { value: "rumored", display_value: "Rumored" },
-  planned: { value: "planned", display_value: "Planned" },
-  in_production: { value: "in_production", display_value: "In Production" },
-  post_production: {
-    value: "post_production",
-    display_value: "Post Production",
-  },
-  released: { value: "released", display_value: "Released" },
-  canceled: { value: "canceled", display_value: "Canceled" },
-  pilot: { value: "pilot", display_value: "Pilot" },
-  ended: { value: "ended", display_value: "Ended" },
   returning_series: {
     value: "returning_series",
     display_value: "Returning Series",
   },
+  planned: { value: "planned", display_value: "Planned" },
+  in_production: { value: "in_production", display_value: "In Production" },
+  ended: { value: "ended", display_value: "Ended" },
+  canceled: { value: "canceled", display_value: "Canceled" },
+  pilot: { value: "pilot", display_value: "Pilot" },
 } as const;

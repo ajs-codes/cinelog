@@ -1,6 +1,7 @@
 import { WATCH_STATUS } from "@/lib/constants";
 import { AppError } from "@/lib/http/errors";
 import { nowUnixSeconds } from "@/lib/media/display";
+import { toMovieStatusDisplay } from "@/lib/media/status";
 import { pickCastAndDirectors } from "@/lib/tmdb/credits";
 import { tmdbFetch } from "@/lib/tmdb/client";
 import type { MoviePayload, TmdbMovie } from "@/lib/types";
@@ -49,7 +50,7 @@ export async function getMovieDetails(tmdbId: number, userId?: number) {
     release_date: movie.release_date ?? null,
     certification: releaseCountry?.release_dates?.[0] ?? null,
     runtime: movie.runtime,
-    status: movie.status,
+    status: toMovieStatusDisplay(movie.status),
     tagline: movie.tagline,
     title: movie.title,
     vote_average: movie.vote_average,

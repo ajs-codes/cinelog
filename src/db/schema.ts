@@ -8,6 +8,18 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
+import { MOVIE_STATUS, SERIES_STATUS } from "@/lib/constants";
+
+const movieStatusValues = sql.raw(
+  Object.values(MOVIE_STATUS)
+    .map((status) => `'${status.value}'`)
+    .join(", "),
+);
+const seriesStatusValues = sql.raw(
+  Object.values(SERIES_STATUS)
+    .map((status) => `'${status.value}'`)
+    .join(", "),
+);
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -60,6 +72,10 @@ export const movies = sqliteTable(
     check(
       "movies_impression_check",
       sql`${table.impression} IN (0, 1, 2)`,
+    ),
+    check(
+      "movies_status_check",
+      sql`${table.status} IS NULL OR ${table.status} IN (${movieStatusValues})`,
     ),
     index("movies_tmdb_id_index").on(table.tmdbId),
   ],
@@ -126,6 +142,10 @@ export const series = sqliteTable(
     check(
       "series_impression_check",
       sql`${table.impression} IN (0, 1, 2)`,
+    ),
+    check(
+      "series_status_check",
+      sql`${table.status} IS NULL OR ${table.status} IN (${seriesStatusValues})`,
     ),
     index("series_tmdb_id_index").on(table.tmdbId),
   ],
