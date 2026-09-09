@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo, useRef } from "react";
 import { useEffect, useMemo, useRef } from "react";
 import { User } from "lucide-react";
 import Image from "next/image";
@@ -41,12 +40,6 @@ export function CastCrew({ credits, createdBy }: CastCrewProps) {
 
   if (mergedCredits.length === 0) return null;
 
-  function handleWheel(e: React.WheelEvent<HTMLDivElement>) {
-    if (!scrollRef.current) return;
-    if (e.deltaY === 0) return;
-    e.preventDefault();
-    scrollRef.current.scrollLeft += e.deltaY;
-  }
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -73,8 +66,6 @@ export function CastCrew({ credits, createdBy }: CastCrewProps) {
 
       <div
         ref={scrollRef}
-        onWheel={handleWheel}
-        className="custom-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 pb-2"
         className="custom-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 overscroll-contain"
       >
         {mergedCredits.map((member) => (
@@ -96,7 +87,6 @@ function CreditCard({ member }: { member: CreditMember }) {
 
   return (
     <div className="flex w-30 shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-container-high">
-      <div className="relative aspect-[2/3] w-full bg-surface-container">
       <div className="relative aspect-2/3 w-full bg-surface-container">
         {member.profile_path ? (
           <Image
