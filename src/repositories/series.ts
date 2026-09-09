@@ -10,6 +10,7 @@ import {
   seriesToGenres,
 } from "@/db/schema";
 import type { Season, Series } from "@/db/schema";
+import { normalizeSeriesStatus } from "@/lib/media/status";
 import type { TmdbSeries } from "@/lib/types";
 
 type Database = ReturnType<typeof getDb>;
@@ -120,7 +121,7 @@ export async function insertUserSeries(
         totalNumberOfEpisodes: numEpisodes,
         totalNumberOfSeasons: numSeasons,
         voteAverage: voteAvg,
-        status: body.status || null,
+        status: normalizeSeriesStatus(body.status),
         originalLanguage: body.original_language || null,
         originCountry: Array.isArray(body.origin_country)
           ? body.origin_country[0]

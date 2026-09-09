@@ -6,6 +6,7 @@ import { ProgressActions } from "@/components/content-detail/progress/progress-a
 import { ProgressMetrics } from "@/components/content-detail/progress/progress-metrics";
 import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
 import { useProgressSeasons } from "@/hooks/title-details/use-progress-seasons";
+import { canUpdateSeriesWatchActivity } from "@/lib/media/status";
 import type { SeriesDetails } from "@/lib/types";
 import { useAppSelector } from "@/store";
 
@@ -34,6 +35,9 @@ export function ContentProgress({
   const selectedSeasonDetails = seasons.find(
     (season) => season.seasonNumber === selectedSeason,
   );
+  const canUpdateWatchActivity = canUpdateSeriesWatchActivity(series?.status);
+  const isWatchActivityDisabled =
+    !series?.is_present_in_watchlist || !canUpdateWatchActivity;
 
   return (
     <section className="m-4 rounded-[22px] border border-outline-variant bg-surface-container p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] sm:p-4">
@@ -45,7 +49,7 @@ export function ContentProgress({
             type={type}
             watchStatus={series?.watch_status}
             mutationStatus={entry?.mutationStatus}
-            disabled={!series?.is_present_in_watchlist}
+            disabled={isWatchActivityDisabled}
             seasons={seasons}
             selectedSeason={selectedSeason}
             onSeasonChange={setPickedSeason}
@@ -59,7 +63,7 @@ export function ContentProgress({
 
       <div className={type === "series" ? "mt-6" : ""}>
         <ProgressActions
-          disabled={!series?.is_present_in_watchlist}
+          disabled={isWatchActivityDisabled}
           episodeCount={selectedSeasonDetails?.episodeCount}
           episodesWatched={selectedSeasonDetails?.episodesWatched}
           id={mediaId}

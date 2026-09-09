@@ -7,6 +7,7 @@ import {
   moviesToGenres,
   productionCompanies,
 } from "@/db/schema";
+import { normalizeMovieStatus } from "@/lib/media/status";
 import type { MoviePayload } from "@/lib/types";
 
 export async function findUserMovieImpression(tmdbId: number, userId: number) {
@@ -61,7 +62,7 @@ export async function insertUserMovie(
         posterPath: body.poster_path || null,
         releaseDate: releaseDateRaw || null,
         voteAverage: voteAvg,
-        status: body.status || null,
+        status: normalizeMovieStatus(body.status),
         originalLanguage: body.original_language || null,
         originCountry: body.origin_country?.[0] || null,
         certificate: certificate || null,

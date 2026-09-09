@@ -106,6 +106,13 @@
       "when": 1788864052322,
       "tag": "0014_add_movie_series_enum_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1788944557317,
+      "tag": "0015_add_movie_series_status_checks",
+      "breakpoints": true
     }
   ]
 }
