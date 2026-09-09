@@ -1,29 +1,11 @@
 "use client";
 
-import {
-  BookmarkPlus,
-  Check,
-  Copy,
-  ExternalLink,
-  Heart,
-  Share2,
-  ThumbsDown,
-  ThumbsUp,
-} from "lucide-react";
-import { useState } from "react";
+import { BookmarkPlus, Check, Heart, ThumbsDown, ThumbsUp } from "lucide-react";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
+import { ShareButton } from "@/components/content-detail/hero-header/share-button";
 import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
-import { Toast } from "@/components/ui/toast";
 import { IMPRESSION } from "@/lib/constants";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 import { formatLanguage, orFallback } from "@/lib/utils";
@@ -64,8 +46,6 @@ export function ActionBar({
   content,
 }: ActionBarProps) {
   const dispatch = useAppDispatch();
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const tmdbId = id !== undefined ? id : "N/A";
   const displayImdbId = orFallback(imdbId);
   const displayLanguage = language?.trim() ? formatLanguage(language) : "N/A";
@@ -89,25 +69,6 @@ export function ActionBar({
     );
   };
 
-  const handleCopyLink = async () => {
-    setIsShareDialogOpen(false);
-
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setToastMessage("Link copied. You can share it now.");
-    } catch {
-      setToastMessage("Unable to copy the link. Please copy the URL manually.");
-    }
-  };
-
-  const tmdbUrl =
-    id !== undefined
-      ? `https://www.themoviedb.org/${type === "series" ? "tv" : "movie"}/${id}`
-      : null;
-  const imdbUrl = imdbId?.trim()
-    ? `https://www.imdb.com/title/${imdbId.trim()}/`
-    : null;
-
   return (
     <div className="mt-6 border-t border-white/10 pt-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -126,14 +87,7 @@ export function ActionBar({
           {isPresentInWatchlist ? "In Watchlist" : "Add to Watchlist"}
         </Button>
 
-        <button
-          type="button"
-          aria-label="Share title"
-          onClick={() => setIsShareDialogOpen(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-surface-container text-slate-200 transition hover:bg-surface-container-high"
-        >
-          <Share2 className="h-4 w-4" />
-        </button>
+        <ShareButton id={id} imdbId={imdbId} type={type} />
 
         <div className="mx-1 h-6 w-px bg-white/15" />
 
@@ -176,59 +130,6 @@ export function ActionBar({
         </div>
       </div>
 
-      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="max-w-sm border border-outline-alt bg-surface-container text-on-surface">
-          <DialogHeader className="pr-8">
-            <DialogTitle>Share title</DialogTitle>
-            <DialogDescription className="text-secondary">
-              Choose where you want to view or share this title.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col gap-2">
-            <Button
-              type="button"
-              variant="darkFilled"
-              className="justify-start gap-3 border-outline-alt text-on-surface"
-              disabled={!tmdbUrl}
-              onClick={() => {
-                if (tmdbUrl) {
-                  window.open(tmdbUrl, "_blank", "noopener,noreferrer");
-                  setIsShareDialogOpen(false);
-                }
-              }}
-            >
-              <ExternalLink className="size-4 text-brand-primary" />
-              TMDB page
-            </Button>
-            <Button
-              type="button"
-              variant="darkFilled"
-              className="justify-start gap-3 border-outline-alt text-on-surface"
-              disabled={!imdbUrl}
-              onClick={() => {
-                if (imdbUrl) {
-                  window.open(imdbUrl, "_blank", "noopener,noreferrer");
-                  setIsShareDialogOpen(false);
-                }
-              }}
-            >
-              <ExternalLink className="size-4 text-brand-primary" />
-              IMDb page
-            </Button>
-            <DialogClose
-              type="button"
-              variant="darkFilled"
-              className="justify-start gap-3 border-outline-alt text-on-surface"
-              onClick={handleCopyLink}
-            >
-              <Copy className="size-4 text-status-info" />
-              Copy link
-            </DialogClose>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-neutral">
         <span>TMDB ID: {tmdbId}</span>
         <span className="text-outline-muted">•</span>
@@ -236,10 +137,6 @@ export function ActionBar({
         <span className="text-outline-muted">•</span>
         <span>Language: {displayLanguage}</span>
       </div>
-
-      {toastMessage && (
-        <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
-      )}
     </div>
   );
 }

@@ -4,7 +4,11 @@ type SeriesDetails = {
     iso_3166_1?: string;
     rating?: string;
   };
-  created_by?: Array<{ id?: number; name?: string }>;
+  created_by?: Array<{
+    id?: number;
+    name?: string;
+    profile_path?: string | null;
+  }>;
   first_air_date?: string;
   genres?: Array<{ id?: number; name?: string }>;
   id?: number;
@@ -26,6 +30,12 @@ type SeriesDetails = {
   watch_status?: number | null;
   total_number_of_episodes_watched?: number;
   total_number_of_seasons_watched?: number;
+  production_companies?: Array<{
+    id?: number;
+    name?: string;
+    origin_country?: string;
+  }>;
+  credits?: CreditMember[];
 };
 
 type SeriesSeason = {
@@ -46,6 +56,11 @@ type MovieDetails = {
   imdb_id?: string | null;
   overview?: string | null;
   poster_path?: string | null;
+  production_companies?: Array<{
+    id?: number;
+    name?: string;
+    origin_country?: string;
+  }>;
   release_date?: string | null;
   certification?: {
     certification?: string | null;
@@ -64,6 +79,7 @@ type MovieDetails = {
   is_present_in_watchlist?: boolean;
   impression?: number | null;
   watch_status?: number | null;
+  credits?: CreditMember[];
 };
 
 type BadgeIndicator = "success" | "info" | "error" | "accentAlt";
@@ -85,6 +101,16 @@ type TmdbCrewMember = {
   name?: string;
   known_for_department?: string;
   [key: string]: unknown;
+};
+
+type CreditMember = {
+  id?: number;
+  name?: string;
+  profile_path?: string | null;
+  character?: string;
+  job?: string;
+  known_for_department?: string;
+  order?: number;
 };
 
 type TmdbReleaseDate = {
@@ -144,7 +170,11 @@ type TmdbContentRating = {
 
 type TmdbSeries = {
   backdrop_path?: string | null;
-  created_by?: Array<{ id?: number; name?: string }> | null;
+  created_by?: Array<{
+    id?: number;
+    name?: string;
+    profile_path?: string | null;
+  }> | null;
   first_air_date?: string;
   genres?: Array<{ id?: number; name?: string }> | null;
   id?: number;
@@ -209,6 +239,7 @@ type TmdbSearchResponse = {
 
 export type {
   BadgeIndicator,
+  CreditMember,
   MovieDetails,
   MoviePayload,
   RouteContext,

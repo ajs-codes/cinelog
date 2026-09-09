@@ -12,6 +12,7 @@ export type MovieCardData = {
   title: string;
   completion: number;
   type: "Movie" | "Series";
+  watchStatus?: number;
 };
 
 export function MovieCard({ movie }: { movie: MovieCardData }) {

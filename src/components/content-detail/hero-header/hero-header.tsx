@@ -23,7 +23,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
       : state.contentDetails[mediaType][String(mediaId)],
   );
   const title = orFallback(movie?.title || series?.name);
-  const overview = orFallback(movie?.overview || series?.overview);
+  const tagline = movie?.tagline?.trim() || series?.tagline?.trim();
   const language = movie?.original_language ?? series?.original_language;
   const genres = movie?.genres ?? series?.genres;
   const imdbId = movie?.imdb_id ?? series?.imdb_id;
@@ -50,9 +50,11 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
               <h1 className="font-heading text-3xl leading-[0.96] text-white sm:text-4xl md:text-[48px]">
                 {title}
               </h1>
-              <p className="max-w-230 text-[16px] font-medium text-outline-muted">
-                {overview}
-              </p>
+              {tagline && (
+                <p className="max-w-230 text-[16px] font-medium text-outline-muted">
+                  {tagline}
+                </p>
+              )}
             </div>
 
             <GenrePills genres={genres} type={series?.type ?? type} />

@@ -45,7 +45,7 @@ export function SeasonSelect({
   );
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative inline-block" ref={dropdownRef}>
       <button
         type="button"
         disabled={isDisabled}
@@ -59,14 +59,14 @@ export function SeasonSelect({
         <ChevronDown
           className={cn(
             "h-4 w-4 text-outline-muted transition-transform duration-200",
-            isOpen && "rotate-x-180",
+            isOpen && "rotate-180",
           )}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 max-h-72 w-56 overflow-y-auto rounded-xl border border-outline-alt bg-surface-container shadow-[0_8px_24px_rgb(0_0_0/25%)] z-50">
-          <div className="flex flex-col py-1.5">
+        <div className="absolute top-full left-0 mt-2 max-h-72 w-full overflow-hidden rounded-xl border border-outline-alt bg-surface-container shadow-[0_8px_24px_rgb(0_0_0/25%)] z-50">
+          <div className="movie-lists-scrollbar flex max-h-72 flex-col overflow-y-auto py-1.5">
             {seasons.map((season) => {
               const isSelected = season.seasonNumber === selectedSeason;
               return (
@@ -80,18 +80,20 @@ export function SeasonSelect({
                     }
                   }}
                   className={cn(
-                    "inline-flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm text-on-surface hover:bg-surface-container-high transition-colors text-left",
+                    "flex w-full items-center justify-between gap-1.5 px-2.5 py-2 text-left text-on-surface hover:bg-surface-container-high transition-colors",
                     isSelected && "bg-surface-container-high",
                   )}
                 >
-                  <div className="flex flex-col">
-                    <span className="font-medium">{season.label}</span>
-                    <span className="text-xs text-outline-muted">
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-medium truncate">
+                      {season.label}
+                    </span>
+                    <span className="text-[11px] text-outline-muted truncate">
                       {season.episodeCount} Episodes
                     </span>
                   </div>
                   {isSelected && (
-                    <Check className="h-4 w-4 shrink-0 text-brand-primary" />
+                    <Check className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
                   )}
                 </button>
               );

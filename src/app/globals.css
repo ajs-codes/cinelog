@@ -3,27 +3,32 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer utilities {
-  .movie-lists-scrollbar {
+  .movie-lists-scrollbar,
+  .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: var(--surface) transparent;
   }
 
-  .movie-lists-scrollbar::-webkit-scrollbar {
+  .movie-lists-scrollbar::-webkit-scrollbar,
+  .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
 
-  .movie-lists-scrollbar::-webkit-scrollbar-track {
+  .movie-lists-scrollbar::-webkit-scrollbar-track,
+  .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .movie-lists-scrollbar::-webkit-scrollbar-thumb {
+  .movie-lists-scrollbar::-webkit-scrollbar-thumb,
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     border: 1px solid transparent;
     border-radius: 999px;
     background: var(--surface);
     background-clip: padding-box;
   }
 
-  .movie-lists-scrollbar::-webkit-scrollbar-thumb:hover {
+  .movie-lists-scrollbar::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--surface-container-high);
     background-clip: padding-box;
   }
