@@ -24,7 +24,6 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
   );
   const title = orFallback(movie?.title || series?.name);
   const tagline = movie?.tagline?.trim() || series?.tagline?.trim();
-  const language = movie?.original_language ?? series?.original_language;
   const genres = movie?.genres ?? series?.genres;
   const imdbId = movie?.imdb_id ?? series?.imdb_id;
   const posterPath = movie?.poster_path ?? series?.poster_path;
@@ -63,7 +62,6 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
           <ActionBar
             id={mediaId}
             imdbId={imdbId}
-            language={language ?? undefined}
             type={type}
             isPresentInWatchlist={
               movie?.is_present_in_watchlist ?? series?.is_present_in_watchlist

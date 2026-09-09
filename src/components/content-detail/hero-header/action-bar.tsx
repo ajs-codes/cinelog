@@ -12,7 +12,7 @@ import {
   canUpdateSeriesWatchActivity,
 } from "@/lib/media/status";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
-import { formatLanguage, orFallback } from "@/lib/utils";
+import { orFallback } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import {
   mutationRequested,
@@ -41,7 +41,6 @@ const IMPRESSION_CONFIG = {
 export function ActionBar({
   id,
   imdbId,
-  language,
   type,
   isPresentInWatchlist = false,
   impression = null,
@@ -52,8 +51,6 @@ export function ActionBar({
   const dispatch = useAppDispatch();
   const tmdbId = id !== undefined ? id : "N/A";
   const displayImdbId = orFallback(imdbId);
-  const displayLanguage = language?.trim() ? formatLanguage(language) : "N/A";
-
   const isMutating = mutationStatus === "loading";
   const canUpdateWatchActivity =
     type === "movie"
@@ -149,8 +146,6 @@ export function ActionBar({
         <span>TMDB ID: {tmdbId}</span>
         <span className="text-outline-muted">•</span>
         <span>IMDB ID: {displayImdbId}</span>
-        <span className="text-outline-muted">•</span>
-        <span>Language: {displayLanguage}</span>
       </div>
     </div>
   );

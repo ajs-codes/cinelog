@@ -103,9 +103,7 @@ export async function insertUserSeries(
     }
 
     const voteAvg =
-      typeof body.vote_average === "number"
-        ? Math.round(body.vote_average * 10)
-        : null;
+      typeof body.vote_average === "number" ? body.vote_average : null;
     const numEpisodes = body.number_of_episodes || null;
     const numSeasons = body.number_of_seasons || null;
 

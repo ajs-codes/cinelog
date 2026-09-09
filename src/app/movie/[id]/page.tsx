@@ -39,8 +39,10 @@ export default function MoviePage() {
       ) : (
         <main>
           <HeroHeader movie={movie} type="movie" />
-          <SpecificationsMeta movie={movie} type="movie" />
-          <CastCrew credits={movie.credits} />
+          <div className="grid grid-cols-1 items-start lg:grid-cols-2">
+            <SpecificationsMeta movie={movie} type="movie" />
+            <CastCrew credits={movie.credits} />
+          </div>
         </main>
       )}
     </AppShell>

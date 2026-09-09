@@ -31,6 +31,7 @@ export async function getLibrary(userId: number) {
     updated_at: show.updatedAt,
     last_watched_at: show.lastWatchedAt,
     completed_at: show.completedAt,
+    vote_average: show.voteAverage,
     name: show.name,
     first_air_date: show.firstAirDate,
     last_air_date: show.lastAirDate,

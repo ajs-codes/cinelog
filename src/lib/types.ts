@@ -107,6 +107,7 @@ type LibrarySeries = {
   last_watched_at: string | null;
   completed_at: string | null;
   name: string;
+  vote_average: number | null;
   first_air_date: string | null;
   last_air_date: string | null;
   total_number_of_episodes: number | null;
