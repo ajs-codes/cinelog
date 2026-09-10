@@ -1,14 +1,17 @@
-import type { LibraryMovie, LibrarySeries } from "@/lib/types";
+import type { LibraryMetadata, LibraryMovie, LibrarySeries } from "@/lib/types";
+import type { LibraryQueryInput } from "@/lib/validations/library";
 import { listLibraryRows } from "@/repositories/library";
 
-export async function getLibrary(userId: number) {
-  const { movies: movieRows, series: seriesRows, seasons: seasonRows } =
-    await listLibraryRows(userId);
+export async function getLibrary(userId: number, query: LibraryQueryInput) {
+  const {
+    movies: movieRows,
+    series: seriesRows,
+    seasons: seasonRows,
+    movieCount,
+    seriesCount,
+  } = await listLibraryRows(userId, query);
 
-  const seasonsBySeries = new Map<
-    number,
-    LibrarySeries["seasons_info"]
-  >();
+  const seasonsBySeries = new Map<number, LibrarySeries["seasons_info"]>();
   for (const season of seasonRows) {
     const seasons = seasonsBySeries.get(season.tmdbId) ?? [];
     seasons.push({
@@ -63,5 +66,16 @@ export async function getLibrary(userId: number) {
     seasons_info: seasonsBySeries.get(show.tmdbId) ?? [],
   }));
 
-  return { movies, series };
+  const pageLength = query.type === "movie" ? movies.length : series.length;
+  const metadata: LibraryMetadata = {
+    count: {
+      movies: movieCount,
+      series: seriesCount,
+    },
+    offset: query.offset,
+    limit: query.limit,
+    hasMore: query.offset + pageLength < (query.type === "movie" ? movieCount : seriesCount),
+  };
+
+  return { movies, series, metadata };
 }
