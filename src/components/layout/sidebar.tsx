@@ -1,25 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Clapperboard,
-  LayoutDashboard,
-  Library,
-  Settings,
-  X,
-} from "lucide-react";
+import { Clapperboard, LayoutDashboard, Library, Settings, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { libraryRequested } from "@/store/slices/librarySlice";
-
-const subscribeToNothing = () => () => {};
 
 const navigation = [
   { label: "Overview", href: "/", icon: LayoutDashboard },
-  { label: "My library", href: "/library", icon: Library, showCount: true },
+  { label: "My library", href: "/library", icon: Library },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -30,23 +19,6 @@ type SidebarProps = {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
-  const { movies, series, status } = useAppSelector((state) => state.library);
-  const requestedRef = useRef(false);
-  const hasMounted = useSyncExternalStore(
-    subscribeToNothing,
-    () => true,
-    () => false,
-  );
-
-  useEffect(() => {
-    if (status === "idle" && !requestedRef.current) {
-      requestedRef.current = true;
-      dispatch(libraryRequested());
-    }
-  }, [dispatch, status]);
-
-  const libraryCount = movies.length + series.length;
 
   return (
     <>
@@ -90,7 +62,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <p className="px-3 pb-3 font-public-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-outline-muted">
             Workspace
           </p>
-          {navigation.map(({ label, href, icon: Icon, showCount }) => {
+          {navigation.map(({ label, href, icon: Icon }) => {
             const active = pathname === href;
             return (
               <Link
@@ -106,14 +78,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               >
                 <Icon className="size-4.5" strokeWidth={1.8} />
                 {label}
-                {showCount && hasMounted ? (
-                  <span
-                    aria-label={`${libraryCount} titles in library`}
-                    className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-brand-primary-container px-1.5 font-public-sans text-[10px] font-medium leading-none text-white"
-                  >
-                    {libraryCount}
-                  </span>
-                ) : null}
               </Link>
             );
           })}

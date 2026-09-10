@@ -1,4 +1,4 @@
-import { desc, eq, inArray, asc } from "drizzle-orm";
+import { desc, eq, asc } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   genres,
@@ -53,123 +53,123 @@ export type UserSeriesRow = {
   genres: string[];
 };
 
-export async function listUserMovies(
-  userId: number,
-): Promise<UserMovieRow[]> {
-  const userMovies = await getDb()
-    .select({
-      id: movies.id,
-      tmdbId: movies.tmdbId,
-      watchStatus: movies.watchStatus,
-      impression: movies.impression,
-      createdAt: movies.createdAt,
-      updatedAt: movies.updatedAt,
-      completedAt: movies.completedAt,
-      title: movies.title,
-      posterPath: movies.posterPath,
-      releaseDate: movies.releaseDate,
-      voteAverage: movies.voteAverage,
-      status: movies.status,
-      originalLanguage: movies.originalLanguage,
-      originCountry: movies.originCountry,
-      certificate: movies.certificate,
-    })
-    .from(movies)
-    .where(eq(movies.userId, userId))
-    .orderBy(desc(movies.createdAt));
+export type UserSeasonRow = {
+  tmdbId: number;
+  seasonNumber: number;
+  episodeCount: number;
+  episodesWatched: number;
+  airDate: string | null;
+};
 
-  if (userMovies.length === 0) return [];
-
-  const movieIds = userMovies.map((m) => m.id);
-  const movieGenres = await getDb()
-    .select({
-      movieId: moviesToGenres.movieId,
-      genreName: genres.name,
-    })
-    .from(moviesToGenres)
-    .innerJoin(genres, eq(moviesToGenres.genreId, genres.id))
-    .where(inArray(moviesToGenres.movieId, movieIds));
-
+function attachGenres<T extends { id: number }>(
+  rows: T[],
+  genreRows: { parentId: number; genreName: string }[],
+  key: "parentId",
+): (T & { genres: string[] })[] {
   const genreMap = new Map<number, string[]>();
-  for (const row of movieGenres) {
-    const list = genreMap.get(row.movieId) || [];
+  for (const row of genreRows) {
+    const list = genreMap.get(row[key]) || [];
     list.push(row.genreName);
-    genreMap.set(row.movieId, list);
+    genreMap.set(row[key], list);
   }
 
-  return userMovies.map((m) => ({
-    ...m,
-    genres: genreMap.get(m.id) || [],
+  return rows.map((row) => ({
+    ...row,
+    genres: genreMap.get(row.id) || [],
   }));
 }
 
-export async function listUserSeries(
-  userId: number,
-): Promise<UserSeriesRow[]> {
-  const userSeries = await getDb()
-    .select({
-      id: series.id,
-      tmdbId: series.tmdbId,
-      watchStatus: series.watchStatus,
-      impression: series.impression,
-      createdAt: series.createdAt,
-      updatedAt: series.updatedAt,
-      lastWatchedAt: series.lastWatchedAt,
-      completedAt: series.completedAt,
-      name: series.name,
-      firstAirDate: series.firstAirDate,
-      lastAirDate: series.lastAirDate,
-      totalNumberOfEpisodes: series.totalNumberOfEpisodes,
-      totalNumberOfSeasons: series.totalNumberOfSeasons,
-      totalNumberOfSeasonsWatched: series.totalNumberOfSeasonsWatched,
-      totalNumberOfEpisodesWatched: series.totalNumberOfEpisodesWatched,
-      posterPath: series.posterPath,
-      voteAverage: series.voteAverage,
-      status: series.status,
-      originalLanguage: series.originalLanguage,
-      originCountry: series.originCountry,
-      certificate: series.certificate,
-    })
-    .from(series)
-    .where(eq(series.userId, userId))
-    .orderBy(desc(series.createdAt));
+export async function listLibraryRows(userId: number): Promise<{
+  movies: UserMovieRow[];
+  series: UserSeriesRow[];
+  seasons: UserSeasonRow[];
+}> {
+  const db = getDb();
+  const [userMovies, movieGenres, userSeries, seriesGenres, seasonRows] =
+    await db.batch([
+      db
+        .select({
+          id: movies.id,
+          tmdbId: movies.tmdbId,
+          watchStatus: movies.watchStatus,
+          impression: movies.impression,
+          createdAt: movies.createdAt,
+          updatedAt: movies.updatedAt,
+          completedAt: movies.completedAt,
+          title: movies.title,
+          posterPath: movies.posterPath,
+          releaseDate: movies.releaseDate,
+          voteAverage: movies.voteAverage,
+          status: movies.status,
+          originalLanguage: movies.originalLanguage,
+          originCountry: movies.originCountry,
+          certificate: movies.certificate,
+        })
+        .from(movies)
+        .where(eq(movies.userId, userId))
+        .orderBy(desc(movies.createdAt)),
+      db
+        .select({
+          parentId: moviesToGenres.movieId,
+          genreName: genres.name,
+        })
+        .from(moviesToGenres)
+        .innerJoin(genres, eq(moviesToGenres.genreId, genres.id))
+        .innerJoin(movies, eq(moviesToGenres.movieId, movies.id))
+        .where(eq(movies.userId, userId)),
+      db
+        .select({
+          id: series.id,
+          tmdbId: series.tmdbId,
+          watchStatus: series.watchStatus,
+          impression: series.impression,
+          createdAt: series.createdAt,
+          updatedAt: series.updatedAt,
+          lastWatchedAt: series.lastWatchedAt,
+          completedAt: series.completedAt,
+          name: series.name,
+          firstAirDate: series.firstAirDate,
+          lastAirDate: series.lastAirDate,
+          totalNumberOfEpisodes: series.totalNumberOfEpisodes,
+          totalNumberOfSeasons: series.totalNumberOfSeasons,
+          totalNumberOfSeasonsWatched: series.totalNumberOfSeasonsWatched,
+          totalNumberOfEpisodesWatched: series.totalNumberOfEpisodesWatched,
+          posterPath: series.posterPath,
+          voteAverage: series.voteAverage,
+          status: series.status,
+          originalLanguage: series.originalLanguage,
+          originCountry: series.originCountry,
+          certificate: series.certificate,
+        })
+        .from(series)
+        .where(eq(series.userId, userId))
+        .orderBy(desc(series.createdAt)),
+      db
+        .select({
+          parentId: seriesToGenres.seriesId,
+          genreName: genres.name,
+        })
+        .from(seriesToGenres)
+        .innerJoin(genres, eq(seriesToGenres.genreId, genres.id))
+        .innerJoin(series, eq(seriesToGenres.seriesId, series.id))
+        .where(eq(series.userId, userId)),
+      db
+        .select({
+          tmdbId: series.tmdbId,
+          seasonNumber: seasons.seasonNumber,
+          episodeCount: seasons.episodeCount,
+          episodesWatched: seasons.episodesWatched,
+          airDate: seasons.airDate,
+        })
+        .from(seasons)
+        .innerJoin(series, eq(seasons.seriesId, series.id))
+        .where(eq(series.userId, userId))
+        .orderBy(asc(series.tmdbId), asc(seasons.seasonNumber)),
+    ]);
 
-  if (userSeries.length === 0) return [];
-
-  const seriesIds = userSeries.map((s) => s.id);
-  const seriesGenres = await getDb()
-    .select({
-      seriesId: seriesToGenres.seriesId,
-      genreName: genres.name,
-    })
-    .from(seriesToGenres)
-    .innerJoin(genres, eq(seriesToGenres.genreId, genres.id))
-    .where(inArray(seriesToGenres.seriesId, seriesIds));
-
-  const genreMap = new Map<number, string[]>();
-  for (const row of seriesGenres) {
-    const list = genreMap.get(row.seriesId) || [];
-    list.push(row.genreName);
-    genreMap.set(row.seriesId, list);
-  }
-
-  return userSeries.map((s) => ({
-    ...s,
-    genres: genreMap.get(s.id) || [],
-  }));
-}
-
-export async function listUserSeriesSeasons(userId: number) {
-  return getDb()
-    .select({
-      tmdbId: series.tmdbId,
-      seasonNumber: seasons.seasonNumber,
-      episodeCount: seasons.episodeCount,
-      episodesWatched: seasons.episodesWatched,
-      airDate: seasons.airDate,
-    })
-    .from(seasons)
-    .innerJoin(series, eq(seasons.seriesId, series.id))
-    .where(eq(series.userId, userId))
-    .orderBy(asc(series.tmdbId), asc(seasons.seasonNumber));
+  return {
+    movies: attachGenres(userMovies, movieGenres, "parentId"),
+    series: attachGenres(userSeries, seriesGenres, "parentId"),
+    seasons: seasonRows,
+  };
 }

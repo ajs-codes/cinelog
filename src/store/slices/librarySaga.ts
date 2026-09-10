@@ -17,10 +17,17 @@ type LibraryResponse = {
   series?: LibrarySeries[];
 };
 
+const LIBRARY_FETCH_ROUTES = new Set(["/", "/library"]);
+
 let isFetchingLibrary = false;
 
+function isLibraryFetchRoute() {
+  if (typeof window === "undefined") return false;
+  return LIBRARY_FETCH_ROUTES.has(window.location.pathname);
+}
+
 function* fetchLibrary(): SagaIterator {
-  if (isFetchingLibrary) return;
+  if (!isLibraryFetchRoute() || isFetchingLibrary) return;
   isFetchingLibrary = true;
 
   try {

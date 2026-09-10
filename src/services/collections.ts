@@ -4,7 +4,6 @@ import type {
   UpdateCollectionInput,
 } from "@/lib/validations/collections";
 import {
-  deleteUserCollection as repoDeleteCollection,
   findUserCollectionById,
   insertUserCollection,
   listUserCollections,
@@ -41,11 +40,3 @@ export async function updateUserCollection(
   }
   return updated;
 }
-
-export async function deleteUserCollection(id: number, userId: number) {
-  const deleted = await repoDeleteCollection(id, userId);
-  if (deleted.length === 0) {
-    throw new AppError("Collection not found", 404);
-  }
-}
-

@@ -69,10 +69,14 @@ GET /api/library
 
 ### Get movie details
 # Optional cookie. `movieId` is the TMDB id.
+# Logged-in users get is_present_in_watchlist, impression, watch_status.
 GET /api/movie/{{movieId}}
 
 ### Add movie to library
-# Requires cookie. Body is a compact TMDB-shaped MoviePayload (the app sends a fuller object).
+# Requires cookie. Body is the GET movie details already on the client.
+# Server inserts from that body (no TMDB fetch).
+# 201: same payload as GET movie details, with is_present_in_watchlist: true
+# 409 if the movie is already in the library
 POST /api/movie/{{movieId}}
 Content-Type: application/json
 
@@ -97,6 +101,8 @@ Content-Type: application/json
 # Requires cookie. Send at least one of watch_status or impression.
 # watch_status: 0 Plan to Watch, 1 Watching, 2 Completed, 3 Dropped
 # impression: 0 Dislike, 1 Like, 2 Love (or null)
+# Response: { is_present_in_watchlist, watch_status, impression }
+# 400 if the movie status does not allow watch activity updates.
 PATCH /api/movie/{{movieId}}
 Content-Type: application/json
 
@@ -111,12 +117,16 @@ DELETE /api/movie/{{movieId}}
 
 ### Get series details
 # Optional cookie. `seriesId` is the TMDB id.
-# Logged-in users get library flags plus episodes_watched on each season,
-# total_number_of_episodes_watched, and total_number_of_seasons_watched.
+# Logged-in users get is_present_in_watchlist, impression, watch_status,
+# episodes_watched on each season, total_number_of_episodes_watched,
+# and total_number_of_seasons_watched.
 GET /api/series/{{seriesId}}
 
 ### Add series to library
-# Requires cookie. Body is a compact TMDB-shaped TmdbSeries.
+# Requires cookie. Body is the GET series details already on the client.
+# Server inserts from that body (no TMDB fetch).
+# 201: same payload as GET series details, with is_present_in_watchlist: true
+# 409 if the series is already in the library
 POST /api/series/{{seriesId}}
 Content-Type: application/json
 
@@ -133,6 +143,10 @@ Content-Type: application/json
   "original_language": "en",
   "origin_country": ["US"],
   "type": "Scripted",
+  "content_ratings": {
+    "iso_3166_1": "IN",
+    "rating": "A"
+  },
   "genres": [
     { "id": 18, "name": "Drama" }
   ],
@@ -150,9 +164,9 @@ Content-Type: application/json
 ### Update series in library
 # Requires cookie. Send at least one of watch_status, impression,
 # or both mark_season_to_watched and mark_episode_to_watched together.
-# Response: { "success": true, "data": SeriesRow }
-# SeriesRow is the DB row (camelCase): tmdbId, watchStatus, impression,
-#   totalNumberOfEpisodesWatched, totalNumberOfSeasonsWatched, lastWatchedAt, …
+# Response: { is_present_in_watchlist, watch_status, impression,
+#   total_number_of_episodes_watched, total_number_of_seasons_watched,
+#   seasons: [{ season_number, episode_count, episodes_watched }] }
 # 400 if the series status does not allow watch activity updates,
 # or if the marked season has not aired yet.
 PATCH /api/series/{{seriesId}}

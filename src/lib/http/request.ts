@@ -23,6 +23,7 @@ const DIRECT_VALIDATION_MESSAGES = new Set([
   "Invalid watch_status",
   "Invalid impression",
   "No valid fields to update",
+  "Current password is required to set a new password",
 ]);
 
 export function parseSchema<T>(schema: ZodType<T>, data: unknown): T {

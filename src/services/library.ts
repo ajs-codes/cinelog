@@ -1,16 +1,9 @@
 import type { LibraryMovie, LibrarySeries } from "@/lib/types";
-import {
-  listUserMovies,
-  listUserSeries,
-  listUserSeriesSeasons,
-} from "@/repositories/library";
+import { listLibraryRows } from "@/repositories/library";
 
 export async function getLibrary(userId: number) {
-  const [movieRows, seriesRows, seasonRows] = await Promise.all([
-    listUserMovies(userId),
-    listUserSeries(userId),
-    listUserSeriesSeasons(userId),
-  ]);
+  const { movies: movieRows, series: seriesRows, seasons: seasonRows } =
+    await listLibraryRows(userId);
 
   const seasonsBySeries = new Map<
     number,

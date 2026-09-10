@@ -8,7 +8,7 @@ const passwordSchema = z
   .regex(/[A-Z]/, "Must contain at least 1 uppercase letter")
   .regex(/[a-z]/, "Must contain at least 1 lowercase letter")
   .regex(/[0-9]/, "Must contain at least 1 number")
-  .regex(/[@#&!_]/, "Must contain at least 1 symbol (@, #, &, !)")
+  .regex(/[@#&!_]/, "Must contain at least 1 symbol (@, #, &, !, _)")
   .regex(
     /^[a-zA-Z0-9@#&!_]+$/,
     "Only alphanumeric and @, #, &, ! symbols are allowed",
@@ -42,21 +42,52 @@ export const loginSchema = z.object({
   password: passwordSchema,
 });
 
-export const updateProfileSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(10, "Username cannot exceed 10 characters")
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores",
-    )
-    .optional(),
-  email: z.string().email("Invalid email format").optional(),
-  displayName: z.string().nullable().optional(),
-  currentPassword: z.string().optional(),
-  newPassword: passwordSchema.optional(),
-});
+export const updateProfileSchema = z
+  .object({
+    username: z
+      .string()
+      .trim()
+      .min(3, "Username must be at least 3 characters")
+      .max(10, "Username cannot exceed 10 characters")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores",
+      )
+      .optional(),
+    email: z.string().trim().email("Invalid email format").optional(),
+    displayName: z
+      .union([z.string(), z.null()])
+      .optional()
+      .transform((value) => {
+        if (value === undefined) return undefined;
+        if (value === null) return null;
+        const trimmed = value.trim();
+        return trimmed.length === 0 ? null : trimmed;
+      }),
+    currentPassword: z.string().optional(),
+    newPassword: passwordSchema.optional(),
+  })
+  .superRefine((data, context) => {
+    if (data.newPassword && !data.currentPassword) {
+      context.addIssue({
+        code: "custom",
+        path: ["currentPassword"],
+        message: "Current password is required to set a new password",
+      });
+    }
+
+    if (
+      data.username === undefined &&
+      data.email === undefined &&
+      data.displayName === undefined &&
+      data.newPassword === undefined
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "No valid fields to update",
+      });
+    }
+  });
 
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

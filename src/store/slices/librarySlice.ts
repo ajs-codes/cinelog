@@ -58,7 +58,9 @@ const librarySlice = createSlice({
   initialState,
   reducers: {
     libraryRequested: (state) => {
-      state.status = "loading";
+      if (state.status !== "succeeded") {
+        state.status = "loading";
+      }
       state.error = null;
     },
     librarySucceeded: (

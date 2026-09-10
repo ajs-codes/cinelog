@@ -14,10 +14,8 @@ export default function Home() {
   const { movies, series, status } = useAppSelector((state) => state.library);
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(libraryRequested());
-    }
-  }, [dispatch, status]);
+    dispatch(libraryRequested());
+  }, [dispatch]);
 
   const watchingMovies = useMemo(
     () => movies.filter((movie) => movie.watch_status === 1),

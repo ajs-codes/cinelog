@@ -28,6 +28,19 @@ export type ContentProgressMutation = {
   episodeNumber: number;
 };
 
+export type ContentLibraryFields = {
+  is_present_in_watchlist?: boolean;
+  watch_status?: number | null;
+  impression?: number | null;
+  total_number_of_episodes_watched?: number;
+  total_number_of_seasons_watched?: number;
+  seasons?: Array<{
+    season_number: number;
+    episode_count?: number;
+    episodes_watched: number;
+  }>;
+};
+
 export type ContentDetailsState = Record<
   ContentMediaType,
   Record<string, ContentDetailsEntry>
@@ -107,7 +120,7 @@ const contentDetailsSlice = createSlice({
       action: PayloadAction<{
         id: string;
         mediaType: ContentMediaType;
-        data: Partial<ContentDetailsData>;
+        data: ContentLibraryFields;
       }>,
     ) => {
       const entry = state[action.payload.mediaType][action.payload.id];
@@ -116,7 +129,24 @@ const contentDetailsSlice = createSlice({
       entry.mutationError = undefined;
       entry.pendingValue = undefined;
       entry.pendingProgress = undefined;
-      if (entry.data) Object.assign(entry.data, action.payload.data);
+      if (!entry.data) return;
+
+      const { seasons, ...libraryFields } = action.payload.data;
+      Object.assign(entry.data, libraryFields);
+
+      if (seasons && "seasons" in entry.data && Array.isArray(entry.data.seasons)) {
+        const progressByNumber = new Map(
+          seasons.map((season) => [season.season_number, season.episodes_watched]),
+        );
+        entry.data.seasons = entry.data.seasons.map((season) => ({
+          ...season,
+          episodes_watched:
+            season.season_number === undefined
+              ? season.episodes_watched
+              : (progressByNumber.get(season.season_number) ??
+                season.episodes_watched),
+        }));
+      }
     },
     mutationFailed: (
       state,

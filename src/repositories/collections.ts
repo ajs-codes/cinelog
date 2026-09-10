@@ -1,5 +1,5 @@
-import { and, asc, desc, eq, inArray } from "drizzle-orm";
-import { getDb } from "@/db";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { asBatch, getDb, type SqliteBatchQuery } from "@/db";
 import {
   customCollectionFilters,
   customCollections,
@@ -11,35 +11,12 @@ import type {
 } from "@/lib/validations/collections";
 import type { CustomCollectionWithFilters } from "@/lib/types";
 
-export async function listUserCollections(
-  userId: number,
-): Promise<CustomCollectionWithFilters[]> {
-  const db = getDb();
-  const collections = await db
-    .select()
-    .from(customCollections)
-    .where(eq(customCollections.userId, userId))
-    .orderBy(asc(customCollections.displayOrder), desc(customCollections.createdAt));
-
-  if (collections.length === 0) {
-    return [];
-  }
-
-  const collectionIds = collections.map((c) => c.id);
-
-  const [filters, sorts] = await Promise.all([
-    db
-      .select()
-      .from(customCollectionFilters)
-      .where(inArray(customCollectionFilters.customCollectionId, collectionIds)),
-    db
-      .select()
-      .from(customCollectionSorts)
-      .where(inArray(customCollectionSorts.customCollectionId, collectionIds))
-      .orderBy(asc(customCollectionSorts.priority)),
-  ]);
-
-  return collections.map((col) => ({
+function mapCollection(
+  col: typeof customCollections.$inferSelect,
+  filters: (typeof customCollectionFilters.$inferSelect)[],
+  sorts: (typeof customCollectionSorts.$inferSelect)[],
+): CustomCollectionWithFilters {
+  return {
     id: col.id,
     userId: col.userId,
     name: col.name,
@@ -50,63 +27,6 @@ export async function listUserCollections(
     displayOrder: col.displayOrder,
     createdAt: col.createdAt,
     updatedAt: col.updatedAt,
-    filters: filters
-      .filter((f) => f.customCollectionId === col.id)
-      .map((f) => ({
-        id: f.id,
-        customCollectionId: f.customCollectionId,
-        field: f.field,
-        operator: f.operator,
-        value: f.value,
-      })),
-    sorts: sorts
-      .filter((s) => s.customCollectionId === col.id)
-      .map((s) => ({
-        id: s.id,
-        customCollectionId: s.customCollectionId,
-        field: s.field,
-        direction: s.direction,
-        priority: s.priority,
-      })),
-  }));
-}
-
-export async function findUserCollectionById(
-  id: number,
-  userId: number,
-): Promise<CustomCollectionWithFilters | null> {
-  const db = getDb();
-  const collection = await db
-    .select()
-    .from(customCollections)
-    .where(and(eq(customCollections.id, id), eq(customCollections.userId, userId)))
-    .get();
-
-  if (!collection) return null;
-
-  const [filters, sorts] = await Promise.all([
-    db
-      .select()
-      .from(customCollectionFilters)
-      .where(eq(customCollectionFilters.customCollectionId, id)),
-    db
-      .select()
-      .from(customCollectionSorts)
-      .where(eq(customCollectionSorts.customCollectionId, id))
-      .orderBy(asc(customCollectionSorts.priority)),
-  ]);
-
-  return {
-    id: collection.id,
-    userId: collection.userId,
-    name: collection.name,
-    mediaType: collection.mediaType,
-    showInDashboard: collection.showInDashboard,
-    showInLibrary: collection.showInLibrary,
-    groupBy: collection.groupBy,
-    displayOrder: collection.displayOrder,
-    createdAt: collection.createdAt,
-    updatedAt: collection.updatedAt,
     filters: filters.map((f) => ({
       id: f.id,
       customCollectionId: f.customCollectionId,
@@ -124,14 +44,97 @@ export async function findUserCollectionById(
   };
 }
 
+export async function listUserCollections(
+  userId: number,
+): Promise<CustomCollectionWithFilters[]> {
+  const db = getDb();
+  const [collections, filters, sorts] = await db.batch([
+    db
+      .select()
+      .from(customCollections)
+      .where(eq(customCollections.userId, userId))
+      .orderBy(
+        asc(customCollections.displayOrder),
+        desc(customCollections.createdAt),
+      ),
+    db
+      .select({
+        id: customCollectionFilters.id,
+        customCollectionId: customCollectionFilters.customCollectionId,
+        field: customCollectionFilters.field,
+        operator: customCollectionFilters.operator,
+        value: customCollectionFilters.value,
+      })
+      .from(customCollectionFilters)
+      .innerJoin(
+        customCollections,
+        eq(customCollectionFilters.customCollectionId, customCollections.id),
+      )
+      .where(eq(customCollections.userId, userId)),
+    db
+      .select({
+        id: customCollectionSorts.id,
+        customCollectionId: customCollectionSorts.customCollectionId,
+        field: customCollectionSorts.field,
+        direction: customCollectionSorts.direction,
+        priority: customCollectionSorts.priority,
+      })
+      .from(customCollectionSorts)
+      .innerJoin(
+        customCollections,
+        eq(customCollectionSorts.customCollectionId, customCollections.id),
+      )
+      .where(eq(customCollections.userId, userId))
+      .orderBy(asc(customCollectionSorts.priority)),
+  ]);
+
+  return collections.map((col) =>
+    mapCollection(
+      col,
+      filters.filter((f) => f.customCollectionId === col.id),
+      sorts.filter((s) => s.customCollectionId === col.id),
+    ),
+  );
+}
+
+export async function findUserCollectionById(
+  id: number,
+  userId: number,
+): Promise<CustomCollectionWithFilters | null> {
+  const db = getDb();
+  const [collectionRows, filters, sorts] = await db.batch([
+    db
+      .select()
+      .from(customCollections)
+      .where(
+        and(eq(customCollections.id, id), eq(customCollections.userId, userId)),
+      ),
+    db
+      .select()
+      .from(customCollectionFilters)
+      .where(eq(customCollectionFilters.customCollectionId, id)),
+    db
+      .select()
+      .from(customCollectionSorts)
+      .where(eq(customCollectionSorts.customCollectionId, id))
+      .orderBy(asc(customCollectionSorts.priority)),
+  ]);
+
+  const collection = collectionRows[0];
+  if (!collection) return null;
+
+  return mapCollection(collection, filters, sorts);
+}
+
 export async function insertUserCollection(
   userId: number,
   data: CreateCollectionInput,
 ): Promise<CustomCollectionWithFilters> {
   const db = getDb();
+  const collectionIdSql = sql`(select max(${customCollections.id}) from ${customCollections} where ${customCollections.userId} = ${userId})`;
 
-  return db.transaction(async (tx) => {
-    const [collection] = await tx
+  const queries: SqliteBatchQuery[] = [
+    db
       .insert(customCollections)
       .values({
         userId,
@@ -142,66 +145,48 @@ export async function insertUserCollection(
         groupBy: data.groupBy ?? null,
         displayOrder: data.displayOrder,
       })
-      .returning();
-
-    const createdFilters = [];
-    for (const filter of data.filters) {
-      const [created] = await tx
-        .insert(customCollectionFilters)
-        .values({
-          customCollectionId: collection.id,
+      .returning(),
+    db
+      .insert(customCollectionFilters)
+      .values(
+        data.filters.map((filter) => ({
+          customCollectionId: collectionIdSql,
           field: filter.field,
           operator: filter.operator,
           value: filter.value,
-        })
-        .returning();
-      createdFilters.push({
-        id: created.id,
-        customCollectionId: created.customCollectionId,
-        field: created.field,
-        operator: created.operator,
-        value: created.value,
-      });
-    }
+        })),
+      )
+      .returning(),
+  ];
 
-    const createdSorts = [];
-    if (data.sorts && data.sorts.length > 0) {
-      for (let i = 0; i < data.sorts.length; i++) {
-        const sort = data.sorts[i];
-        const [created] = await tx
-          .insert(customCollectionSorts)
-          .values({
-            customCollectionId: collection.id,
+  if (data.sorts && data.sorts.length > 0) {
+    queries.push(
+      db
+        .insert(customCollectionSorts)
+        .values(
+          data.sorts.map((sort, i) => ({
+            customCollectionId: collectionIdSql,
             field: sort.field,
             direction: sort.direction,
             priority: sort.priority ?? i,
-          })
-          .returning();
-        createdSorts.push({
-          id: created.id,
-          customCollectionId: created.customCollectionId,
-          field: created.field,
-          direction: created.direction,
-          priority: created.priority,
-        });
-      }
-    }
+          })),
+        )
+        .returning(),
+    );
+  }
 
-    return {
-      id: collection.id,
-      userId: collection.userId,
-      name: collection.name,
-      mediaType: collection.mediaType,
-      showInDashboard: collection.showInDashboard,
-      showInLibrary: collection.showInLibrary,
-      groupBy: collection.groupBy,
-      displayOrder: collection.displayOrder,
-      createdAt: collection.createdAt,
-      updatedAt: collection.updatedAt,
-      filters: createdFilters,
-      sorts: createdSorts,
-    };
-  });
+  const results = await db.batch(asBatch(queries));
+  const [createdCollections, createdFilters, createdSorts] = results as [
+    (typeof customCollections.$inferSelect)[],
+    (typeof customCollectionFilters.$inferSelect)[],
+    (typeof customCollectionSorts.$inferSelect)[]?,
+  ];
+
+  return mapCollection(
+    createdCollections[0],
+    createdFilters,
+    createdSorts ?? [],
+  );
 }
 
 export async function updateUserCollection(
@@ -210,135 +195,125 @@ export async function updateUserCollection(
   data: UpdateCollectionInput,
 ): Promise<CustomCollectionWithFilters | null> {
   const db = getDb();
+  const existing = await findUserCollectionById(id, userId);
+  if (!existing) return null;
 
-  return db.transaction(async (tx) => {
-    const existing = await tx
-      .select()
-      .from(customCollections)
-      .where(and(eq(customCollections.id, id), eq(customCollections.userId, userId)))
-      .get();
+  const updates: Partial<typeof customCollections.$inferInsert> = {
+    updatedAt: String(Math.floor(Date.now() / 1000)),
+  };
 
-    if (!existing) return null;
+  if (data.name !== undefined) updates.name = data.name;
+  if (data.mediaType !== undefined) updates.mediaType = data.mediaType;
+  if (data.showInDashboard !== undefined)
+    updates.showInDashboard = data.showInDashboard;
+  if (data.showInLibrary !== undefined)
+    updates.showInLibrary = data.showInLibrary;
+  if (data.groupBy !== undefined) updates.groupBy = data.groupBy;
+  if (data.displayOrder !== undefined) updates.displayOrder = data.displayOrder;
 
-    const updates: Partial<typeof customCollections.$inferInsert> = {
-      updatedAt: String(Math.floor(Date.now() / 1000)),
-    };
-
-    if (data.name !== undefined) updates.name = data.name;
-    if (data.mediaType !== undefined) updates.mediaType = data.mediaType;
-    if (data.showInDashboard !== undefined)
-      updates.showInDashboard = data.showInDashboard;
-    if (data.showInLibrary !== undefined)
-      updates.showInLibrary = data.showInLibrary;
-    if (data.groupBy !== undefined) updates.groupBy = data.groupBy;
-    if (data.displayOrder !== undefined) updates.displayOrder = data.displayOrder;
-
-    const [updated] = await tx
+  const queries: SqliteBatchQuery[] = [
+    db
       .update(customCollections)
       .set(updates)
-      .where(and(eq(customCollections.id, id), eq(customCollections.userId, userId)))
-      .returning();
+      .where(
+        and(eq(customCollections.id, id), eq(customCollections.userId, userId)),
+      )
+      .returning(),
+  ];
 
-    let finalFilters = [];
-    if (data.filters !== undefined) {
-      await tx
+  if (data.filters !== undefined) {
+    queries.push(
+      db
         .delete(customCollectionFilters)
-        .where(eq(customCollectionFilters.customCollectionId, id));
-
-      for (const filter of data.filters) {
-        const [created] = await tx
-          .insert(customCollectionFilters)
-          .values({
+        .where(eq(customCollectionFilters.customCollectionId, id)),
+      db
+        .insert(customCollectionFilters)
+        .values(
+          data.filters.map((filter) => ({
             customCollectionId: id,
             field: filter.field,
             operator: filter.operator,
             value: filter.value,
-          })
-          .returning();
-        finalFilters.push({
-          id: created.id,
-          customCollectionId: created.customCollectionId,
-          field: created.field,
-          operator: created.operator,
-          value: created.value,
-        });
-      }
-    } else {
-      const existingFilters = await tx
-        .select()
-        .from(customCollectionFilters)
-        .where(eq(customCollectionFilters.customCollectionId, id));
-      finalFilters = existingFilters.map((f) => ({
-        id: f.id,
-        customCollectionId: f.customCollectionId,
-        field: f.field,
-        operator: f.operator,
-        value: f.value,
-      }));
-    }
+          })),
+        )
+        .returning(),
+    );
+  }
 
-    let finalSorts = [];
-    if (data.sorts !== undefined) {
-      await tx
+  if (data.sorts !== undefined) {
+    queries.push(
+      db
         .delete(customCollectionSorts)
-        .where(eq(customCollectionSorts.customCollectionId, id));
+        .where(eq(customCollectionSorts.customCollectionId, id)),
+    );
 
-      for (let i = 0; i < data.sorts.length; i++) {
-        const sort = data.sorts[i];
-        const [created] = await tx
+    if (data.sorts.length > 0) {
+      queries.push(
+        db
           .insert(customCollectionSorts)
-          .values({
-            customCollectionId: id,
-            field: sort.field,
-            direction: sort.direction,
-            priority: sort.priority ?? i,
-          })
-          .returning();
-        finalSorts.push({
-          id: created.id,
-          customCollectionId: created.customCollectionId,
-          field: created.field,
-          direction: created.direction,
-          priority: created.priority,
-        });
-      }
-    } else {
-      const existingSorts = await tx
-        .select()
-        .from(customCollectionSorts)
-        .where(eq(customCollectionSorts.customCollectionId, id))
-        .orderBy(asc(customCollectionSorts.priority));
-      finalSorts = existingSorts.map((s) => ({
-        id: s.id,
-        customCollectionId: s.customCollectionId,
-        field: s.field,
-        direction: s.direction,
-        priority: s.priority,
-      }));
+          .values(
+            data.sorts.map((sort, i) => ({
+              customCollectionId: id,
+              field: sort.field,
+              direction: sort.direction,
+              priority: sort.priority ?? i,
+            })),
+          )
+          .returning(),
+      );
     }
+  }
 
-    return {
-      id: updated.id,
-      userId: updated.userId,
-      name: updated.name,
-      mediaType: updated.mediaType,
-      showInDashboard: updated.showInDashboard,
-      showInLibrary: updated.showInLibrary,
-      groupBy: updated.groupBy,
-      displayOrder: updated.displayOrder,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
-      filters: finalFilters,
-      sorts: finalSorts,
-    };
-  });
+  const results = await db.batch(asBatch(queries));
+  const updated = (results[0] as (typeof customCollections.$inferSelect)[])[0];
+
+  let finalFilters = existing.filters;
+  let finalSorts = existing.sorts ?? [];
+  let resultIndex = 1;
+
+  if (data.filters !== undefined) {
+    resultIndex += 1;
+    finalFilters = (
+      results[resultIndex] as (typeof customCollectionFilters.$inferSelect)[]
+    ).map((created) => ({
+      id: created.id,
+      customCollectionId: created.customCollectionId,
+      field: created.field,
+      operator: created.operator,
+      value: created.value,
+    }));
+    resultIndex += 1;
+  }
+
+  if (data.sorts !== undefined) {
+    resultIndex += 1;
+    if (data.sorts.length > 0) {
+      finalSorts = (
+        results[resultIndex] as (typeof customCollectionSorts.$inferSelect)[]
+      ).map((created) => ({
+        id: created.id,
+        customCollectionId: created.customCollectionId,
+        field: created.field,
+        direction: created.direction,
+        priority: created.priority,
+      }));
+    } else {
+      finalSorts = [];
+    }
+  }
+
+  return {
+    id: updated.id,
+    userId: updated.userId,
+    name: updated.name,
+    mediaType: updated.mediaType,
+    showInDashboard: updated.showInDashboard,
+    showInLibrary: updated.showInLibrary,
+    groupBy: updated.groupBy,
+    displayOrder: updated.displayOrder,
+    createdAt: updated.createdAt,
+    updatedAt: updated.updatedAt,
+    filters: finalFilters,
+    sorts: finalSorts,
+  };
 }
-
-export async function deleteUserCollection(id: number, userId: number) {
-  const db = getDb();
-  return db
-    .delete(customCollections)
-    .where(and(eq(customCollections.id, id), eq(customCollections.userId, userId)))
-    .returning();
-}
-
