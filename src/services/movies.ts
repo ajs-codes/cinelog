@@ -17,6 +17,7 @@ import {
   insertUserMovie,
   updateUserMovie,
 } from "@/repositories/movies";
+import { isUniqueConstraintError } from "@/lib/db/unique-constraint";
 
 export async function getMovieDetails(tmdbId: number, userId?: number) {
   const queryParams = new URLSearchParams({
@@ -71,13 +72,14 @@ export async function addMovieToLibrary(
   userId: number,
   body: MoviePayload,
 ) {
-  const existing = await findUserMovie(tmdbId, userId);
-
-  if (existing) {
-    throw new AppError("Movie already exists in library", 409);
+  try {
+    await insertUserMovie(tmdbId, userId, body);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      throw new AppError("Movie already exists in library", 409);
+    }
+    throw error;
   }
-
-  await insertUserMovie(tmdbId, userId, body);
 }
 
 export async function removeMovieFromLibrary(tmdbId: number, userId: number) {

@@ -149,9 +149,6 @@ export function CustomCollectionsSection() {
     direction: 1,
     priority: 0,
   });
-
-  // Delete confirm
-  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -313,24 +310,6 @@ export function CustomCollectionsSection() {
       }
     } catch {
       setErrorMessage("Failed to update sort order.");
-    }
-  };
-
-  const handleDeleteCollection = async (id: number) => {
-    try {
-      setIsSubmitting(true);
-      const res = await fetch(`/api/collections/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setCollections((prev) => prev.filter((c) => c.id !== id));
-        setDeleteConfirmId(null);
-        setSuccessMessage("Collection deleted successfully.");
-      }
-    } catch {
-      setErrorMessage("Failed to delete collection.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -559,7 +538,7 @@ export function CustomCollectionsSection() {
                   </div>
                 </div>
 
-                {/* Right side controls: SORT selector, Active toggle switch, Edit, Delete */}
+                {/* Right side controls: SORT selector, Active toggle switch, Edit */}
                 <div className="flex flex-wrap items-center gap-3 pt-2 sm:pt-0">
                   {/* SORT Dropdown */}
                   <div className="flex items-center gap-1.5 rounded-lg border border-outline-alt/60 bg-surface-container px-2.5 py-1">
@@ -621,62 +600,12 @@ export function CustomCollectionsSection() {
                   >
                     <Edit2 className="h-3.5 w-3.5" />
                   </Button>
-
-                  {/* Delete action */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleteConfirmId(col.id)}
-                    className="h-8 w-8 text-secondary hover:text-status-error"
-                    title="Delete Stream"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
                 </div>
               </div>
             );
           })}
         </div>
       )}
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteConfirmId !== null}
-        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
-      >
-        <DialogContent className="border-outline-alt bg-surface-container-low sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-on-surface">
-              Delete Stream Collection
-            </DialogTitle>
-            <DialogDescription className="text-secondary">
-              Are you sure you want to remove this custom collection? It will no
-              longer appear as a carousel in your library.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="border-t border-outline-alt/60">
-            <Button
-              type="button"
-              variant="darkFilled"
-              onClick={() => setDeleteConfirmId(null)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={() =>
-                deleteConfirmId && handleDeleteCollection(deleteConfirmId)
-              }
-              disabled={isSubmitting}
-              className="bg-status-error text-white hover:bg-status-error/90"
-            >
-              {isSubmitting ? "Deleting..." : "Delete"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Create / Edit Collection Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

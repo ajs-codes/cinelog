@@ -2,24 +2,7 @@ import { TMDB_POSTER_BASE_URL } from "@/lib/constants";
 import { getYearString } from "@/lib/media/display";
 import { tmdbFetch } from "@/lib/tmdb/client";
 import type { SearchType, TmdbSearchResponse } from "@/lib/types";
-import { findGenreNamesByTmdbIds } from "@/repositories/genres";
-import { findUserMovieTmdbIds } from "@/repositories/movies";
-import { findUserSeriesTmdbIds } from "@/repositories/series";
-
-async function findWatchlistedTmdbIds(
-  type: SearchType,
-  tmdbIds: number[],
-  userId?: number,
-) {
-  if (!userId) return new Set<number>();
-
-  const rows =
-    type === "movie"
-      ? await findUserMovieTmdbIds(userId, tmdbIds)
-      : await findUserSeriesTmdbIds(userId, tmdbIds);
-
-  return new Set(rows.map((row) => row.tmdbId));
-}
+import { findSearchLookups } from "@/repositories/search";
 
 export async function searchTitles(
   query: string,
@@ -47,10 +30,12 @@ export async function searchTitles(
   const tmdbIds = (data.results ?? []).flatMap((result) =>
     result.id === undefined ? [] : [result.id],
   );
-  const [genreRows, watchlistedTmdbIds] = await Promise.all([
-    findGenreNamesByTmdbIds(genreIds),
-    findWatchlistedTmdbIds(type, tmdbIds, userId),
-  ]);
+  const { genreRows, watchlistedTmdbIds } = await findSearchLookups(
+    type,
+    genreIds,
+    tmdbIds,
+    userId,
+  );
   const genreNamesByTmdbId = new Map(
     genreRows.map((genre) => [genre.tmdbId, genre.name]),
   );

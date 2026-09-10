@@ -76,6 +76,7 @@ export const movies = sqliteTable(
       sql`${table.status} IS NULL OR ${table.status} IN (${movieStatusValues})`,
     ),
     index("movies_tmdb_id_index").on(table.tmdbId),
+    uniqueIndex("movies_user_id_tmdb_id_unique").on(table.userId, table.tmdbId),
   ],
 );
 
@@ -143,6 +144,7 @@ export const series = sqliteTable(
       sql`${table.status} IS NULL OR ${table.status} IN (${seriesStatusValues})`,
     ),
     index("series_tmdb_id_index").on(table.tmdbId),
+    uniqueIndex("series_user_id_tmdb_id_unique").on(table.userId, table.tmdbId),
   ],
 );
 
