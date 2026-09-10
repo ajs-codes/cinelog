@@ -15,6 +15,7 @@ import {
   findUserSeries,
   insertUserSeries,
   listSeasonsBySeriesId,
+  markAllSeasonsCompletedForSeries,
   runInTransaction,
   updateSeasonById,
   updateSeasonsBySeriesId,
@@ -34,9 +35,7 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
   });
 
   const credits = pickCastAndDirectors(seriesRecord.credits);
-  const userSeries = userId
-    ? await findUserSeries(tmdbId, userId)
-    : undefined;
+  const userSeries = userId ? await findUserSeries(tmdbId, userId) : undefined;
   const userSeasons = userSeries
     ? await listSeasonsBySeriesId(userSeries.id)
     : [];
@@ -142,8 +141,7 @@ export async function updateSeriesInLibrary(
     let finalWatchStatus = existingSeries.watchStatus;
     let finalCompletedAt = existingSeries.completedAt;
     let finalLastWatchedAt = existingSeries.lastWatchedAt;
-    let finalTotalEpsWatched =
-      existingSeries.totalNumberOfEpisodesWatched || 0;
+    let finalTotalEpsWatched = existingSeries.totalNumberOfEpisodesWatched || 0;
     let finalTotalSeasonsWatched =
       existingSeries.totalNumberOfSeasonsWatched || 0;
 
@@ -170,10 +168,7 @@ export async function updateSeriesInLibrary(
       }
 
       if (!hasAiredOnOrBeforeToday(targetSeason.airDate)) {
-        throw new AppError(
-          "Cannot mark a season that has not aired yet",
-          400,
-        );
+        throw new AppError("Cannot mark a season that has not aired yet", 400);
       }
 
       const epsWatched = Math.min(
@@ -207,9 +202,8 @@ export async function updateSeriesInLibrary(
           (s) => s.display_value === "Plan to Watch",
         )?.value ?? 0;
       const completedValue =
-        Object.values(WATCH_STATUS).find(
-          (s) => s.display_value === "Completed",
-        )?.value ?? 2;
+        Object.values(WATCH_STATUS).find((s) => s.display_value === "Completed")
+          ?.value ?? 2;
 
       if (finalWatchStatus === planToWatchValue) {
         finalTotalEpsWatched = 0;
@@ -233,18 +227,7 @@ export async function updateSeriesInLibrary(
         finalTotalEpsWatched = existingSeries.totalNumberOfEpisodes || 0;
         finalTotalSeasonsWatched = existingSeries.totalNumberOfSeasons || 0;
 
-        for (const s of allSeasons) {
-          await updateSeasonById(
-            s.id,
-            {
-              episodesWatched: s.episodeCount,
-              completedAt: now,
-              lastWatchedAt: now,
-              updatedAt: now,
-            },
-            tx,
-          );
-        }
+        await markAllSeasonsCompletedForSeries(existingSeries.id, now, tx);
       } else {
         finalCompletedAt = null;
       }
