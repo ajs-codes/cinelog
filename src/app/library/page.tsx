@@ -1,10 +1,5 @@
-import { AppShell } from "@/components/layout/app-shell";
-import { LibraryView } from "./library-view";
+import { redirect } from "next/navigation";
 
 export default function LibraryPage() {
-  return (
-    <AppShell>
-      <LibraryView />
-    </AppShell>
-  );
+  redirect("/library/movies");
 }
