@@ -73,7 +73,7 @@ function SearchDialogContent() {
     <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogTrigger render={<FloatingSearchButton />} />
       <DialogContent
-        className="max-h-[calc(100dvh-2rem)] w-full max-w-[calc(100%-2rem)] border border-outline-alt bg-surface-container shadow-[0_8px_24px_rgb(0_0_0/25%)] sm:max-w-3xl"
+        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-[calc(100%-1.5rem)] border border-outline-alt bg-surface-container p-3 sm:p-4 gap-3 sm:gap-4 shadow-[0_8px_24px_rgb(0_0_0/25%)] sm:max-h-[calc(100dvh-2rem)] sm:max-w-3xl"
         showCloseButton={false}
       >
         <SearchGroup

@@ -57,7 +57,7 @@ export function CastCrew({ credits, createdBy }: CastCrewProps) {
   if (mergedCredits.length === 0) return null;
 
   return (
-    <section className="m-4 rounded-[22px] border border-outline-variant bg-surface-container p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+    <section className="m-2.5 sm:m-4 rounded-xl sm:rounded-[22px] border border-outline-variant bg-surface-container p-3.5 sm:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold font-noto-sans text-on-surface">
           Cast & Key Crew
@@ -66,7 +66,7 @@ export function CastCrew({ credits, createdBy }: CastCrewProps) {
 
       <div
         ref={scrollRef}
-        className="custom-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 overscroll-contain"
+        className="custom-scrollbar -mx-1 flex gap-2.5 sm:gap-3 overflow-x-auto px-1 pb-2 overscroll-contain"
       >
         {mergedCredits.map((member) => (
           <CreditCard
@@ -86,7 +86,7 @@ function CreditCard({ member }: { member: CreditMember }) {
     : (member.job ?? member.known_for_department ?? "Crew");
 
   return (
-    <div className="flex w-30 shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-container-high">
+    <div className="flex w-24 sm:w-30 shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-container-high">
       <div className="relative aspect-2/3 w-full bg-surface-container">
         {member.profile_path ? (
           <Image

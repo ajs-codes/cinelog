@@ -8,6 +8,7 @@ import {
   Loader2,
   ThumbsDown,
   ThumbsUp,
+  type LucideIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,15 @@ import {
   type ContentMutation,
 } from "@/store/slices/contentDetailsSlice";
 
+const IMPRESSION_CONFIG: Record<
+  number,
+  { icon: LucideIcon; iconClassName: string }
+> = {
+  0: { icon: ThumbsDown, iconClassName: "text-outline-muted" },
+  1: { icon: ThumbsUp, iconClassName: "text-status-info" },
+  2: { icon: Heart, iconClassName: "text-status-error" },
+};
+
 type ActionBarProps = {
   id?: number;
   imdbId?: string | null;
@@ -41,12 +51,6 @@ type ActionBarProps = {
   pendingValue?: number | null;
   content?: MovieDetails | SeriesDetails;
 };
-
-const IMPRESSION_CONFIG = {
-  0: { icon: ThumbsDown, iconClassName: "text-outline-muted" },
-  1: { icon: ThumbsUp, iconClassName: "" },
-  2: { icon: Heart, iconClassName: "text-status-error" },
-} as const;
 
 export function ActionBar({
   id,
@@ -104,13 +108,13 @@ export function ActionBar({
 
   return (
     <div className="mt-6 border-t border-white/10 pt-4">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
         <Button
           type="button"
           disabled={isMutating || isPresentInWatchlist}
           onClick={() => requestMutation("add-watchlist")}
           variant="darkFilled"
-          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
+          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
         >
           {isAddingWatchlist ? (
             <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
@@ -128,7 +132,7 @@ export function ActionBar({
 
         <ShareButton id={id} imdbId={imdbId} type={type} />
 
-        <div className="mx-1 h-6 w-px bg-white/15" />
+        <div className="mx-1 hidden h-6 w-px bg-white/15 sm:block" />
 
         {type === "movie" && (
           <ProgressStatus

@@ -56,7 +56,7 @@ export function CollectionCarousel({
   return (
     <section
       aria-labelledby={`collection-${collection.id}-heading`}
-      className="w-full space-y-4"
+      className="flex w-full flex-col gap-4"
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export function CollectionCarousel({
             <div className="flex flex-wrap items-center gap-2">
               <h2
                 id={`collection-${collection.id}-heading`}
-                className="font-heading text-xl font-semibold tracking-tight text-on-surface sm:text-2xl"
+                className="font-heading text-lg font-semibold tracking-tight text-on-surface sm:text-2xl"
               >
                 {collection.name}
               </h2>
@@ -132,7 +132,7 @@ export function CollectionCarousel({
       {count > 0 ? (
         <div
           ref={scrollContainerRef}
-          className="movie-lists-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-4 pt-1"
+          className="movie-lists-scrollbar -mx-1 flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pb-4 pt-1 overscroll-contain"
         >
           {matchingItems.map((item) => {
             const isMovie = "title" in item;
@@ -151,11 +151,12 @@ export function CollectionCarousel({
           })}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-white/10 bg-surface-container-low px-4 py-8 text-center font-public-sans text-xs text-secondary">
-          No titles in your library match this filter group yet.
+        <div className="rounded-xl border border-dashed border-white/10 bg-surface-container-low p-6 text-center">
+          <p className="font-public-sans text-xs text-secondary">
+            No titles in your library match this filter group yet.
+          </p>
         </div>
       )}
     </section>
   );
 }
-

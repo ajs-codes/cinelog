@@ -49,12 +49,13 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
   const nextEpisode = progress.nextEpisode;
   const totalSeasons = series.total_number_of_seasons ?? 0;
   const completedSeasons = series.total_number_of_seasons_watched ?? 0;
-  const totalEpisodes = series.total_number_of_episodes ?? 0;
   const episodesWatched = series.total_number_of_episodes_watched ?? 0;
+  const totalEpisodes = series.total_number_of_episodes ?? 0;
   const percentage =
     totalEpisodes > 0
       ? Math.min(100, Math.round((episodesWatched / totalEpisodes) * 100))
       : 0;
+
   const canUpdateWatchActivity = canUpdateSeriesWatchActivity(series.status);
   const status =
     WATCH_STATUS[series.watch_status as keyof typeof WATCH_STATUS] ??
@@ -62,8 +63,9 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
   const statusIndicator =
     WATCH_STATUS_INDICATOR[series.watch_status] ?? WATCH_STATUS_INDICATOR[0];
   const StatusIcon =
-    WATCH_STATUS_ICONS[series.watch_status as keyof typeof WATCH_STATUS_ICONS] ??
-    WATCH_STATUS_ICONS[0];
+    WATCH_STATUS_ICONS[
+      series.watch_status as keyof typeof WATCH_STATUS_ICONS
+    ] ?? WATCH_STATUS_ICONS[0];
   const rating = (series.vote_average ?? 0).toFixed(1);
   const meta = seriesMeta(series);
   const isNextDisabled =
@@ -96,7 +98,7 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
     : "All aired episodes watched";
 
   return (
-    <Card className="group/card h-[352.5px] w-60 min-w-60 gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-transform hover:-translate-y-0.5">
+    <Card className="group/card h-[352.5px] w-full max-w-[15rem] min-w-0 sm:w-60 sm:min-w-60 gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-transform hover:-translate-y-0.5">
       <CardContent className="p-0">
         <Link
           aria-label={`View ${series.name} details`}

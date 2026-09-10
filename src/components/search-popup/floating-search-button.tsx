@@ -20,7 +20,7 @@ export function FloatingSearchButton({
         shortcutLabel ? `Search movies (${shortcutLabel})` : "Search movies"
       }
       className={cn(
-        "fixed right-6 bottom-6 z-50 size-14 rounded-xl shadow-[0_4px_8px_rgb(0_0_0/30%)]",
+        "fixed right-4 bottom-4 sm:right-6 sm:bottom-6 z-50 size-12 sm:size-14 rounded-xl shadow-[0_4px_8px_rgb(0_0_0/30%)]",
         className,
       )}
       size="icon-lg"
@@ -29,13 +29,14 @@ export function FloatingSearchButton({
       }
       type="button"
       {...props}
-    >{shortcutLabel ? (
-      <Badge
-        aria-hidden="true"
-        className="absolute -top-8 px-1.5 py-0.5 text-[10px] leading-3 text-secondary"
-        text={shortcutLabel}
-      />
-    ) : null}
+    >
+      {shortcutLabel ? (
+        <Badge
+          aria-hidden="true"
+          className="absolute -top-8 px-1.5 py-0.5 text-[10px] leading-3 text-secondary"
+          text={shortcutLabel}
+        />
+      ) : null}
       <Search className="size-6" strokeWidth={2} />
     </Button>
   );

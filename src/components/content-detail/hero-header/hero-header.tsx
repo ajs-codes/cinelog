@@ -16,7 +16,7 @@ type HeroHeaderProps = {
 };
 
 export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
-  const mediaType = type ?? (movie ? "movie" : "series");
+  const mediaType: "movie" | "series" = type ?? (movie ? "movie" : "series");
   const mediaId = movie?.id ?? series?.id;
   const entry = useAppSelector((state) =>
     mediaId === undefined
@@ -33,10 +33,10 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
 
   return (
     <section
-      className="relative m-4 rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]"
+      className="relative m-2.5 sm:m-4 rounded-xl sm:rounded-[16px] border border-white/10 bg-linear-to-b from-surface-container-low via-surface-container to-surface p-3.5 sm:p-4 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]"
       aria-label="Title header"
     >
-      <div className="absolute inset-0 overflow-hidden rounded-[16px] pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden rounded-xl sm:rounded-[16px] pointer-events-none">
         {backdropPath ? (
           <>
             <Image
@@ -57,15 +57,15 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
         )}
       </div>
 
-      <div className="relative grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-x-8">
+      <div className="relative grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-x-8">
         <PosterPanel posterPath={posterPath} rating={rating} title={title} />
 
         <div className="col-span-1 flex min-w-0 flex-col justify-end md:col-span-9">
           <div className="flex flex-col gap-3">
-            <MetaRow movie={movie} series={series} type={type} />
+            <MetaRow movie={movie} series={series} type={mediaType} />
 
             <div className="space-y-2">
-              <h1 className="font-heading text-3xl leading-[0.96] text-white sm:text-4xl md:text-[48px]">
+              <h1 className="font-heading text-2xl leading-tight text-white sm:text-4xl md:text-[48px] md:leading-[0.96]">
                 {title}
               </h1>
               {tagline && (
@@ -75,17 +75,17 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
               )}
             </div>
 
-            <GenrePills genres={genres} type={series?.type ?? type} />
+            <GenrePills genres={genres} type={series?.type ?? mediaType} />
           </div>
 
           <ActionBar
             id={mediaId}
             imdbId={imdbId}
-            type={type}
+            type={mediaType}
             isPresentInWatchlist={
               movie?.is_present_in_watchlist ?? series?.is_present_in_watchlist
             }
-            impression={movie?.impression ?? series?.impression}
+            impression={movie?.impression ?? series?.impression ?? null}
             watchStatus={movie?.watch_status ?? series?.watch_status}
             mutationStatus={entry?.mutationStatus}
             lastMutation={entry?.lastMutation}

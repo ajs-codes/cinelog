@@ -40,7 +40,7 @@ export function ContentProgress({
     !series?.is_present_in_watchlist || !canUpdateWatchActivity;
 
   return (
-    <section className="m-4 rounded-[22px] border border-outline-variant bg-surface-container p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] sm:p-4">
+    <section className="m-2.5 sm:m-4 rounded-xl sm:rounded-[22px] border border-outline-variant bg-surface-container p-3.5 sm:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
       {type === "series" ? (
         <>
           <ProgressStatus

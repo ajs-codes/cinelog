@@ -14,7 +14,7 @@ export function PosterPanel({ posterPath, rating, title }: PosterPanelProps) {
       : "N/A";
 
   return (
-    <div className="relative col-span-1 aspect-2/3 w-full max-w-60 justify-self-center overflow-hidden rounded-xl bg-surface-container-high md:col-span-3 md:justify-self-start">
+    <div className="relative col-span-1 aspect-2/3 w-full max-w-48 sm:max-w-56 md:max-w-60 justify-self-center overflow-hidden rounded-xl bg-surface-container-high md:col-span-3 md:justify-self-start">
       {posterPath ? (
         <Image
           alt={`${title} poster`}
