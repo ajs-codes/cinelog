@@ -18,32 +18,32 @@ export function SearchControls({
   resultText,
 }: SearchControlsProps) {
   return (
-    <div className="flex items-center justify-between gap-3 pt-1">
-      <div className="flex items-center gap-1 rounded-xl border border-[#232527] bg-[#101112] p-1">
+    <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 sm:gap-3 sm:pt-1">
+      <div className="flex items-center gap-1 rounded-xl border border-[#232527] bg-[#101112] p-1 shrink-0">
         <Button
-          className="rounded-lg px-3.5 py-1.5"
+          className="rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm"
           onClick={() => onMediaTypeChange("movie")}
           size="default"
           variant={mediaType === "movie" ? "primaryFilled" : "darkFilled"}
           type="button"
         >
-          <Clapperboard className="size-3.5" />
+          <Clapperboard className="size-3.5 shrink-0" />
           Movies
         </Button>
         <Button
-          className="rounded-lg px-3.5 py-1.5 text-text-secondary no-underline"
+          className="rounded-lg px-2.5 py-1 text-xs text-text-secondary no-underline sm:px-3.5 sm:py-1.5 sm:text-sm"
           onClick={() => onMediaTypeChange("series")}
           size="default"
           variant={mediaType === "series" ? "primaryFilled" : "darkFilled"}
           type="button"
         >
-          <TvMinimal className="size-3.5" />
+          <TvMinimal className="size-3.5 shrink-0" />
           Series
         </Button>
       </div>
 
       <Badge
-        className="border-[#262626] bg-[#161718] px-3.25 py-1.75 text-on-surface"
+        className="max-w-full truncate border-[#262626] bg-[#161718] px-2.5 py-1 text-xs text-on-surface sm:px-3.25 sm:py-1.75 shrink-0"
         indicator={resultIndicator}
         text={resultText}
       />

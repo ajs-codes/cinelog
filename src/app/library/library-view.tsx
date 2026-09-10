@@ -71,19 +71,19 @@ export function LibraryView() {
   );
 
   return (
-    <main className="relative min-h-[calc(100vh-3.5rem)] px-5 py-8 sm:px-8 lg:py-10">
+    <main className="relative min-h-[calc(100vh-3.5rem)] px-3.5 py-6 sm:px-8 lg:py-10">
       <div
         aria-hidden={isLoading}
-        className={`mx-auto flex w-full max-w-[1720px] flex-col gap-8 ${
+        className={`mx-auto flex w-full max-w-[1720px] flex-col gap-6 sm:gap-8 ${
           isLoading ? "blur-sm" : ""
         }`}
       >
-        <header className="flex flex-col gap-5">
+        <header className="flex flex-col gap-4 sm:gap-5">
           <div>
-            <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">
+            <h1 className="font-heading text-2xl tracking-tight sm:text-4xl">
               My library
             </h1>
-            <p className="mt-2 font-public-sans text-xs text-secondary">
+            <p className="mt-1 sm:mt-2 font-public-sans text-xs text-secondary">
               {isLoading
                 ? "Loading your watchlist"
                 : `${total} titles in your watchlist`}
@@ -163,7 +163,7 @@ function LibrarySection({
       </h2>
 
       {count > 0 ? (
-        <div className="grid grid-cols-[repeat(auto-fill,15rem)] gap-x-4 gap-y-6">
+        <div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-[repeat(auto-fill,15rem)] sm:justify-items-start sm:gap-x-4 sm:gap-y-6">
           {children}
         </div>
       ) : (

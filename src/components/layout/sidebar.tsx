@@ -32,7 +32,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
       <aside
         aria-label="Main navigation"
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-72 shrink-0 flex-col border-r border-outline-alt bg-surface-container-low transition-transform duration-200 ease-out lg:z-30 lg:w-58 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-72 max-w-[80vw] shrink-0 flex-col border-r border-outline-alt bg-surface-container-low transition-transform duration-200 ease-out lg:z-30 lg:w-58 lg:max-w-none lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

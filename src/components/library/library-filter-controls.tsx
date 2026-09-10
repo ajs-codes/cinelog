@@ -43,13 +43,13 @@ export function LibraryFilterControls({
         return (
           <Button
             aria-pressed={isActive}
-            className="rounded-lg px-3.5 py-1.5"
+            className="rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm"
             key={value}
             onClick={() => onMediaTypeChange(value)}
             type="button"
             variant={isActive ? "primaryFilled" : "darkFilled"}
           >
-            <Icon className="size-3.5" />
+            <Icon className="size-3.5 shrink-0" />
             {label}
             <span
               aria-label={`${count} ${value === "movie" ? "movies" : "series"}`}
