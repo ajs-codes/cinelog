@@ -2,11 +2,15 @@
 
 import { Provider } from "react-redux";
 import { store } from "@/store";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { initAuthRequest } from "@/store/slices/authSlice";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const initialized = useRef(false);
+
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
     store.dispatch(initAuthRequest());
   }, []);
 

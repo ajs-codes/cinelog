@@ -46,8 +46,16 @@ export function ProgressStatus({
   const { episodeCount } = useProgressStatus(series);
   const [isOpen, setIsOpen] = useState(false);
   const status = watchStatus ?? 0;
+  const isPendingRef = useRef(false);
+
+  useEffect(() => {
+    if (mutationStatus !== "loading") {
+      isPendingRef.current = false;
+    }
+  }, [mutationStatus]);
+
   const isMutating = mutationStatus === "loading";
-  const isDisabled = disabled || isMutating;
+  const isDisabled = disabled || isMutating || isPendingRef.current;
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   if (isDisabled && isOpen) {
@@ -87,7 +95,10 @@ export function ProgressStatus({
           className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
           <CurrentStatusIcon
-            className={cn("h-4 w-4", WATCH_STATUS_INDICATOR_TEXT[currentIndicator])}
+            className={cn(
+              "h-4 w-4",
+              WATCH_STATUS_INDICATOR_TEXT[currentIndicator],
+            )}
           />
           <span className="font-medium">{currentStatusObj.display_value}</span>
           <ChevronDown
@@ -114,6 +125,7 @@ export function ProgressStatus({
                       setIsOpen(false);
                       if (id === undefined || isDisabled || ws.value === status)
                         return;
+                      isPendingRef.current = true;
                       dispatch(
                         mutationRequested({
                           id: String(id),

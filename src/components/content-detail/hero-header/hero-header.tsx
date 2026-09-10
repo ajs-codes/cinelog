@@ -44,6 +44,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
               className="object-cover opacity-50 blur-xs scale-105"
               fill
               priority
+              sizes="100vw"
               src={`https://image.tmdb.org/t/p/original${backdropPath}`}
             />
             <div className="absolute inset-0 bg-linear-to-t from-surface/85 via-surface/30 to-transparent" />

@@ -1,5 +1,5 @@
 import type { SagaIterator } from "redux-saga";
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import {
   detailsFailed,
   detailsRequested,
@@ -43,10 +43,19 @@ function* fetchContentDetails(
   }
 }
 
+const activeMutations = new Set<string>();
+
 function* mutateContentDetails(
   action: ReturnType<typeof mutationRequested>,
 ): SagaIterator {
   const { id, mediaType, mutation, value, content, progress } = action.payload;
+  const mutationKey = `${mediaType}:${id}:${mutation}`;
+
+  if (activeMutations.has(mutationKey)) {
+    return;
+  }
+  activeMutations.add(mutationKey);
+
   const method = mutation === "add-watchlist" ? "POST" : "PATCH";
   const body =
     mutation === "add-watchlist"
@@ -60,13 +69,16 @@ function* mutateContentDetails(
                 mark_season_to_watched: progress.seasonNumber,
                 mark_episode_to_watched: progress.episodeNumber,
               }
-          : undefined;
+            : undefined;
 
   try {
     if (mutation === "add-watchlist" && !content) {
       throw new Error("Content details are unavailable");
     }
-    if (mutation === "update-progress" && (!progress || mediaType !== "series")) {
+    if (
+      mutation === "update-progress" &&
+      (!progress || mediaType !== "series")
+    ) {
       throw new Error("Series progress details are unavailable");
     }
 
@@ -80,8 +92,7 @@ function* mutateContentDetails(
 
     const refreshSeriesDetails =
       mediaType === "series" &&
-      (mutation === "update-progress" ||
-        mutation === "update-watch-status");
+      (mutation === "update-progress" || mutation === "update-watch-status");
 
     if (mutation === "add-watchlist") {
       yield put(libraryRequested());
@@ -130,10 +141,12 @@ function* mutateContentDetails(
         error: error instanceof Error ? error.message : "Content update failed",
       }),
     );
+  } finally {
+    activeMutations.delete(mutationKey);
   }
 }
 
 export function* contentDetailsSaga(): SagaIterator {
   yield takeLatest(detailsRequested.type, fetchContentDetails);
-  yield takeLatest(mutationRequested.type, mutateContentDetails);
+  yield takeEvery(mutationRequested.type, mutateContentDetails);
 }

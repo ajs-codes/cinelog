@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -32,6 +32,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { movies, series, status } = useAppSelector((state) => state.library);
+  const requestedRef = useRef(false);
   const hasMounted = useSyncExternalStore(
     subscribeToNothing,
     () => true,
@@ -39,7 +40,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   );
 
   useEffect(() => {
-    if (status === "idle") {
+    if (status === "idle" && !requestedRef.current) {
+      requestedRef.current = true;
       dispatch(libraryRequested());
     }
   }, [dispatch, status]);

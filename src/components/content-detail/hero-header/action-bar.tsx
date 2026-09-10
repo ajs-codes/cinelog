@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { BookmarkPlus, Check, Heart, ThumbsDown, ThumbsUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,14 @@ export function ActionBar({
   const tmdbId = id !== undefined ? id : "N/A";
   const displayImdbId = orFallback(imdbId);
   const isMutating = mutationStatus === "loading";
+  const isPendingRef = useRef(false);
+
+  useEffect(() => {
+    if (mutationStatus !== "loading") {
+      isPendingRef.current = false;
+    }
+  }, [mutationStatus]);
+
   const canUpdateWatchActivity =
     type === "movie"
       ? canUpdateMovieWatchActivity(content?.status)
@@ -63,11 +72,12 @@ export function ActionBar({
     mutation: ContentMutation,
     value?: number | null,
   ) => {
-    if (id === undefined || !type || isMutating) return;
+    if (id === undefined || !type || isMutating || isPendingRef.current) return;
     if (mutation !== "add-watchlist" && !isPresentInWatchlist) return;
     if (mutation !== "add-watchlist" && !canUpdateWatchActivity) {
       return;
     }
+    isPendingRef.current = true;
     dispatch(
       mutationRequested({
         id: String(id),

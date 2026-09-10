@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { MovieCard } from "@/components/custom/movie-card";
@@ -30,10 +30,17 @@ export function LibraryView() {
   const [mediaType, setMediaType] = useState<LibraryMediaType>("movie");
 
   useEffect(() => {
-    dispatch(libraryRequested());
-  }, [dispatch]);
+    if (status === "idle") {
+      dispatch(libraryRequested());
+    }
+  }, [dispatch, status]);
+
+  const collectionsFetchedRef = useRef(false);
 
   useEffect(() => {
+    if (collectionsFetchedRef.current) return;
+    collectionsFetchedRef.current = true;
+
     async function fetchCollections() {
       try {
         const res = await fetch("/api/collections");
