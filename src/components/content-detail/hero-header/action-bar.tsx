@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { BookmarkPlus, Check, Heart, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  BookmarkPlus,
+  Check,
+  Heart,
+  Loader2,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
@@ -30,6 +37,8 @@ type ActionBarProps = {
   impression?: number | null;
   watchStatus?: number | null;
   mutationStatus?: ContentMutationStatus;
+  lastMutation?: ContentMutation;
+  pendingValue?: number | null;
   content?: MovieDetails | SeriesDetails;
 };
 
@@ -47,6 +56,8 @@ export function ActionBar({
   impression = null,
   watchStatus = null,
   mutationStatus = "idle",
+  lastMutation,
+  pendingValue,
   content,
 }: ActionBarProps) {
   const dispatch = useAppDispatch();
@@ -89,6 +100,8 @@ export function ActionBar({
     );
   };
 
+  const isAddingWatchlist = isMutating && lastMutation === "add-watchlist";
+
   return (
     <div className="mt-6 border-t border-white/10 pt-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -99,12 +112,18 @@ export function ActionBar({
           variant="darkFilled"
           className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-4 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
         >
-          {isPresentInWatchlist ? (
+          {isAddingWatchlist ? (
+            <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
+          ) : isPresentInWatchlist ? (
             <Check className="h-4 w-4 text-status-success" />
           ) : (
             <BookmarkPlus className="h-4 w-4" />
           )}
-          {isPresentInWatchlist ? "In Watchlist" : "Add to Watchlist"}
+          {isAddingWatchlist
+            ? "Adding..."
+            : isPresentInWatchlist
+              ? "In Watchlist"
+              : "Add to Watchlist"}
         </Button>
 
         <ShareButton id={id} imdbId={imdbId} type={type} />
@@ -117,6 +136,7 @@ export function ActionBar({
             type="movie"
             watchStatus={watchStatus}
             mutationStatus={mutationStatus}
+            lastMutation={lastMutation}
             disabled={!isPresentInWatchlist || !canUpdateWatchActivity}
           />
         )}
@@ -126,6 +146,11 @@ export function ActionBar({
             const config =
               IMPRESSION_CONFIG[imp.value as keyof typeof IMPRESSION_CONFIG];
             const isActive = impression === imp.value;
+            const isThisImpressionMutating =
+              isMutating &&
+              lastMutation === "update-impression" &&
+              (pendingValue === imp.value ||
+                (pendingValue === null && isActive));
 
             return (
               <ReactionButton
@@ -136,6 +161,7 @@ export function ActionBar({
                 }
                 label={imp.display_value}
                 active={isActive}
+                loading={isThisImpressionMutating}
                 disabled={
                   !isPresentInWatchlist || isMutating || !canUpdateWatchActivity
                 }

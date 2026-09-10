@@ -10,6 +10,8 @@ import {
   type ContentDetailsData,
 } from "./contentDetailsSlice";
 import { libraryRequested } from "./librarySlice";
+import { showToast } from "./toastSlice";
+import { IMPRESSION, WATCH_STATUS } from "@/lib/constants";
 
 type DetailsResponse = ContentDetailsData & { error?: string };
 
@@ -118,6 +120,48 @@ function* mutateContentDetails(
       }
 
       yield put(detailsSucceeded({ data: detailsData, id, mediaType }));
+
+      if (mutation === "update-progress" && progress) {
+        const seriesData = detailsData as unknown as {
+          seasons_info?: Array<{
+            season_number: number;
+            episode_count: number;
+            episodes_watched: number;
+          }>;
+        };
+        const season = seriesData.seasons_info?.find(
+          (s) => s.season_number === progress.seasonNumber,
+        );
+        const isSeasonCompleted = season
+          ? season.episodes_watched >= season.episode_count
+          : false;
+
+        if (isSeasonCompleted) {
+          yield put(
+            showToast({
+              message: `Season ${progress.seasonNumber} completed!`,
+              variant: "success",
+            }),
+          );
+        } else {
+          yield put(
+            showToast({
+              message: `Episode ${progress.episodeNumber} marked as completed`,
+              variant: "success",
+            }),
+          );
+        }
+      } else if (mutation === "update-watch-status") {
+        const statusName =
+          Object.values(WATCH_STATUS).find((s) => s.value === value)
+            ?.display_value ?? "Status";
+        yield put(
+          showToast({
+            message: `Status updated to ${statusName}`,
+            variant: "success",
+          }),
+        );
+      }
       return;
     }
 
@@ -133,12 +177,57 @@ function* mutateContentDetails(
               : { impression: value ?? null },
       }),
     );
+
+    if (mutation === "add-watchlist") {
+      yield put(
+        showToast({
+          message: "Added to your watchlist",
+          variant: "success",
+        }),
+      );
+    } else if (mutation === "update-watch-status") {
+      const statusName =
+        Object.values(WATCH_STATUS).find((s) => s.value === value)
+          ?.display_value ?? "Status";
+      yield put(
+        showToast({
+          message: `Status updated to ${statusName}`,
+          variant: "success",
+        }),
+      );
+    } else if (mutation === "update-impression") {
+      if (value === null || value === undefined) {
+        yield put(
+          showToast({
+            message: "Impression removed",
+            variant: "info",
+          }),
+        );
+      } else {
+        const impName =
+          Object.values(IMPRESSION).find((i) => i.value === value)
+            ?.display_value ?? "Reaction";
+        yield put(
+          showToast({
+            message: `Impression updated to ${impName}`,
+            variant: "success",
+          }),
+        );
+      }
+    }
   } catch (error) {
     yield put(
       mutationFailed({
         id,
         mediaType,
         error: error instanceof Error ? error.message : "Content update failed",
+      }),
+    );
+    yield put(
+      showToast({
+        message:
+          error instanceof Error ? error.message : "Content update failed",
+        variant: "error",
       }),
     );
   } finally {

@@ -166,6 +166,13 @@ type CustomCollectionWithFilters = {
 
 type BadgeIndicator = "success" | "info" | "error" | "accentAlt";
 
+type ToastProps = {
+  message: string;
+  onDismiss: () => void;
+  duration?: number;
+  variant?: "info" | "success" | "error";
+};
+
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
@@ -341,4 +348,5 @@ export type {
   TmdbResult,
   TmdbSearchResponse,
   TmdbSeries,
+  ToastProps,
 };

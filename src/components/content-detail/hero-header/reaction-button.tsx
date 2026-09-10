@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { Loader2, type LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -7,6 +7,7 @@ export type ReactionButtonProps = {
   iconClassName?: string;
   label: string;
   active?: boolean;
+  loading?: boolean;
   disabled?: boolean;
   className?: string;
   onClick?: () => void;
@@ -17,6 +18,7 @@ export function ReactionButton({
   iconClassName = "",
   label,
   active = false,
+  loading = false,
   disabled = false,
   className = "",
   onClick,
@@ -24,7 +26,7 @@ export function ReactionButton({
   return (
     <Button
       type="button"
-      disabled={disabled}
+      disabled={disabled || loading}
       onClick={onClick}
       variant={active ? "primaryFilled" : "darkFilled"}
       className={[
@@ -37,7 +39,11 @@ export function ReactionButton({
         .filter(Boolean)
         .join(" ")}
     >
-      <Icon className={`h-4 w-4 ${iconClassName}`} />
+      {loading ? (
+        <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
+      ) : (
+        <Icon className={`h-4 w-4 ${iconClassName}`} />
+      )}
       {label}
     </Button>
   );
