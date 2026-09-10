@@ -30,10 +30,8 @@ export function LibraryView() {
   const [mediaType, setMediaType] = useState<LibraryMediaType>("movie");
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(libraryRequested());
-    }
-  }, [dispatch, status]);
+    dispatch(libraryRequested());
+  }, [dispatch]);
 
   const collectionsFetchedRef = useRef(false);
 
@@ -62,10 +60,6 @@ export function LibraryView() {
   const total = movies.length + series.length;
   const isLoading = status === "idle" || status === "loading";
   const isMovies = mediaType === "movie";
-  const activeCount = isMovies ? movies.length : series.length;
-  const activeCountText = isMovies
-    ? `${activeCount} ${activeCount === 1 ? "movie" : "movies"}`
-    : `${activeCount} series`;
   const activeLibraryCollections = useMemo(
     () =>
       collections.filter(
@@ -97,7 +91,8 @@ export function LibraryView() {
           </div>
 
           <LibraryFilterControls
-            countText={activeCountText}
+            movieCount={movies.length}
+            seriesCount={series.length}
             mediaType={mediaType}
             onMediaTypeChange={setMediaType}
           />
@@ -158,10 +153,13 @@ function LibrarySection({
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-4">
       <h2
-        className="font-heading text-xl tracking-tight text-on-surface"
+        className="flex items-center gap-2 font-heading text-xl tracking-tight text-on-surface"
         id={headingId}
       >
         {title}
+        <span className="rounded-md bg-surface-container-high px-1.5 py-0.5 font-public-sans text-[10px] font-medium leading-none text-secondary">
+          {count}
+        </span>
       </h2>
 
       {count > 0 ? (

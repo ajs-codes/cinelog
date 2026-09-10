@@ -8,12 +8,14 @@ import {
   mutationRequested,
   mutationSucceeded,
   type ContentDetailsData,
+  type ContentLibraryFields,
 } from "./contentDetailsSlice";
-import { libraryRequested } from "./librarySlice";
 import { showToast } from "./toastSlice";
 import { IMPRESSION, WATCH_STATUS } from "@/lib/constants";
 
 type DetailsResponse = ContentDetailsData & { error?: string };
+type MutationResponse = ContentLibraryFields &
+  ContentDetailsData & { error?: string };
 
 function* fetchContentDetails(
   action: ReturnType<typeof detailsRequested>,
@@ -89,102 +91,45 @@ function* mutateContentDetails(
       headers: body ? { "Content-Type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });
-    const data: { error?: string } = yield call([response, "json"]);
+    const data: MutationResponse = yield call([response, "json"]);
     if (!response.ok) throw new Error(data.error ?? "Content update failed");
 
-    const refreshSeriesDetails =
-      mediaType === "series" &&
-      (mutation === "update-progress" || mutation === "update-watch-status");
-
     if (mutation === "add-watchlist") {
-      yield put(libraryRequested());
-    }
-
-    if (refreshSeriesDetails) {
-      yield put(libraryRequested());
-
-      const detailsResponse: Response = yield call(
-        fetch,
-        `/api/${mediaType}/${id}`,
-        { cache: "no-store" },
-      );
-      const detailsData: DetailsResponse = yield call([
-        detailsResponse,
-        "json",
-      ]);
-
-      if (!detailsResponse.ok) {
-        throw new Error(
-          detailsData.error ?? "Updated content details request failed",
-        );
-      }
-
-      yield put(detailsSucceeded({ data: detailsData, id, mediaType }));
-
-      if (mutation === "update-progress" && progress) {
-        const seriesData = detailsData as unknown as {
-          seasons_info?: Array<{
-            season_number: number;
-            episode_count: number;
-            episodes_watched: number;
-          }>;
-        };
-        const season = seriesData.seasons_info?.find(
-          (s) => s.season_number === progress.seasonNumber,
-        );
-        const isSeasonCompleted = season
-          ? season.episodes_watched >= season.episode_count
-          : false;
-
-        if (isSeasonCompleted) {
-          yield put(
-            showToast({
-              message: `Season ${progress.seasonNumber} completed!`,
-              variant: "success",
-            }),
-          );
-        } else {
-          yield put(
-            showToast({
-              message: `Episode ${progress.episodeNumber} marked as completed`,
-              variant: "success",
-            }),
-          );
-        }
-      } else if (mutation === "update-watch-status") {
-        const statusName =
-          Object.values(WATCH_STATUS).find((s) => s.value === value)
-            ?.display_value ?? "Status";
-        yield put(
-          showToast({
-            message: `Status updated to ${statusName}`,
-            variant: "success",
-          }),
-        );
-      }
-      return;
-    }
-
-    yield put(
-      mutationSucceeded({
-        id,
-        mediaType,
-        data:
-          mutation === "add-watchlist"
-            ? { is_present_in_watchlist: true }
-            : mutation === "update-watch-status"
-              ? { watch_status: value ?? 0 }
-              : { impression: value ?? null },
-      }),
-    );
-
-    if (mutation === "add-watchlist") {
+      yield put(detailsSucceeded({ data, id, mediaType }));
       yield put(
         showToast({
           message: "Added to your watchlist",
           variant: "success",
         }),
       );
+      return;
+    }
+
+    yield put(mutationSucceeded({ id, mediaType, data }));
+
+    if (mutation === "update-progress" && progress) {
+      const season = data.seasons?.find(
+        (s) => s.season_number === progress.seasonNumber,
+      );
+      const isSeasonCompleted = season
+        ? season.episodes_watched >= (season.episode_count ?? 0)
+        : false;
+
+      if (isSeasonCompleted) {
+        yield put(
+          showToast({
+            message: `Season ${progress.seasonNumber} completed!`,
+            variant: "success",
+          }),
+        );
+      } else {
+        yield put(
+          showToast({
+            message: `Episode ${progress.episodeNumber} marked as completed`,
+            variant: "success",
+          }),
+        );
+      }
     } else if (mutation === "update-watch-status") {
       const statusName =
         Object.values(WATCH_STATUS).find((s) => s.value === value)

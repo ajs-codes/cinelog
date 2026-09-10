@@ -6,6 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { userUpdated, type User } from "@/store/slices/authSlice";
+import { updateProfileSchema } from "@/lib/validations/auth";
+
+function profileErrorMessage(data: { error?: string; details?: unknown }) {
+  if (Array.isArray(data.details)) {
+    const first = data.details[0];
+    if (
+      first &&
+      typeof first === "object" &&
+      "message" in first &&
+      typeof first.message === "string" &&
+      first.message.trim()
+    ) {
+      return first.message;
+    }
+  }
+
+  return data.error || "Failed to update profile.";
+}
 
 export function UserProfileSection() {
   const { user } = useAppSelector((state) => state.auth);
@@ -33,45 +51,53 @@ function UserProfileForm({ user }: { user: User | null }) {
     setErrorMessage(null);
     setSuccessMessage(null);
 
+    if (!user) {
+      setErrorMessage("You must be signed in to update your profile.");
+      return;
+    }
+
+    if (confirmPassword && !newPassword) {
+      setErrorMessage("Enter a new password or clear the confirmation field.");
+      return;
+    }
+
     if (newPassword && newPassword !== confirmPassword) {
       setErrorMessage("New passwords do not match.");
       return;
     }
 
-    if (newPassword && !currentPassword) {
-      setErrorMessage("Current password is required to set a new password.");
+    const payload: Record<string, unknown> = {};
+    if (username.trim() !== user.username) payload.username = username.trim();
+    if (email.trim() !== user.email) payload.email = email.trim();
+    if (displayName.trim() !== (user.displayName || "").trim()) {
+      payload.displayName = displayName.trim() || null;
+    }
+    if (newPassword) {
+      payload.currentPassword = currentPassword;
+      payload.newPassword = newPassword;
+    }
+
+    const parsed = updateProfileSchema.safeParse(payload);
+    if (!parsed.success) {
+      setErrorMessage(
+        parsed.error.issues[0]?.message ?? "Validation failed",
+      );
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const payload: Record<string, unknown> = {};
-      if (username !== user?.username) payload.username = username;
-      if (email !== user?.email) payload.email = email;
-      if (displayName !== (user?.displayName || ""))
-        payload.displayName = displayName || null;
-      if (newPassword) {
-        payload.currentPassword = currentPassword;
-        payload.newPassword = newPassword;
-      }
-
-      if (Object.keys(payload).length === 0) {
-        setErrorMessage("No changes to save.");
-        setIsLoading(false);
-        return;
-      }
-
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(parsed.data),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMessage(data.error || "Failed to update profile.");
+        setErrorMessage(profileErrorMessage(data));
         setIsLoading(false);
         return;
       }
@@ -145,7 +171,11 @@ function UserProfileForm({ user }: { user: User | null }) {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username (3-10 characters)"
                 className="border-outline-alt bg-surface-container"
+                minLength={3}
+                maxLength={10}
+                pattern="[A-Za-z0-9_]+"
                 required
+                disabled={!user || isLoading}
               />
               <p className="font-public-sans text-[11px] text-secondary">
                 Alphanumeric characters and underscores only.
@@ -167,6 +197,7 @@ function UserProfileForm({ user }: { user: User | null }) {
                 placeholder="name@example.com"
                 className="border-outline-alt bg-surface-container"
                 required
+                disabled={!user || isLoading}
               />
               <p className="font-public-sans text-[11px] text-secondary">
                 Used for account identification and notifications.
@@ -187,6 +218,7 @@ function UserProfileForm({ user }: { user: User | null }) {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Your Public Name"
                 className="border-outline-alt bg-surface-container"
+                disabled={!user || isLoading}
               />
             </div>
           </div>
@@ -199,7 +231,8 @@ function UserProfileForm({ user }: { user: User | null }) {
               Change Password
             </h3>
             <span className="font-public-sans text-[11px] text-outline-muted">
-              (Leave blank if keeping current password)
+              Leave blank to keep your current password. New passwords need 6–20
+              characters, upper and lower case, a number, and one of @ # & ! _
             </span>
           </div>
 
@@ -218,6 +251,8 @@ function UserProfileForm({ user }: { user: User | null }) {
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
                 className="border-outline-alt bg-surface-container"
+                disabled={!user || isLoading}
+                autoComplete="current-password"
               />
             </div>
 
@@ -235,6 +270,8 @@ function UserProfileForm({ user }: { user: User | null }) {
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="••••••••"
                 className="border-outline-alt bg-surface-container"
+                disabled={!user || isLoading}
+                autoComplete="new-password"
               />
             </div>
 
@@ -252,6 +289,8 @@ function UserProfileForm({ user }: { user: User | null }) {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 className="border-outline-alt bg-surface-container"
+                disabled={!user || isLoading}
+                autoComplete="new-password"
               />
             </div>
           </div>
@@ -260,7 +299,7 @@ function UserProfileForm({ user }: { user: User | null }) {
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={!user || isLoading}
             className="h-10 min-w-36 rounded-lg bg-brand-primary font-medium text-surface hover:bg-brand-primary/90"
           >
             {isLoading ? (

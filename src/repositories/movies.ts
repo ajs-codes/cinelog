@@ -69,8 +69,10 @@ export async function insertUserMovie(
       db.insert(moviesToGenres).select(
         db
           .select({
+            id: sql<number | null>`null`.as("id"),
             movieId: movies.id,
             genreId: genres.id,
+            createdAt: sql`(unixepoch())`.as("createdAt"),
           })
           .from(movies)
           .innerJoin(genres, inArray(genres.tmdbId, genreTmdbIds))
