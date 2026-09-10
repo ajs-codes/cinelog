@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { MovieCard } from "@/components/custom/movie-card";
 import { SeriesCard } from "@/components/custom/series-card";
 import { CollectionCarousel } from "@/components/library/collection-carousel";
-import {
-  LibraryFilterControls,
-  type LibraryMediaType,
-} from "@/components/library/library-filter-controls";
+import { LibraryFilterControls } from "@/components/library/library-filter-controls";
+import type { LibraryMediaType } from "@/components/library/library-filter-controls";
 import type { CustomCollectionWithFilters } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { libraryRequested } from "@/store/slices/librarySlice";
@@ -19,7 +18,11 @@ const COLLECTION_MEDIA_TYPE: Record<LibraryMediaType, number> = {
   series: 1,
 };
 
-export function LibraryView() {
+type LibraryViewProps = {
+  mediaType?: LibraryMediaType;
+};
+
+export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
   const dispatch = useAppDispatch();
   const { movies, series, status, error } = useAppSelector(
     (state) => state.library,
@@ -27,7 +30,6 @@ export function LibraryView() {
   const [collections, setCollections] = useState<CustomCollectionWithFilters[]>(
     [],
   );
-  const [mediaType, setMediaType] = useState<LibraryMediaType>("movie");
 
   useEffect(() => {
     dispatch(libraryRequested());
@@ -94,7 +96,6 @@ export function LibraryView() {
             movieCount={movies.length}
             seriesCount={series.length}
             mediaType={mediaType}
-            onMediaTypeChange={setMediaType}
           />
         </header>
 
@@ -146,7 +147,7 @@ function LibrarySection({
 }: {
   title: string;
   count: number;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const headingId = `${title.toLowerCase()}-heading`;
 

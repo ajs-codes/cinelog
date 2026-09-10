@@ -13,8 +13,8 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
-      <main className="relative min-h-[calc(100vh-3.5rem)]">
-        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 sm:gap-8 px-3.5 py-6 sm:px-8 lg:py-14">
+      <main className="relative min-h-[calc(100vh-3.5rem)] px-3.5 py-6 sm:px-8 lg:py-10">
+        <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-6 sm:gap-8">
           {/* Top Breadcrumb & Heading matching reference mockup */}
           <header className="space-y-2 border-b border-outline-alt/60 pb-6">
             <p className="font-mono text-[11px] sm:text-xs font-semibold tracking-wider text-outline-muted uppercase">
@@ -44,7 +44,7 @@ export default function SettingsPage() {
                 }`}
               >
                 <SlidersHorizontal className="h-4 w-4 shrink-0" />
-                Custom Stream Collections
+                Custom Collections
               </button>
               <button
                 type="button"
