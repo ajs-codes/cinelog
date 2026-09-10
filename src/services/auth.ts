@@ -7,7 +7,7 @@ import type {
   UpdateProfileInput,
 } from "@/lib/validations/auth";
 import {
-  findUserByEmail,
+  findUserAndNameConflicts,
   findUserById,
   findUserByUsername,
   findUserByUsernameOrEmail,
@@ -90,7 +90,11 @@ export async function updateUserProfile(
   userId: number,
   input: UpdateProfileInput,
 ) {
-  const user = await findUserById(userId);
+  const { user, usernameOwner, emailOwner } = await findUserAndNameConflicts(
+    userId,
+    input.username,
+    input.email,
+  );
   if (!user) {
     throw new AppError("User not found", 404);
   }
@@ -100,16 +104,14 @@ export async function updateUserProfile(
   };
 
   if (input.username && input.username !== user.username) {
-    const existing = await findUserByUsername(input.username);
-    if (existing && existing.id !== userId) {
+    if (usernameOwner && usernameOwner.id !== userId) {
       throw new AppError("Username already in use", 409);
     }
     updates.username = input.username;
   }
 
   if (input.email && input.email !== user.email) {
-    const existing = await findUserByEmail(input.email);
-    if (existing && existing.id !== userId) {
+    if (emailOwner && emailOwner.id !== userId) {
       throw new AppError("Email already in use", 409);
     }
     updates.email = input.email;

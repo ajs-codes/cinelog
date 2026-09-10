@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
+import type { BatchItem } from "drizzle-orm/batch";
 import * as schema from "./schema";
 
 type Database = ReturnType<typeof drizzle<typeof schema>>;
@@ -24,4 +25,16 @@ export function getDb() {
   database = drizzle(client, { schema });
 
   return database;
+}
+
+export type SqliteBatchQuery = BatchItem<"sqlite">;
+
+export function asBatch(
+  queries: SqliteBatchQuery[],
+): [SqliteBatchQuery, ...SqliteBatchQuery[]] {
+  if (queries.length === 0) {
+    throw new Error("db.batch requires at least one query");
+  }
+
+  return queries as [SqliteBatchQuery, ...SqliteBatchQuery[]];
 }

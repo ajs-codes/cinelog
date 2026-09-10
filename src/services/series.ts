@@ -11,16 +11,12 @@ import { tmdbFetch } from "@/lib/tmdb/client";
 import type { TmdbSeries } from "@/lib/types";
 import type { SeriesPatchInput } from "@/lib/validations/library";
 import {
+  applySeriesWatchUpdates,
   deleteUserSeries,
-  findUserSeries,
+  findUserSeriesAndSeasons,
   insertUserSeries,
-  listSeasonsBySeriesId,
-  markAllSeasonsCompletedForSeries,
-  runInTransaction,
-  updateSeasonById,
-  updateSeasonsBySeriesId,
-  updateSeriesById,
 } from "@/repositories/series";
+import { isUniqueConstraintError } from "@/lib/db/unique-constraint";
 import type { NewSeries } from "@/db/schema";
 
 export async function getSeriesDetails(tmdbId: number, userId?: number) {
@@ -35,10 +31,9 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
   });
 
   const credits = pickCastAndDirectors(seriesRecord.credits);
-  const userSeries = userId ? await findUserSeries(tmdbId, userId) : undefined;
-  const userSeasons = userSeries
-    ? await listSeasonsBySeriesId(userSeries.id)
-    : [];
+  const { userSeries, userSeasons } = userId
+    ? await findUserSeriesAndSeasons(tmdbId, userId)
+    : { userSeries: undefined, userSeasons: [] };
   const progressBySeasonNumber = new Map(
     userSeasons.map((season) => [season.seasonNumber, season.episodesWatched]),
   );
@@ -91,13 +86,14 @@ export async function addSeriesToLibrary(
   userId: number,
   body: TmdbSeries,
 ) {
-  const existing = await findUserSeries(tmdbId, userId);
-
-  if (existing) {
-    throw new AppError("Series already exists in library", 409);
+  try {
+    await insertUserSeries(tmdbId, userId, body);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      throw new AppError("Series already exists in library", 409);
+    }
+    throw error;
   }
-
-  await insertUserSeries(tmdbId, userId, body);
 }
 
 export async function removeSeriesFromLibrary(tmdbId: number, userId: number) {
@@ -113,7 +109,8 @@ export async function updateSeriesInLibrary(
   userId: number,
   body: SeriesPatchInput,
 ) {
-  const existingSeries = await findUserSeries(tmdbId, userId);
+  const { userSeries: existingSeries, userSeasons: allSeasons } =
+    await findUserSeriesAndSeasons(tmdbId, userId);
 
   if (!existingSeries) {
     throw new AppError("Series not found in library", 404);
@@ -137,143 +134,157 @@ export async function updateSeriesInLibrary(
 
   const now = nowUnixSeconds();
 
-  await runInTransaction(async (tx) => {
-    let finalWatchStatus = existingSeries.watchStatus;
-    let finalCompletedAt = existingSeries.completedAt;
-    let finalLastWatchedAt = existingSeries.lastWatchedAt;
-    let finalTotalEpsWatched = existingSeries.totalNumberOfEpisodesWatched || 0;
-    let finalTotalSeasonsWatched =
-      existingSeries.totalNumberOfSeasonsWatched || 0;
+  let finalWatchStatus = existingSeries.watchStatus;
+  let finalCompletedAt = existingSeries.completedAt;
+  let finalLastWatchedAt = existingSeries.lastWatchedAt;
+  let finalTotalEpsWatched = existingSeries.totalNumberOfEpisodesWatched || 0;
+  let finalTotalSeasonsWatched =
+    existingSeries.totalNumberOfSeasonsWatched || 0;
 
-    let updateImpression = false;
-    let newImpressionValue: number | null = existingSeries.impression;
+  let updateImpression = false;
+  let newImpressionValue: number | null = existingSeries.impression;
 
-    if (body.impression !== undefined) {
-      updateImpression = true;
-      newImpressionValue = body.impression;
+  if (body.impression !== undefined) {
+    updateImpression = true;
+    newImpressionValue = body.impression;
+  }
+
+  let didProgressUpdate = false;
+  let seasonUpdate:
+    | {
+        seasonId: number;
+        values: {
+          episodesWatched: number;
+          lastWatchedAt: string;
+          completedAt: string | null;
+          updatedAt: string;
+        };
+      }
+    | undefined;
+  let resetAllSeasons:
+    | {
+        episodesWatched: number;
+        completedAt: null;
+        lastWatchedAt: null;
+        updatedAt: string;
+      }
+    | undefined;
+  let completeAllSeasonsAt: string | undefined;
+
+  if (
+    body.mark_season_to_watched !== undefined &&
+    body.mark_episode_to_watched !== undefined
+  ) {
+    const targetSeason = allSeasons.find(
+      (s) => s.seasonNumber === body.mark_season_to_watched,
+    );
+    if (!targetSeason) {
+      throw new AppError("Season not found in library", 404);
     }
 
-    const allSeasons = await listSeasonsBySeriesId(existingSeries.id, tx);
-    let didProgressUpdate = false;
-
-    if (
-      body.mark_season_to_watched !== undefined &&
-      body.mark_episode_to_watched !== undefined
-    ) {
-      const targetSeason = allSeasons.find(
-        (s) => s.seasonNumber === body.mark_season_to_watched,
-      );
-      if (!targetSeason) {
-        throw new AppError("Season not found in library", 404);
-      }
-
-      if (!hasAiredOnOrBeforeToday(targetSeason.airDate)) {
-        throw new AppError("Cannot mark a season that has not aired yet", 400);
-      }
-
-      const epsWatched = Math.min(
-        body.mark_episode_to_watched,
-        targetSeason.episodeCount,
-      );
-      const seasonCompletedAt =
-        epsWatched === targetSeason.episodeCount && epsWatched > 0 ? now : null;
-
-      await updateSeasonById(
-        targetSeason.id,
-        {
-          episodesWatched: epsWatched,
-          lastWatchedAt: now,
-          completedAt: seasonCompletedAt,
-          updatedAt: now,
-        },
-        tx,
-      );
-
-      targetSeason.episodesWatched = epsWatched;
-      targetSeason.completedAt = seasonCompletedAt;
-      targetSeason.lastWatchedAt = now;
-      didProgressUpdate = true;
+    if (!hasAiredOnOrBeforeToday(targetSeason.airDate)) {
+      throw new AppError("Cannot mark a season that has not aired yet", 400);
     }
 
-    if (body.watch_status !== undefined) {
-      finalWatchStatus = body.watch_status;
-      const planToWatchValue =
-        Object.values(WATCH_STATUS).find(
-          (s) => s.display_value === "Plan to Watch",
-        )?.value ?? 0;
-      const completedValue =
-        Object.values(WATCH_STATUS).find((s) => s.display_value === "Completed")
-          ?.value ?? 2;
+    const epsWatched = Math.min(
+      body.mark_episode_to_watched,
+      targetSeason.episodeCount,
+    );
+    const seasonCompletedAt =
+      epsWatched === targetSeason.episodeCount && epsWatched > 0 ? now : null;
 
-      if (finalWatchStatus === planToWatchValue) {
-        finalTotalEpsWatched = 0;
-        finalTotalSeasonsWatched = 0;
-        finalCompletedAt = null;
-        finalLastWatchedAt = null;
-
-        await updateSeasonsBySeriesId(
-          existingSeries.id,
-          {
-            episodesWatched: 0,
-            completedAt: null,
-            lastWatchedAt: null,
-            updatedAt: now,
-          },
-          tx,
-        );
-      } else if (finalWatchStatus === completedValue) {
-        finalCompletedAt = now;
-        finalLastWatchedAt = now;
-        finalTotalEpsWatched = existingSeries.totalNumberOfEpisodes || 0;
-        finalTotalSeasonsWatched = existingSeries.totalNumberOfSeasons || 0;
-
-        await markAllSeasonsCompletedForSeries(existingSeries.id, now, tx);
-      } else {
-        finalCompletedAt = null;
-      }
-    } else if (didProgressUpdate) {
-      finalTotalEpsWatched = allSeasons.reduce(
-        (sum, s) => sum + s.episodesWatched,
-        0,
-      );
-      finalTotalSeasonsWatched = allSeasons.filter(
-        (s) => s.episodesWatched === s.episodeCount && s.episodeCount > 0,
-      ).length;
-      finalLastWatchedAt = now;
-
-      const totalEps = existingSeries.totalNumberOfEpisodes || 0;
-      if (totalEps > 0 && finalTotalEpsWatched >= totalEps) {
-        const completedValue =
-          Object.values(WATCH_STATUS).find(
-            (s) => s.display_value === "Completed",
-          )?.value ?? 2;
-        finalWatchStatus = completedValue;
-        finalCompletedAt = now;
-      } else {
-        const watchingValue =
-          Object.values(WATCH_STATUS).find(
-            (s) => s.display_value === "Watching",
-          )?.value ?? 1;
-        finalWatchStatus = watchingValue;
-        finalCompletedAt = null;
-      }
-    }
-
-    const seriesUpdate: Partial<NewSeries> = {
-      watchStatus: finalWatchStatus,
-      completedAt: finalCompletedAt,
-      lastWatchedAt: finalLastWatchedAt,
-      totalNumberOfEpisodesWatched: finalTotalEpsWatched,
-      totalNumberOfSeasonsWatched: finalTotalSeasonsWatched,
-      updatedAt: now,
+    seasonUpdate = {
+      seasonId: targetSeason.id,
+      values: {
+        episodesWatched: epsWatched,
+        lastWatchedAt: now,
+        completedAt: seasonCompletedAt,
+        updatedAt: now,
+      },
     };
 
-    if (updateImpression) {
-      seriesUpdate.impression = newImpressionValue;
+    targetSeason.episodesWatched = epsWatched;
+    targetSeason.completedAt = seasonCompletedAt;
+    targetSeason.lastWatchedAt = now;
+    didProgressUpdate = true;
+  }
+
+  if (body.watch_status !== undefined) {
+    finalWatchStatus = body.watch_status;
+    const planToWatchValue =
+      Object.values(WATCH_STATUS).find(
+        (s) => s.display_value === "Plan to Watch",
+      )?.value ?? 0;
+    const completedValue =
+      Object.values(WATCH_STATUS).find((s) => s.display_value === "Completed")
+        ?.value ?? 2;
+
+    if (finalWatchStatus === planToWatchValue) {
+      finalTotalEpsWatched = 0;
+      finalTotalSeasonsWatched = 0;
+      finalCompletedAt = null;
+      finalLastWatchedAt = null;
+      resetAllSeasons = {
+        episodesWatched: 0,
+        completedAt: null,
+        lastWatchedAt: null,
+        updatedAt: now,
+      };
+    } else if (finalWatchStatus === completedValue) {
+      finalCompletedAt = now;
+      finalLastWatchedAt = now;
+      finalTotalEpsWatched = existingSeries.totalNumberOfEpisodes || 0;
+      finalTotalSeasonsWatched = existingSeries.totalNumberOfSeasons || 0;
+      completeAllSeasonsAt = now;
+    } else {
+      finalCompletedAt = null;
     }
+  } else if (didProgressUpdate) {
+    finalTotalEpsWatched = allSeasons.reduce(
+      (sum, s) => sum + s.episodesWatched,
+      0,
+    );
+    finalTotalSeasonsWatched = allSeasons.filter(
+      (s) => s.episodesWatched === s.episodeCount && s.episodeCount > 0,
+    ).length;
+    finalLastWatchedAt = now;
 
-    await updateSeriesById(existingSeries.id, seriesUpdate, tx);
+    const totalEps = existingSeries.totalNumberOfEpisodes || 0;
+    if (totalEps > 0 && finalTotalEpsWatched >= totalEps) {
+      const completedValue =
+        Object.values(WATCH_STATUS).find(
+          (s) => s.display_value === "Completed",
+        )?.value ?? 2;
+      finalWatchStatus = completedValue;
+      finalCompletedAt = now;
+    } else {
+      const watchingValue =
+        Object.values(WATCH_STATUS).find(
+          (s) => s.display_value === "Watching",
+        )?.value ?? 1;
+      finalWatchStatus = watchingValue;
+      finalCompletedAt = null;
+    }
+  }
+
+  const seriesUpdate: Partial<NewSeries> = {
+    watchStatus: finalWatchStatus,
+    completedAt: finalCompletedAt,
+    lastWatchedAt: finalLastWatchedAt,
+    totalNumberOfEpisodesWatched: finalTotalEpsWatched,
+    totalNumberOfSeasonsWatched: finalTotalSeasonsWatched,
+    updatedAt: now,
+  };
+
+  if (updateImpression) {
+    seriesUpdate.impression = newImpressionValue;
+  }
+
+  return applySeriesWatchUpdates({
+    seriesId: existingSeries.id,
+    seriesValues: seriesUpdate,
+    seasonUpdate,
+    resetAllSeasons,
+    completeAllSeasonsAt,
   });
-
-  return findUserSeries(tmdbId, userId);
 }
