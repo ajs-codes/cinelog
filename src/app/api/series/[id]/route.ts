@@ -33,8 +33,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const tmdbId = parsePositiveIntId(id, "series");
     const session = await requireSession();
     const body = await parseJson<TmdbSeries>(request);
-    await addSeriesToLibrary(tmdbId, session.userId, body);
-    return created({ success: true });
+    return created(await addSeriesToLibrary(tmdbId, session.userId, body));
   } catch (error) {
     return toErrorResponse(
       error,
@@ -66,12 +65,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     const tmdbId = parsePositiveIntId(id, "series");
     const session = await requireSession();
     const body = parseSchema(seriesPatchSchema, await parseJson(request));
-    const updatedSeries = await updateSeriesInLibrary(
-      tmdbId,
-      session.userId,
-      body,
-    );
-    return ok({ success: true, data: updatedSeries });
+    return ok(await updateSeriesInLibrary(tmdbId, session.userId, body));
   } catch (error) {
     return toErrorResponse(
       error,

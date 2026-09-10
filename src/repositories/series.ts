@@ -169,8 +169,10 @@ export async function insertUserSeries(
       db.insert(seriesToGenres).select(
         db
           .select({
+            id: sql<number | null>`null`.as("id"),
             seriesId: series.id,
             genreId: genres.id,
+            createdAt: sql`(unixepoch())`.as("createdAt"),
           })
           .from(series)
           .innerJoin(genres, inArray(genres.tmdbId, genreTmdbIds))

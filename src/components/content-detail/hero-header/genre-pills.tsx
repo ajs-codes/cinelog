@@ -10,9 +10,9 @@ export function GenrePills({ genres, type }: GenrePillsProps) {
 
   return (
     <div className="mt-1 flex flex-wrap gap-2 pt-2">
-      {genrePills.map(({ isType, label }) => (
+      {genrePills.map(({ isType, label }, index) => (
         <span
-          key={label}
+          key={`${isType ? "type" : "genre"}-${label}-${index}`}
           className={`rounded-full px-3.5 py-1.5 text-[12px] font-medium transition ${
             isType
               ? "border border-brand-tertiary-accent bg-brand-tertiary-accent/10 text-brand-tertiary-accent-alt"

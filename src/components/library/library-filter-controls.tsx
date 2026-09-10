@@ -1,5 +1,4 @@
 import { Clapperboard, TvMinimal, type LucideIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export type LibraryMediaType = "movie" | "series";
@@ -14,39 +13,57 @@ const MEDIA_TYPES: {
 ];
 
 type LibraryFilterControlsProps = {
-  countText: string;
+  movieCount: number;
+  seriesCount: number;
   mediaType: LibraryMediaType;
   onMediaTypeChange: (mediaType: LibraryMediaType) => void;
 };
 
 export function LibraryFilterControls({
-  countText,
+  movieCount,
+  seriesCount,
   mediaType,
   onMediaTypeChange,
 }: LibraryFilterControlsProps) {
+  const counts: Record<LibraryMediaType, number> = {
+    movie: movieCount,
+    series: seriesCount,
+  };
+
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div
-        aria-label="Filter library by media type"
-        className="flex items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1"
-        role="group"
-      >
-        {MEDIA_TYPES.map(({ icon: Icon, label, value }) => (
+    <div
+      aria-label="Filter library by media type"
+      className="flex w-fit items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1"
+      role="group"
+    >
+      {MEDIA_TYPES.map(({ icon: Icon, label, value }) => {
+        const count = counts[value];
+        const isActive = mediaType === value;
+
+        return (
           <Button
-            aria-pressed={mediaType === value}
+            aria-pressed={isActive}
             className="rounded-lg px-3.5 py-1.5"
             key={value}
             onClick={() => onMediaTypeChange(value)}
             type="button"
-            variant={mediaType === value ? "primaryFilled" : "darkFilled"}
+            variant={isActive ? "primaryFilled" : "darkFilled"}
           >
             <Icon className="size-3.5" />
             {label}
+            <span
+              aria-label={`${count} ${value === "movie" ? "movies" : "series"}`}
+              className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-md px-1.5 font-public-sans text-[10px] font-medium leading-none ${
+                isActive
+                  ? "bg-white/15 text-white"
+                  : "bg-surface-container-high text-secondary"
+              }`}
+            >
+              {count}
+            </span>
           </Button>
-        ))}
-      </div>
-
-      <Badge className="text-on-surface" text={countText} />
+        );
+      })}
     </div>
   );
 }

@@ -17,26 +17,72 @@ import {
   insertUserSeries,
 } from "@/repositories/series";
 import { isUniqueConstraintError } from "@/lib/db/unique-constraint";
-import type { NewSeries } from "@/db/schema";
+import type { NewSeries, Season, Series } from "@/db/schema";
 
-export async function getSeriesDetails(tmdbId: number, userId?: number) {
+type UserSeriesLibrary = {
+  userSeries?: Pick<
+    Series,
+    | "impression"
+    | "watchStatus"
+    | "totalNumberOfEpisodesWatched"
+    | "totalNumberOfSeasonsWatched"
+  >;
+  userSeasons: Pick<Season, "seasonNumber" | "episodeCount" | "episodesWatched">[];
+};
+
+export type SeriesLibraryFields = {
+  is_present_in_watchlist: boolean;
+  impression: number | null;
+  watch_status: number | null;
+  total_number_of_episodes_watched: number;
+  total_number_of_seasons_watched: number;
+  seasons: Array<{
+    season_number: number;
+    episode_count: number;
+    episodes_watched: number;
+  }>;
+};
+
+async function fetchTmdbSeries(tmdbId: number) {
   const queryParams = new URLSearchParams({
     append_to_response: "external_ids,content_ratings,credits",
     language: "en-US",
   });
 
-  const seriesRecord = await tmdbFetch<TmdbSeries>(`/tv/${tmdbId}`, {
+  return tmdbFetch<TmdbSeries>(`/tv/${tmdbId}`, {
     searchParams: queryParams,
     failedMessage: "TMDB series request failed",
   });
+}
 
-  const credits = pickCastAndDirectors(seriesRecord.credits);
-  const { userSeries, userSeasons } = userId
-    ? await findUserSeriesAndSeasons(tmdbId, userId)
-    : { userSeries: undefined, userSeasons: [] };
+function toSeriesLibraryFields({
+  userSeries,
+  userSeasons,
+}: UserSeriesLibrary): SeriesLibraryFields {
+  return {
+    is_present_in_watchlist: Boolean(userSeries),
+    impression: userSeries?.impression ?? null,
+    watch_status: userSeries?.watchStatus ?? null,
+    total_number_of_episodes_watched:
+      userSeries?.totalNumberOfEpisodesWatched ?? 0,
+    total_number_of_seasons_watched:
+      userSeries?.totalNumberOfSeasonsWatched ?? 0,
+    seasons: userSeasons.map((season) => ({
+      season_number: season.seasonNumber,
+      episode_count: season.episodeCount,
+      episodes_watched: season.episodesWatched,
+    })),
+  };
+}
+
+function toSeriesDetails(seriesRecord: TmdbSeries, library: UserSeriesLibrary) {
   const progressBySeasonNumber = new Map(
-    userSeasons.map((season) => [season.seasonNumber, season.episodesWatched]),
+    library.userSeasons.map((season) => [
+      season.seasonNumber,
+      season.episodesWatched,
+    ]),
   );
+  const libraryFields = toSeriesLibraryFields(library);
 
   return {
     backdrop_path: seriesRecord.backdrop_path,
@@ -70,15 +116,40 @@ export async function getSeriesDetails(tmdbId: number, userId?: number) {
       seriesRecord.content_ratings?.results?.find(
         (rating) => rating.iso_3166_1 === "IN",
       ) ?? {},
-    credits,
-    is_present_in_watchlist: Boolean(userSeries),
-    impression: userSeries?.impression ?? null,
-    watch_status: userSeries?.watchStatus ?? null,
+    credits: pickCastAndDirectors(seriesRecord.credits),
+    is_present_in_watchlist: libraryFields.is_present_in_watchlist,
+    impression: libraryFields.impression,
+    watch_status: libraryFields.watch_status,
     total_number_of_episodes_watched:
-      userSeries?.totalNumberOfEpisodesWatched ?? 0,
+      libraryFields.total_number_of_episodes_watched,
     total_number_of_seasons_watched:
-      userSeries?.totalNumberOfSeasonsWatched ?? 0,
+      libraryFields.total_number_of_seasons_watched,
   };
+}
+
+export async function getSeriesDetails(tmdbId: number, userId?: number) {
+  const seriesRecord = await fetchTmdbSeries(tmdbId);
+  const library = userId
+    ? await findUserSeriesAndSeasons(tmdbId, userId)
+    : { userSeries: undefined, userSeasons: [] };
+
+  return toSeriesDetails(seriesRecord, library);
+}
+
+function toSeriesInsertPayload(body: TmdbSeries): TmdbSeries {
+  const ratings = body.content_ratings as
+    | TmdbSeries["content_ratings"]
+    | { iso_3166_1?: string; rating?: string }
+    | undefined;
+
+  if (ratings && !("results" in ratings) && "rating" in ratings) {
+    return {
+      ...body,
+      content_ratings: { results: [ratings] },
+    };
+  }
+
+  return body;
 }
 
 export async function addSeriesToLibrary(
@@ -87,13 +158,26 @@ export async function addSeriesToLibrary(
   body: TmdbSeries,
 ) {
   try {
-    await insertUserSeries(tmdbId, userId, body);
+    await insertUserSeries(tmdbId, userId, toSeriesInsertPayload(body));
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       throw new AppError("Series already exists in library", 409);
     }
     throw error;
   }
+
+  return {
+    ...body,
+    is_present_in_watchlist: true,
+    impression: null,
+    watch_status: 0,
+    total_number_of_episodes_watched: 0,
+    total_number_of_seasons_watched: 0,
+    seasons: (body.seasons ?? []).map((season) => ({
+      ...season,
+      episodes_watched: 0,
+    })),
+  };
 }
 
 export async function removeSeriesFromLibrary(tmdbId: number, userId: number) {
@@ -108,7 +192,7 @@ export async function updateSeriesInLibrary(
   tmdbId: number,
   userId: number,
   body: SeriesPatchInput,
-) {
+): Promise<SeriesLibraryFields> {
   const { userSeries: existingSeries, userSeasons: allSeasons } =
     await findUserSeriesAndSeasons(tmdbId, userId);
 
@@ -280,11 +364,13 @@ export async function updateSeriesInLibrary(
     seriesUpdate.impression = newImpressionValue;
   }
 
-  return applySeriesWatchUpdates({
+  await applySeriesWatchUpdates({
     seriesId: existingSeries.id,
     seriesValues: seriesUpdate,
     seasonUpdate,
     resetAllSeasons,
     completeAllSeasonsAt,
   });
+
+  return toSeriesLibraryFields(await findUserSeriesAndSeasons(tmdbId, userId));
 }

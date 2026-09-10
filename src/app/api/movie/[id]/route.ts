@@ -33,8 +33,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const tmdbId = parsePositiveIntId(id, "movie");
     const session = await requireSession();
     const body = await parseJson<MoviePayload>(request);
-    await addMovieToLibrary(tmdbId, session.userId, body);
-    return created({ success: true });
+    return created(await addMovieToLibrary(tmdbId, session.userId, body));
   } catch (error) {
     return toErrorResponse(
       error,
@@ -66,8 +65,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     const tmdbId = parsePositiveIntId(id, "movie");
     const session = await requireSession();
     const body = parseSchema(moviePatchSchema, await parseJson(request));
-    await updateMovieInLibrary(tmdbId, session.userId, body);
-    return ok({ success: true });
+    return ok(await updateMovieInLibrary(tmdbId, session.userId, body));
   } catch (error) {
     return toErrorResponse(
       error,
