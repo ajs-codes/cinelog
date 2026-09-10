@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Loader2 } from "lucide-react";
 import { SeasonSelect } from "@/components/content-detail/progress/season-select";
 import type { SeasonOption } from "@/hooks/title-details/use-progress-seasons";
 import { useProgressStatus } from "@/hooks/title-details/use-progress-status";
@@ -17,6 +17,7 @@ import { useAppDispatch } from "@/store";
 import {
   mutationRequested,
   type ContentMutationStatus,
+  type ContentMutation,
 } from "@/store/slices/contentDetailsSlice";
 
 type ProgressStatusProps = {
@@ -25,6 +26,7 @@ type ProgressStatusProps = {
   type?: "movie" | "series";
   watchStatus?: number | null;
   mutationStatus?: ContentMutationStatus;
+  lastMutation?: ContentMutation;
   disabled?: boolean;
   seasons?: SeasonOption[];
   selectedSeason?: number;
@@ -37,6 +39,7 @@ export function ProgressStatus({
   type = "series",
   watchStatus = 0,
   mutationStatus = "idle",
+  lastMutation,
   disabled = false,
   seasons = [],
   selectedSeason,
@@ -46,8 +49,17 @@ export function ProgressStatus({
   const { episodeCount } = useProgressStatus(series);
   const [isOpen, setIsOpen] = useState(false);
   const status = watchStatus ?? 0;
+  const isPendingRef = useRef(false);
+
+  useEffect(() => {
+    if (mutationStatus !== "loading") {
+      isPendingRef.current = false;
+    }
+  }, [mutationStatus]);
+
   const isMutating = mutationStatus === "loading";
   const isDisabled = disabled || isMutating;
+  const isStatusMutating = isMutating && lastMutation === "update-watch-status";
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   if (isDisabled && isOpen) {
@@ -86,10 +98,19 @@ export function ProgressStatus({
           onClick={() => setIsOpen(!isOpen)}
           className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
-          <CurrentStatusIcon
-            className={cn("h-4 w-4", WATCH_STATUS_INDICATOR_TEXT[currentIndicator])}
-          />
-          <span className="font-medium">{currentStatusObj.display_value}</span>
+          {isStatusMutating ? (
+            <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
+          ) : (
+            <CurrentStatusIcon
+              className={cn(
+                "h-4 w-4",
+                WATCH_STATUS_INDICATOR_TEXT[currentIndicator],
+              )}
+            />
+          )}
+          <span className="font-medium">
+            {isStatusMutating ? "Updating..." : currentStatusObj.display_value}
+          </span>
           <ChevronDown
             className={cn(
               "h-4 w-4 text-outline-muted transition-transform duration-200",
@@ -112,8 +133,14 @@ export function ProgressStatus({
                     disabled={isDisabled}
                     onClick={() => {
                       setIsOpen(false);
-                      if (id === undefined || isDisabled || ws.value === status)
+                      if (
+                        id === undefined ||
+                        isDisabled ||
+                        isPendingRef.current ||
+                        ws.value === status
+                      )
                         return;
+                      isPendingRef.current = true;
                       dispatch(
                         mutationRequested({
                           id: String(id),

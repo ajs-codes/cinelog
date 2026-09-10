@@ -12,8 +12,12 @@ export function getDb() {
   const url = process.env.TURSO_CONNECTION_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
-  if (!url || !authToken) {
-    throw new Error("Turso environment variables are not configured");
+  if (!url) {
+    throw new Error("TURSO_CONNECTION_URL is not configured");
+  }
+
+  if (!url.startsWith("file:") && !authToken) {
+    throw new Error("TURSO_AUTH_TOKEN is not configured");
   }
 
   const client = createClient({ url, authToken });

@@ -87,7 +87,12 @@ function* handleLogout(): SagaIterator {
   }
 }
 
+let isInitializingAuth = false;
+
 function* handleInit(): SagaIterator {
+  if (isInitializingAuth) return;
+  isInitializingAuth = true;
+
   try {
     const data = yield call(meApi);
     yield put(authSuccess({ user: data.user }));
@@ -97,6 +102,8 @@ function* handleInit(): SagaIterator {
     if (!pathname.startsWith("/login") && !pathname.startsWith("/signup")) {
       window.location.replace("/login");
     }
+  } finally {
+    isInitializingAuth = false;
   }
 }
 

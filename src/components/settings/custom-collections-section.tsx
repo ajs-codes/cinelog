@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   GripVertical,
   Plus,
@@ -152,8 +152,11 @@ export function CustomCollectionsSection() {
 
   // Delete confirm
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     let ignore = false;
 
     async function loadCollections() {

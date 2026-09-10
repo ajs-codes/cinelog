@@ -49,6 +49,7 @@ export function ContentProgress({
             type={type}
             watchStatus={series?.watch_status}
             mutationStatus={entry?.mutationStatus}
+            lastMutation={entry?.lastMutation}
             disabled={isWatchActivityDisabled}
             seasons={seasons}
             selectedSeason={selectedSeason}
@@ -63,13 +64,13 @@ export function ContentProgress({
 
       <div className={type === "series" ? "mt-6" : ""}>
         <ProgressActions
-          disabled={
-            isWatchActivityDisabled || !selectedSeasonDetails?.hasAired
-          }
+          disabled={isWatchActivityDisabled || !selectedSeasonDetails?.hasAired}
           episodeCount={selectedSeasonDetails?.episodeCount}
           episodesWatched={selectedSeasonDetails?.episodesWatched}
           id={mediaId}
           mutationStatus={entry?.mutationStatus}
+          lastMutation={entry?.lastMutation}
+          pendingProgress={entry?.pendingProgress}
           seasonNumber={selectedSeason}
         />
       </div>

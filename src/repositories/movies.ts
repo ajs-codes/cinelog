@@ -68,69 +68,79 @@ export async function insertUserMovie(
       .returning();
 
     if (body.genres && Array.isArray(body.genres)) {
-      for (const genre of body.genres) {
-        if (!genre.id || !genre.name) continue;
-
+      const validGenres = body.genres.filter(
+        (g): g is { id: number; name: string } => Boolean(g.id && g.name),
+      );
+      if (validGenres.length > 0) {
         await tx
           .insert(genres)
-          .values({
-            tmdbId: genre.id,
-            name: genre.name,
-          })
+          .values(
+            validGenres.map((g) => ({
+              tmdbId: g.id,
+              name: g.name,
+            })),
+          )
           .onConflictDoNothing();
 
-        const g = await tx
-          .select()
+        const matchedGenres = await tx
+          .select({ id: genres.id })
           .from(genres)
-          .where(eq(genres.tmdbId, genre.id))
-          .get();
-        if (g) {
+          .where(
+            inArray(
+              genres.tmdbId,
+              validGenres.map((g) => g.id),
+            ),
+          );
+
+        if (matchedGenres.length > 0) {
+          const genreLinks = matchedGenres.map((g) => ({
+            movieId: newMovie.id,
+            genreId: g.id,
+          }));
           await tx
             .insert(moviesToGenres)
-            .values({
-              movieId: newMovie.id,
-              genreId: g.id,
-            })
+            .values(genreLinks)
             .onConflictDoNothing();
         }
       }
     }
 
-    if (body.credits && Array.isArray(body.credits)) {
-      for (const credit of body.credits) {
-        if (!credit.id || !credit.name) continue;
-        await tx.insert(credits).values({
-          movieId: newMovie.id,
-          tmdbId: credit.id,
-          name: credit.name,
-          knownForDepartment: credit.known_for_department || "Acting",
-        });
-      }
-    } else if (body.credits?.cast || body.credits?.crew) {
-      const allCredits = [
-        ...(body.credits.cast || []),
-        ...(body.credits.crew || []),
-      ];
-      for (const credit of allCredits) {
-        if (!credit.id || !credit.name) continue;
-        await tx.insert(credits).values({
-          movieId: newMovie.id,
-          tmdbId: credit.id,
-          name: credit.name,
-          knownForDepartment: credit.known_for_department || "Acting",
-        });
-      }
+    const rawCredits =
+      body.credits && Array.isArray(body.credits)
+        ? body.credits
+        : [...(body.credits?.cast || []), ...(body.credits?.crew || [])];
+
+    const creditsToInsert = rawCredits
+      .filter(
+        (credit): credit is typeof credit & { id: number; name: string } =>
+          Boolean(credit.id && credit.name),
+      )
+      .map((credit) => ({
+        movieId: newMovie.id,
+        tmdbId: credit.id,
+        name: credit.name,
+        knownForDepartment: credit.known_for_department || "Acting",
+      }));
+
+    if (creditsToInsert.length > 0) {
+      await tx.insert(credits).values(creditsToInsert);
     }
 
     if (body.production_companies && Array.isArray(body.production_companies)) {
-      for (const company of body.production_companies) {
-        if (!company.id || !company.name) continue;
-        await tx.insert(productionCompanies).values({
+      const companiesToInsert = body.production_companies
+        .filter(
+          (company): company is typeof company & { id: number; name: string } =>
+            Boolean(company.id && company.name),
+        )
+        .map((company) => ({
           movieId: newMovie.id,
           tmdbId: company.id,
           name: company.name,
           originCountry: company.origin_country || null,
-        });
+        }));
+
+      if (companiesToInsert.length > 0) {
+        await tx.insert(productionCompanies).values(companiesToInsert);
       }
     }
   });

@@ -13,6 +13,8 @@ export type ContentDetailsEntry = {
   mutationStatus?: ContentMutationStatus;
   mutationError?: string;
   lastMutation?: ContentMutation;
+  pendingValue?: number | null;
+  pendingProgress?: ContentProgressMutation;
 };
 
 export type ContentMutation =
@@ -97,6 +99,8 @@ const contentDetailsSlice = createSlice({
       entry.mutationStatus = "loading";
       entry.mutationError = undefined;
       entry.lastMutation = action.payload.mutation;
+      entry.pendingValue = action.payload.value;
+      entry.pendingProgress = action.payload.progress;
     },
     mutationSucceeded: (
       state,
@@ -110,6 +114,8 @@ const contentDetailsSlice = createSlice({
       if (!entry) return;
       entry.mutationStatus = "success";
       entry.mutationError = undefined;
+      entry.pendingValue = undefined;
+      entry.pendingProgress = undefined;
       if (entry.data) Object.assign(entry.data, action.payload.data);
     },
     mutationFailed: (
@@ -124,6 +130,8 @@ const contentDetailsSlice = createSlice({
       if (!entry) return;
       entry.mutationStatus = "failed";
       entry.mutationError = action.payload.error;
+      entry.pendingValue = undefined;
+      entry.pendingProgress = undefined;
     },
   },
 });

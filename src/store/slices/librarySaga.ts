@@ -17,7 +17,12 @@ type LibraryResponse = {
   series?: LibrarySeries[];
 };
 
+let isFetchingLibrary = false;
+
 function* fetchLibrary(): SagaIterator {
+  if (isFetchingLibrary) return;
+  isFetchingLibrary = true;
+
   try {
     const response: Response = yield call(fetch, "/api/library", {
       cache: "no-store",
@@ -40,14 +45,22 @@ function* fetchLibrary(): SagaIterator {
         error instanceof Error ? error.message : "Library request failed",
       ),
     );
+  } finally {
+    isFetchingLibrary = false;
   }
 }
+
+const activeLibraryMutations = new Set<string>();
 
 function* mutateLibraryItem(
   action: ReturnType<typeof libraryItemMutationRequested>,
 ): SagaIterator {
   const { mediaType, tmdbId, watch_status, impression, progress } =
     action.payload;
+  const mutationKey = `${mediaType}:${tmdbId}`;
+
+  if (activeLibraryMutations.has(mutationKey)) return;
+  activeLibraryMutations.add(mutationKey);
 
   const body = progress
     ? {
@@ -83,10 +96,11 @@ function* mutateLibraryItem(
       libraryItemMutationFailed({
         mediaType,
         tmdbId,
-        error:
-          error instanceof Error ? error.message : "Library update failed",
+        error: error instanceof Error ? error.message : "Library update failed",
       }),
     );
+  } finally {
+    activeLibraryMutations.delete(mutationKey);
   }
 }
 

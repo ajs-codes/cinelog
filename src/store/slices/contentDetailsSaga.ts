@@ -1,5 +1,5 @@
 import type { SagaIterator } from "redux-saga";
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import {
   detailsFailed,
   detailsRequested,
@@ -10,6 +10,8 @@ import {
   type ContentDetailsData,
 } from "./contentDetailsSlice";
 import { libraryRequested } from "./librarySlice";
+import { showToast } from "./toastSlice";
+import { IMPRESSION, WATCH_STATUS } from "@/lib/constants";
 
 type DetailsResponse = ContentDetailsData & { error?: string };
 
@@ -43,10 +45,19 @@ function* fetchContentDetails(
   }
 }
 
+const activeMutations = new Set<string>();
+
 function* mutateContentDetails(
   action: ReturnType<typeof mutationRequested>,
 ): SagaIterator {
   const { id, mediaType, mutation, value, content, progress } = action.payload;
+  const mutationKey = `${mediaType}:${id}:${mutation}`;
+
+  if (activeMutations.has(mutationKey)) {
+    return;
+  }
+  activeMutations.add(mutationKey);
+
   const method = mutation === "add-watchlist" ? "POST" : "PATCH";
   const body =
     mutation === "add-watchlist"
@@ -60,13 +71,16 @@ function* mutateContentDetails(
                 mark_season_to_watched: progress.seasonNumber,
                 mark_episode_to_watched: progress.episodeNumber,
               }
-          : undefined;
+            : undefined;
 
   try {
     if (mutation === "add-watchlist" && !content) {
       throw new Error("Content details are unavailable");
     }
-    if (mutation === "update-progress" && (!progress || mediaType !== "series")) {
+    if (
+      mutation === "update-progress" &&
+      (!progress || mediaType !== "series")
+    ) {
       throw new Error("Series progress details are unavailable");
     }
 
@@ -80,8 +94,7 @@ function* mutateContentDetails(
 
     const refreshSeriesDetails =
       mediaType === "series" &&
-      (mutation === "update-progress" ||
-        mutation === "update-watch-status");
+      (mutation === "update-progress" || mutation === "update-watch-status");
 
     if (mutation === "add-watchlist") {
       yield put(libraryRequested());
@@ -107,6 +120,48 @@ function* mutateContentDetails(
       }
 
       yield put(detailsSucceeded({ data: detailsData, id, mediaType }));
+
+      if (mutation === "update-progress" && progress) {
+        const seriesData = detailsData as unknown as {
+          seasons_info?: Array<{
+            season_number: number;
+            episode_count: number;
+            episodes_watched: number;
+          }>;
+        };
+        const season = seriesData.seasons_info?.find(
+          (s) => s.season_number === progress.seasonNumber,
+        );
+        const isSeasonCompleted = season
+          ? season.episodes_watched >= season.episode_count
+          : false;
+
+        if (isSeasonCompleted) {
+          yield put(
+            showToast({
+              message: `Season ${progress.seasonNumber} completed!`,
+              variant: "success",
+            }),
+          );
+        } else {
+          yield put(
+            showToast({
+              message: `Episode ${progress.episodeNumber} marked as completed`,
+              variant: "success",
+            }),
+          );
+        }
+      } else if (mutation === "update-watch-status") {
+        const statusName =
+          Object.values(WATCH_STATUS).find((s) => s.value === value)
+            ?.display_value ?? "Status";
+        yield put(
+          showToast({
+            message: `Status updated to ${statusName}`,
+            variant: "success",
+          }),
+        );
+      }
       return;
     }
 
@@ -122,6 +177,44 @@ function* mutateContentDetails(
               : { impression: value ?? null },
       }),
     );
+
+    if (mutation === "add-watchlist") {
+      yield put(
+        showToast({
+          message: "Added to your watchlist",
+          variant: "success",
+        }),
+      );
+    } else if (mutation === "update-watch-status") {
+      const statusName =
+        Object.values(WATCH_STATUS).find((s) => s.value === value)
+          ?.display_value ?? "Status";
+      yield put(
+        showToast({
+          message: `Status updated to ${statusName}`,
+          variant: "success",
+        }),
+      );
+    } else if (mutation === "update-impression") {
+      if (value === null || value === undefined) {
+        yield put(
+          showToast({
+            message: "Impression removed",
+            variant: "info",
+          }),
+        );
+      } else {
+        const impName =
+          Object.values(IMPRESSION).find((i) => i.value === value)
+            ?.display_value ?? "Reaction";
+        yield put(
+          showToast({
+            message: `Impression updated to ${impName}`,
+            variant: "success",
+          }),
+        );
+      }
+    }
   } catch (error) {
     yield put(
       mutationFailed({
@@ -130,10 +223,19 @@ function* mutateContentDetails(
         error: error instanceof Error ? error.message : "Content update failed",
       }),
     );
+    yield put(
+      showToast({
+        message:
+          error instanceof Error ? error.message : "Content update failed",
+        variant: "error",
+      }),
+    );
+  } finally {
+    activeMutations.delete(mutationKey);
   }
 }
 
 export function* contentDetailsSaga(): SagaIterator {
   yield takeLatest(detailsRequested.type, fetchContentDetails);
-  yield takeLatest(mutationRequested.type, mutateContentDetails);
+  yield takeEvery(mutationRequested.type, mutateContentDetails);
 }
