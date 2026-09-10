@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Clapperboard, LayoutDashboard, Library, Settings, X } from "lucide-react";
+import {
+  Clapperboard,
+  LayoutDashboard,
+  Library,
+  Settings,
+  X,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { label: "Overview", href: "/", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "My library", href: "/library", icon: Library },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -63,7 +69,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             Workspace
           </p>
           {navigation.map(({ label, href, icon: Icon }) => {
-            const active = pathname === href;
+            const active =
+              href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
               <Link
                 key={label}

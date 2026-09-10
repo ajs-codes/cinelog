@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { Clapperboard, TvMinimal, type LucideIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export type LibraryMediaType = "movie" | "series";
 
@@ -7,16 +8,27 @@ const MEDIA_TYPES: {
   icon: LucideIcon;
   label: string;
   value: LibraryMediaType;
+  href: string;
 }[] = [
-  { icon: Clapperboard, label: "Movies", value: "movie" },
-  { icon: TvMinimal, label: "Series", value: "series" },
+  {
+    icon: Clapperboard,
+    label: "Movies",
+    value: "movie",
+    href: "/library/movies",
+  },
+  {
+    icon: TvMinimal,
+    label: "Series",
+    value: "series",
+    href: "/library/series",
+  },
 ];
 
 type LibraryFilterControlsProps = {
   movieCount: number;
   seriesCount: number;
   mediaType: LibraryMediaType;
-  onMediaTypeChange: (mediaType: LibraryMediaType) => void;
+  onMediaTypeChange?: (mediaType: LibraryMediaType) => void;
 };
 
 export function LibraryFilterControls({
@@ -36,18 +48,22 @@ export function LibraryFilterControls({
       className="flex w-fit items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1"
       role="group"
     >
-      {MEDIA_TYPES.map(({ icon: Icon, label, value }) => {
+      {MEDIA_TYPES.map(({ icon: Icon, label, value, href }) => {
         const count = counts[value];
         const isActive = mediaType === value;
 
         return (
-          <Button
+          <Link
             aria-pressed={isActive}
-            className="rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm"
+            aria-current={isActive ? "page" : undefined}
+            className={buttonVariants({
+              variant: isActive ? "primaryFilled" : "darkFilled",
+              className:
+                "rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm",
+            })}
+            href={href}
             key={value}
-            onClick={() => onMediaTypeChange(value)}
-            type="button"
-            variant={isActive ? "primaryFilled" : "darkFilled"}
+            onClick={() => onMediaTypeChange?.(value)}
           >
             <Icon className="size-3.5 shrink-0" />
             {label}
@@ -61,7 +77,7 @@ export function LibraryFilterControls({
             >
               {count}
             </span>
-          </Button>
+          </Link>
         );
       })}
     </div>
