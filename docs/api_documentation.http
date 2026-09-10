@@ -49,7 +49,19 @@ GET /api/search/series?query={{query}}
 
 ### Get library
 # Requires cookie
-# Response: { "movies": LibraryMovie[], "series": LibrarySeries[] }
+# Query: type=movie|series (required), offset=0, limit=20 (max 50)
+# Response: {
+#   "movies": LibraryMovie[],
+#   "series": LibrarySeries[],
+#   "metadata": {
+#     "count": { "movies": number, "series": number },
+#     "offset": number,
+#     "limit": number,
+#     "hasMore": boolean
+#   }
+# }
+#
+# Only the requested type's array is populated. metadata.count always has both totals.
 #
 # LibraryMovie: tmdb_id, watch_status, impression, created_at, updated_at,
 #   completed_at, title, poster_path, release_date, vote_average, status,
@@ -65,7 +77,10 @@ GET /api/search/series?query={{query}}
 # seasons_info[]: season_number, episode_count, episodes_watched, air_date
 # genres is a string array of genre names.
 # vote_average is stored as the TMDB rating times 10 (84 means 8.4).
-GET /api/library
+GET /api/library?type=movie
+
+### Get library page (series)
+GET /api/library?type=series&offset=20&limit=20
 
 ### Get movie details
 # Optional cookie. `movieId` is the TMDB id.

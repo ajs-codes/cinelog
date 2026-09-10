@@ -98,11 +98,11 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
     : "All aired episodes watched";
 
   return (
-    <Card className="group/card h-[352.5px] w-full max-w-[15rem] min-w-0 sm:w-60 sm:min-w-60 gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-transform hover:-translate-y-0.5">
+    <Card className="group/card w-full min-w-0 gap-0 overflow-hidden rounded-[8px] border-0 bg-surface-container-low p-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-transform hover:-translate-y-0.5">
       <CardContent className="p-0">
         <Link
           aria-label={`View ${series.name} details`}
-          className="relative block h-64 overflow-hidden bg-surface-container-low focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-primary"
+          className="relative block aspect-2/3 overflow-hidden bg-surface-container-low focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-primary"
           href={`/series/${series.tmdb_id}`}
         >
           <Image
@@ -110,7 +110,7 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
             className="absolute inset-0 h-full w-full object-cover"
             fill
             loading="eager"
-            sizes="(max-width: 240px) 100vw, 240px"
+            sizes="(max-width: 640px) 50vw, (max-width: 1720px) 20vw, 240px"
             src={posterUrl(series.poster_path, FALLBACK_POSTER)}
           />
 

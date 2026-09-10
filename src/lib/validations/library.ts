@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { IMPRESSION, WATCH_STATUS } from "@/lib/constants";
+import {
+  IMPRESSION,
+  LIBRARY_PAGE_SIZE,
+  LIBRARY_PAGE_SIZE_MAX,
+  WATCH_STATUS,
+} from "@/lib/constants";
 
 const watchStatusValues: number[] = Object.values(WATCH_STATUS).map(
   (status) => status.value,
@@ -75,5 +80,26 @@ export const seriesPatchSchema = z
     }
   });
 
+function parsePageInt(value: unknown, fallback: number) {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+
+  return Number(value);
+}
+
+export const libraryQuerySchema = z.object({
+  type: z.enum(["movie", "series"]),
+  offset: z.preprocess(
+    (value) => parsePageInt(value, 0),
+    z.number().int().min(0),
+  ),
+  limit: z.preprocess(
+    (value) => parsePageInt(value, LIBRARY_PAGE_SIZE),
+    z.number().int().min(1).max(LIBRARY_PAGE_SIZE_MAX),
+  ),
+});
+
 export type MoviePatchInput = z.infer<typeof moviePatchSchema>;
 export type SeriesPatchInput = z.infer<typeof seriesPatchSchema>;
+export type LibraryQueryInput = z.infer<typeof libraryQuerySchema>;

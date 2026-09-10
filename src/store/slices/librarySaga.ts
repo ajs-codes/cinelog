@@ -1,38 +1,84 @@
 import type { SagaIterator } from "redux-saga";
-import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
+import { call, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 
-import type { LibraryMovie, LibrarySeries } from "@/lib/types";
+import { LIBRARY_PAGE_SIZE } from "@/lib/constants";
+import type {
+  LibraryMetadata,
+  LibraryMovie,
+  LibrarySeries,
+} from "@/lib/types";
 import {
   libraryFailed,
   libraryItemMutationFailed,
   libraryItemMutationRequested,
   libraryItemMutationSucceeded,
+  libraryPageFailed,
+  libraryPageRequested,
+  libraryPageSucceeded,
   libraryRequested,
   librarySucceeded,
+  type LibraryState,
+  type SeriesProgressFields,
 } from "./librarySlice";
 
 type LibraryResponse = {
   error?: string;
   movies?: LibraryMovie[];
   series?: LibrarySeries[];
+  metadata?: LibraryMetadata;
 };
 
-let isFetchingLibrary = false;
+type SeriesPatchResponse = SeriesProgressFields & {
+  error?: string;
+};
+
+type LibraryRoot = { library: LibraryState };
+
+const emptyMetadata = (offset: number): LibraryMetadata => ({
+  count: { movies: 0, series: 0 },
+  offset,
+  limit: LIBRARY_PAGE_SIZE,
+  hasMore: false,
+});
+
+const activePageFetches = new Set<string>();
+const activeLibraryMutations = new Set<string>();
+const activeTypeFetches = new Set<string>();
 
 function isLibraryFetchRoute() {
   if (typeof window === "undefined") return false;
-  const path = window.location.pathname;
-  return path === "/" || path.startsWith("/library");
+  return window.location.pathname.startsWith("/library");
 }
 
-function* fetchLibrary(): SagaIterator {
-  if (!isLibraryFetchRoute() || isFetchingLibrary) return;
-  isFetchingLibrary = true;
+function* fetchLibrary(
+  action: ReturnType<typeof libraryRequested>,
+): SagaIterator {
+  if (!isLibraryFetchRoute()) return;
+
+  const mediaType = action.payload.type;
+  if (activeTypeFetches.has(mediaType)) return;
+
+  const library: LibraryState = yield select(
+    (state: LibraryRoot) => state.library,
+  );
+  const alreadyLoaded =
+    mediaType === "movie" ? library.moviesLoaded : library.seriesLoaded;
+  if (alreadyLoaded) return;
+
+  activeTypeFetches.add(mediaType);
+
+  const params = new URLSearchParams({
+    type: mediaType,
+    offset: "0",
+    limit: String(LIBRARY_PAGE_SIZE),
+  });
 
   try {
-    const response: Response = yield call(fetch, "/api/library", {
-      cache: "no-store",
-    });
+    const response: Response = yield call(
+      fetch,
+      `/api/library?${params.toString()}`,
+      { cache: "no-store" },
+    );
     const data: LibraryResponse = yield call([response, "json"]);
 
     if (!response.ok) {
@@ -41,8 +87,10 @@ function* fetchLibrary(): SagaIterator {
 
     yield put(
       librarySucceeded({
+        type: mediaType,
         movies: data.movies ?? [],
         series: data.series ?? [],
+        metadata: data.metadata ?? emptyMetadata(0),
       }),
     );
   } catch (error) {
@@ -52,11 +100,68 @@ function* fetchLibrary(): SagaIterator {
       ),
     );
   } finally {
-    isFetchingLibrary = false;
+    activeTypeFetches.delete(mediaType);
   }
 }
 
-const activeLibraryMutations = new Set<string>();
+function* fetchLibraryPage(
+  action: ReturnType<typeof libraryPageRequested>,
+): SagaIterator {
+  const mediaType = action.payload.type;
+  if (activePageFetches.has(mediaType)) return;
+  activePageFetches.add(mediaType);
+
+  const library: LibraryState = yield select(
+    (state: LibraryRoot) => state.library,
+  );
+  const hasMore =
+    mediaType === "movie" ? library.moviesHasMore : library.seriesHasMore;
+
+  if (!hasMore || library.status !== "succeeded") {
+    activePageFetches.delete(mediaType);
+    return;
+  }
+
+  const offset =
+    mediaType === "movie" ? library.movies.length : library.series.length;
+  const params = new URLSearchParams({
+    type: mediaType,
+    offset: String(offset),
+    limit: String(LIBRARY_PAGE_SIZE),
+  });
+
+  try {
+    const response: Response = yield call(
+      fetch,
+      `/api/library?${params.toString()}`,
+      { cache: "no-store" },
+    );
+    const data: LibraryResponse = yield call([response, "json"]);
+
+    if (!response.ok) {
+      throw new Error(data.error ?? "Library request failed");
+    }
+
+    yield put(
+      libraryPageSucceeded({
+        type: mediaType,
+        movies: data.movies ?? [],
+        series: data.series ?? [],
+        metadata: data.metadata ?? emptyMetadata(offset),
+      }),
+    );
+  } catch (error) {
+    yield put(
+      libraryPageFailed({
+        type: mediaType,
+        error:
+          error instanceof Error ? error.message : "Library request failed",
+      }),
+    );
+  } finally {
+    activePageFetches.delete(mediaType);
+  }
+}
 
 function* mutateLibraryItem(
   action: ReturnType<typeof libraryItemMutationRequested>,
@@ -87,16 +192,28 @@ function* mutateLibraryItem(
         body: JSON.stringify(body),
       },
     );
-    const data: { error?: string } = yield call([response, "json"]);
+    const data: SeriesPatchResponse = yield call([response, "json"]);
 
     if (!response.ok) {
       throw new Error(data.error ?? "Library update failed");
     }
 
-    yield put(libraryItemMutationSucceeded({ mediaType, tmdbId }));
-    if (progress) {
-      yield put(libraryRequested());
-    }
+    const seriesUpdate =
+      mediaType === "series" && progress && data.seasons
+        ? {
+            watch_status: data.watch_status ?? null,
+            impression: data.impression ?? null,
+            total_number_of_episodes_watched:
+              data.total_number_of_episodes_watched ?? 0,
+            total_number_of_seasons_watched:
+              data.total_number_of_seasons_watched ?? 0,
+            seasons: data.seasons,
+          }
+        : undefined;
+
+    yield put(
+      libraryItemMutationSucceeded({ mediaType, tmdbId, seriesUpdate }),
+    );
   } catch (error) {
     yield put(
       libraryItemMutationFailed({
@@ -112,5 +229,6 @@ function* mutateLibraryItem(
 
 export function* librarySaga(): SagaIterator {
   yield takeLatest(libraryRequested.type, fetchLibrary);
+  yield takeEvery(libraryPageRequested.type, fetchLibraryPage);
   yield takeEvery(libraryItemMutationRequested.type, mutateLibraryItem);
 }

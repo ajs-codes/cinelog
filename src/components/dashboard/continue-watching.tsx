@@ -83,12 +83,12 @@ export function ContinueWatching({
           className="movie-lists-scrollbar -mx-1 flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pb-2 overscroll-contain"
         >
           {movies.map((movie) => (
-            <div key={`movie-${movie.tmdb_id}`} className="shrink-0">
+            <div key={`movie-${movie.tmdb_id}`} className="w-60 shrink-0">
               <MovieCard movie={movie} />
             </div>
           ))}
           {series.map((show) => (
-            <div key={`series-${show.tmdb_id}`} className="shrink-0">
+            <div key={`series-${show.tmdb_id}`} className="w-60 shrink-0">
               <SeriesCard series={show} />
             </div>
           ))}
