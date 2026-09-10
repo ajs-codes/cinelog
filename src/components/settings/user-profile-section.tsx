@@ -129,7 +129,7 @@ function UserProfileForm({ user }: { user: User | null }) {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl border border-outline-alt bg-surface-container-low p-5 sm:p-6">
+        <div className="rounded-xl border border-outline-alt bg-surface-container-low p-4 sm:p-6">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label
@@ -192,9 +192,9 @@ function UserProfileForm({ user }: { user: User | null }) {
           </div>
         </div>
 
-        <div className="rounded-xl border border-outline-alt bg-surface-container-low p-5 sm:p-6">
-          <div className="mb-4 flex items-center gap-2 text-secondary">
-            <KeyRound className="h-4 w-4 text-brand-primary" />
+        <div className="rounded-xl border border-outline-alt bg-surface-container-low p-4 sm:p-6">
+          <div className="mb-4 flex flex-wrap items-center gap-2 text-secondary">
+            <KeyRound className="h-4 w-4 text-brand-primary shrink-0" />
             <h3 className="font-heading text-sm font-semibold text-on-surface">
               Change Password
             </h3>

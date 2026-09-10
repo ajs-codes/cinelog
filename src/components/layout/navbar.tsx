@@ -20,7 +20,7 @@ export function Navbar({ onMenuOpen }: NavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-outline-alt bg-surface/90 px-5 backdrop-blur-xl sm:px-8">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-outline-alt bg-surface/90 px-3.5 backdrop-blur-xl sm:px-8">
       <Button
         aria-label="Open navigation"
         className="size-9 rounded-lg text-secondary hover:text-on-surface lg:hidden"
@@ -33,11 +33,11 @@ export function Navbar({ onMenuOpen }: NavbarProps) {
       </Button>
       <div className="ml-auto flex items-center gap-2 sm:gap-4">
         {isAuthenticated && user && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="dark"
               onClick={handleLogout}
-              className="hover:bg-status-error/80! py-4"
+              className="hover:bg-status-error/80! px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
               disabled={status === "loading"}
             >
               Logout

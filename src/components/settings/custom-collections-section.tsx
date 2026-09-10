@@ -645,7 +645,7 @@ export function CustomCollectionsSection() {
         open={deleteConfirmId !== null}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="border-outline-alt bg-surface-container-low sm:max-w-md">
+        <DialogContent className="max-w-[calc(100%-1.5rem)] sm:max-w-md border-outline-alt bg-surface-container-low p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-on-surface">
               Delete Stream Collection
@@ -680,7 +680,7 @@ export function CustomCollectionsSection() {
 
       {/* Create / Edit Collection Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto border-outline-alt bg-surface-container-low sm:max-w-2xl">
+        <DialogContent className="max-h-[85vh] max-w-[calc(100%-1.5rem)] sm:max-w-2xl overflow-y-auto border-outline-alt bg-surface-container-low p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-on-surface">
               {editingCollection
@@ -783,7 +783,7 @@ export function CustomCollectionsSection() {
                       onChange={(e) =>
                         handleUpdateClause(idx, "field", e.target.value)
                       }
-                      className="h-8 w-32 rounded border border-outline-alt bg-surface-container-high px-2 font-public-sans text-xs text-on-surface outline-none"
+                      className="h-8 w-full sm:w-32 rounded border border-outline-alt bg-surface-container-high px-2 font-public-sans text-xs text-on-surface outline-none"
                     >
                       {FIELD_OPTIONS.map((f) => (
                         <option key={f.value} value={f.value}>
@@ -802,7 +802,7 @@ export function CustomCollectionsSection() {
                           Number(e.target.value),
                         )
                       }
-                      className="h-8 w-20 rounded border border-outline-alt bg-surface-container-high px-2 font-mono text-xs text-on-surface outline-none"
+                      className="h-8 w-full sm:w-20 rounded border border-outline-alt bg-surface-container-high px-2 font-mono text-xs text-on-surface outline-none"
                     >
                       {OPERATOR_OPTIONS.map((op) => (
                         <option key={op.value} value={op.value}>
@@ -812,7 +812,7 @@ export function CustomCollectionsSection() {
                     </select>
 
                     {/* Value Input with Preset helpers */}
-                    <div className="flex-1">
+                    <div className="w-full min-w-0 sm:flex-1">
                       {clause.field === "genre" ? (
                         <select
                           value={clause.value}
@@ -890,7 +890,7 @@ export function CustomCollectionsSection() {
                       size="icon"
                       disabled={formFilters.length <= 1}
                       onClick={() => handleRemoveClause(idx)}
-                      className="h-8 w-8 text-secondary hover:text-status-error disabled:opacity-30"
+                      className="h-8 w-8 ml-auto sm:ml-0 text-secondary hover:text-status-error disabled:opacity-30 shrink-0"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

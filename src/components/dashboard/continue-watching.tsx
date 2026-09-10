@@ -33,19 +33,19 @@ export function ContinueWatching({
       aria-labelledby="continue-watching-heading"
       className="flex w-full flex-col gap-4"
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary-container/20 text-brand-primary">
             <PlayCircle className="h-5 w-5" />
           </div>
           <div className="min-w-0">
             <h2
               id="continue-watching-heading"
-              className="font-heading text-xl font-semibold tracking-tight text-on-surface sm:text-2xl"
+              className="font-heading text-lg font-semibold tracking-tight text-on-surface sm:text-2xl"
             >
               Continue Watching
             </h2>
-            <p className="mt-0.5 font-public-sans text-xs text-secondary">
+            <p className="mt-0.5 font-public-sans text-xs text-secondary truncate">
               {totalItems > 0
                 ? `${totalItems} ${totalItems === 1 ? "title" : "titles"} in progress`
                 : "Resume your active movies and series"}
@@ -54,7 +54,7 @@ export function ContinueWatching({
         </div>
 
         {totalItems > 0 && (
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
             <Button
               variant="darkFilled"
               size="icon"
@@ -80,7 +80,7 @@ export function ContinueWatching({
       {totalItems > 0 ? (
         <div
           ref={scrollContainerRef}
-          className="movie-lists-scrollbar flex gap-4 overflow-x-auto scroll-smooth pb-2"
+          className="movie-lists-scrollbar -mx-1 flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-1 pb-2 overscroll-contain"
         >
           {movies.map((movie) => (
             <div key={`movie-${movie.tmdb_id}`} className="shrink-0">

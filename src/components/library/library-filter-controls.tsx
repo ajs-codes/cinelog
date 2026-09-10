@@ -34,19 +34,19 @@ export function LibraryFilterControls({
         {MEDIA_TYPES.map(({ icon: Icon, label, value }) => (
           <Button
             aria-pressed={mediaType === value}
-            className="rounded-lg px-3.5 py-1.5"
+            className="rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm"
             key={value}
             onClick={() => onMediaTypeChange(value)}
             type="button"
             variant={mediaType === value ? "primaryFilled" : "darkFilled"}
           >
-            <Icon className="size-3.5" />
+            <Icon className="size-3.5 shrink-0" />
             {label}
           </Button>
         ))}
       </div>
 
-      <Badge className="text-on-surface" text={countText} />
+      <Badge className="text-on-surface shrink-0" text={countText} />
     </div>
   );
 }

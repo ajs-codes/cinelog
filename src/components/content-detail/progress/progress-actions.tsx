@@ -71,7 +71,7 @@ export function ProgressActions({
         variant="primaryFilled"
         disabled={isDisabled}
         onClick={() => updateProgress(nextEpisode)}
-        className="h-14 justify-center gap-2 rounded-xl border border-brand-primary-container/40 bg-brand-primary-container px-4 text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-brand-primary-container/90"
+        className="h-12 sm:h-14 justify-center gap-2 rounded-xl border border-brand-primary-container/40 bg-brand-primary-container px-4 text-sm sm:text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-brand-primary-container/90"
       >
         {isEpisodeMutating ? (
           <Loader2 className="h-4 w-4 animate-spin text-white" />
@@ -88,7 +88,7 @@ export function ProgressActions({
         variant="darkFilled"
         disabled={isDisabled}
         onClick={() => updateProgress(episodeCount)}
-        className="h-14 justify-center gap-2 rounded-xl border border-white/10 bg-surface-container-high/70 px-4 text-base font-semibold text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high"
+        className="h-12 sm:h-14 justify-center gap-2 rounded-xl border border-white/10 bg-surface-container-high/70 px-4 text-sm sm:text-base font-semibold text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high"
       >
         {isSeasonMutating ? (
           <Loader2 className="h-4 w-4 animate-spin text-brand-tertiary-accent-alt" />

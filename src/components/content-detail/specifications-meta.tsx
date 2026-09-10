@@ -65,14 +65,14 @@ export function SpecificationsMeta({
   const leadStudio = media.production_companies?.[0]?.name ?? "N/A";
 
   return (
-    <section className="m-4 space-y-6 rounded-[22px] border border-outline-variant bg-surface-container p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+    <section className="m-2.5 sm:m-4 space-y-4 sm:space-y-6 rounded-xl sm:rounded-[22px] border border-outline-variant bg-surface-container p-4 sm:p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
       {/* Section Header */}
-      <h2 className="font-bold uppercase tracking-wider font-noto-sans">
+      <h2 className="font-bold uppercase tracking-wider font-noto-sans text-sm sm:text-base">
         Specifications & Meta
       </h2>
 
       {/* Top Grid Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
         {/* Age Rating */}
         <div className="flex items-center gap-3.5 rounded-xl border border-white/10 bg-surface-container-high p-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-outline-muted">
