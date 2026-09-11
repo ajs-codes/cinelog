@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { apiFetch } from "@/lib/http/client";
 import type {
   CollectionFilterItem,
   CollectionSortItem,
@@ -268,7 +269,7 @@ export function CustomCollectionsSection() {
   const handleToggleLibrary = async (col: CustomCollectionWithFilters) => {
     try {
       const nextState = !col.showInLibrary;
-      const res = await fetch(`/api/collections/${col.id}`, {
+      const res = await apiFetch(`/api/collections/${col.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ showInLibrary: nextState }),
@@ -292,7 +293,7 @@ export function CustomCollectionsSection() {
     try {
       const [field, dirStr] = sortValue.split(":");
       const direction = parseInt(dirStr, 10);
-      const res = await fetch(`/api/collections/${col.id}`, {
+      const res = await apiFetch(`/api/collections/${col.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -344,7 +345,7 @@ export function CustomCollectionsSection() {
       };
 
       if (editingCollection) {
-        const res = await fetch(`/api/collections/${editingCollection.id}`, {
+        const res = await apiFetch(`/api/collections/${editingCollection.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -362,7 +363,7 @@ export function CustomCollectionsSection() {
         }
         setSuccessMessage("Collection updated successfully.");
       } else {
-        const res = await fetch("/api/collections", {
+        const res = await apiFetch("/api/collections", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

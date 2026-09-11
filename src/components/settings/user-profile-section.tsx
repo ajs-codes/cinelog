@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { userUpdated, type User } from "@/store/slices/authSlice";
+import { apiFetch } from "@/lib/http/client";
 import { updateProfileSchema } from "@/lib/validations/auth";
 
 function profileErrorMessage(data: { error?: string; details?: unknown }) {
@@ -88,7 +89,7 @@ function UserProfileForm({ user }: { user: User | null }) {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/user/profile", {
+      const res = await apiFetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),

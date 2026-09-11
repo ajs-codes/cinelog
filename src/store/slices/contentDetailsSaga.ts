@@ -12,6 +12,7 @@ import {
 } from "./contentDetailsSlice";
 import { showToast } from "./toastSlice";
 import { IMPRESSION, WATCH_STATUS } from "@/lib/constants";
+import { apiFetch } from "@/lib/http/client";
 
 type DetailsResponse = ContentDetailsData & { error?: string };
 type MutationResponse = ContentLibraryFields &
@@ -86,7 +87,7 @@ function* mutateContentDetails(
       throw new Error("Series progress details are unavailable");
     }
 
-    const response: Response = yield call(fetch, `/api/${mediaType}/${id}`, {
+    const response: Response = yield call(apiFetch, `/api/${mediaType}/${id}`, {
       method,
       headers: body ? { "Content-Type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined,
