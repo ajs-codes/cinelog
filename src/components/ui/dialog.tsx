@@ -152,7 +152,7 @@ function DialogContent({
       <div
         aria-modal="true"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex max-h-[100dvh] w-full max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-hidden rounded-xl bg-surface-container p-4 text-sm text-on-surface shadow-xl outline-none",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-dvh w-full max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-hidden rounded-xl bg-surface-container p-4 text-sm text-on-surface shadow-xl outline-none",
           className,
         )}
         role="dialog"
