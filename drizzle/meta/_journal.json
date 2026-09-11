@@ -15,6 +15,13 @@
       "when": 1789027691922,
       "tag": "0001_melted_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789130125108,
+      "tag": "0002_flowery_bastion",
+      "breakpoints": true
     }
   ]
 }
