@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useSyncExternalStore } from "react";
-
-const APPLE_PLATFORM_PATTERN = /mac|iphone|ipad|ipod/i;
+import { APPLE_PLATFORM_PATTERN } from "@/lib/constants";
 
 const subscribeToNothing = () => () => {};
 

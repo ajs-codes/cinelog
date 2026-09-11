@@ -69,7 +69,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
                 {title}
               </h1>
               {tagline && (
-                <p className="max-w-230 text-[16px] font-medium text-outline-muted">
+                <p className="max-w-full wrap-break-words text-[16px] font-medium text-outline-muted md:max-w-230">
                   {tagline}
                 </p>
               )}

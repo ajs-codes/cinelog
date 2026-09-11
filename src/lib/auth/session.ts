@@ -1,9 +1,7 @@
 import { cookies } from "next/headers";
 import { AppError } from "@/lib/http/errors";
 import { signToken, verifyToken } from "@/lib/auth/jwt";
-
-const AUTH_COOKIE = "auth_token";
-const AUTH_COOKIE_MAX_AGE = 8 * 60 * 60;
+import { AUTH_COOKIE, AUTH_TOKEN_TTL_SECONDS } from "@/lib/constants";
 
 function cookieOptions(maxAge: number) {
   return {
@@ -16,7 +14,7 @@ function cookieOptions(maxAge: number) {
 }
 
 export async function setAuthCookie(token: string) {
-  (await cookies()).set(AUTH_COOKIE, token, cookieOptions(AUTH_COOKIE_MAX_AGE));
+  (await cookies()).set(AUTH_COOKIE, token, cookieOptions(AUTH_TOKEN_TTL_SECONDS));
 }
 
 export async function clearAuthCookie() {

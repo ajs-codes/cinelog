@@ -1,0 +1,2 @@
+export const PLACEHOLDER_MOVIE_COUNT = "1,420";
+export const PLACEHOLDER_SERIES_COUNT = "892";

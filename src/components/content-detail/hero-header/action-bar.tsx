@@ -1,42 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import {
-  BookmarkPlus,
-  Check,
-  Heart,
-  Loader2,
-  ThumbsDown,
-  ThumbsUp,
-  type LucideIcon,
-} from "lucide-react";
-
+import { BookmarkPlus, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
 import { ShareButton } from "@/components/content-detail/hero-header/share-button";
 import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
-import { IMPRESSION } from "@/lib/constants";
-import {
-  canUpdateMovieWatchActivity,
-  canUpdateSeriesWatchActivity,
-} from "@/lib/media/status";
+import { useContentMutation } from "@/hooks/title-details/use-content-mutation";
+import { IMPRESSION, IMPRESSION_CONFIG } from "@/lib/constants";
 import type { MovieDetails, SeriesDetails } from "@/lib/types";
 import { orFallback } from "@/lib/utils";
-import { useAppDispatch } from "@/store";
-import {
-  mutationRequested,
-  type ContentMutationStatus,
-  type ContentMutation,
+import type {
+  ContentMutationStatus,
+  ContentMutation,
 } from "@/store/slices/contentDetailsSlice";
-
-const IMPRESSION_CONFIG: Record<
-  number,
-  { icon: LucideIcon; iconClassName: string }
-> = {
-  0: { icon: ThumbsDown, iconClassName: "text-outline-muted" },
-  1: { icon: ThumbsUp, iconClassName: "text-status-info" },
-  2: { icon: Heart, iconClassName: "text-status-error" },
-};
 
 type ActionBarProps = {
   id?: number;
@@ -64,57 +40,27 @@ export function ActionBar({
   pendingValue,
   content,
 }: ActionBarProps) {
-  const dispatch = useAppDispatch();
   const tmdbId = id !== undefined ? id : "N/A";
   const displayImdbId = orFallback(imdbId);
-  const isMutating = mutationStatus === "loading";
-  const isPendingRef = useRef(false);
-
-  useEffect(() => {
-    if (mutationStatus !== "loading") {
-      isPendingRef.current = false;
-    }
-  }, [mutationStatus]);
-
-  const canUpdateWatchActivity =
-    type === "movie"
-      ? canUpdateMovieWatchActivity(content?.status)
-      : type === "series"
-        ? canUpdateSeriesWatchActivity(content?.status)
-        : false;
-
-  const requestMutation = (
-    mutation: ContentMutation,
-    value?: number | null,
-  ) => {
-    if (id === undefined || !type || isMutating || isPendingRef.current) return;
-    if (mutation !== "add-watchlist" && !isPresentInWatchlist) return;
-    if (mutation !== "add-watchlist" && !canUpdateWatchActivity) {
-      return;
-    }
-    isPendingRef.current = true;
-    dispatch(
-      mutationRequested({
-        id: String(id),
-        mediaType: type,
-        mutation,
-        value,
-        content,
-      }),
-    );
-  };
-
+  const { requestMutation, isMutating, canUpdateWatchActivity } =
+    useContentMutation({
+      id,
+      mediaType: type,
+      mutationStatus,
+      isPresentInWatchlist,
+      content,
+    });
   const isAddingWatchlist = isMutating && lastMutation === "add-watchlist";
 
   return (
     <div className="mt-6 border-t border-white/10 pt-4">
       <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
         <Button
-          type="button"
+          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-3.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high! sm:px-4 sm:text-sm"
           disabled={isMutating || isPresentInWatchlist}
           onClick={() => requestMutation("add-watchlist")}
+          type="button"
           variant="darkFilled"
-          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high!"
         >
           {isAddingWatchlist ? (
             <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
@@ -136,12 +82,12 @@ export function ActionBar({
 
         {type === "movie" && (
           <ProgressStatus
+            disabled={!isPresentInWatchlist || !canUpdateWatchActivity}
             id={id}
+            lastMutation={lastMutation}
+            mutationStatus={mutationStatus}
             type="movie"
             watchStatus={watchStatus}
-            mutationStatus={mutationStatus}
-            lastMutation={lastMutation}
-            disabled={!isPresentInWatchlist || !canUpdateWatchActivity}
           />
         )}
 
@@ -158,23 +104,22 @@ export function ActionBar({
 
             return (
               <ReactionButton
-                key={imp.value}
-                icon={config.icon}
-                iconClassName={
-                  isActive && config.iconClassName ? config.iconClassName : ""
-                }
-                label={imp.display_value}
                 active={isActive}
-                loading={isThisImpressionMutating}
+                className={isActive ? "text-white" : "text-on-surface"}
                 disabled={
                   !isPresentInWatchlist || isMutating || !canUpdateWatchActivity
                 }
-                className={isActive ? "text-white" : "text-on-surface"}
+                icon={config.icon}
+                iconClassName={
+                  isActive && config.className ? config.className : ""
+                }
+                key={imp.value}
+                label={imp.display_value}
+                loading={isThisImpressionMutating}
                 onClick={() =>
-                  requestMutation(
-                    "update-impression",
-                    isActive ? null : imp.value,
-                  )
+                  requestMutation("update-impression", {
+                    value: isActive ? null : imp.value,
+                  })
                 }
               />
             );

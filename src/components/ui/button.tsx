@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, ComponentProps } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant =
@@ -34,7 +35,10 @@ const sizeClasses: Record<ButtonSize, string> = {
   "icon-lg": "size-9",
 };
 
-function buttonVariants({
+const buttonBaseClass =
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-brand-primary focus-visible:ring-3 focus-visible:ring-brand-primary/50 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+
+function getButtonClassName({
   className,
   size = "default",
   variant = "primaryFilled",
@@ -44,7 +48,7 @@ function buttonVariants({
   variant?: ButtonVariant;
 } = {}) {
   return cn(
-    "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+    buttonBaseClass,
     variantClasses[variant],
     sizeClasses[size],
     className,
@@ -62,12 +66,28 @@ function Button({
 }) {
   return (
     <button
-      data-slot="button"
-      className={buttonVariants({ variant, size, className })}
+      className={getButtonClassName({ variant, size, className })}
       {...props}
     />
   );
 }
 
-export { Button, buttonVariants };
+function ButtonLink({
+  className,
+  variant = "primaryFilled",
+  size = "default",
+  ...props
+}: ComponentProps<typeof Link> & {
+  size?: ButtonSize;
+  variant?: ButtonVariant;
+}) {
+  return (
+    <Link
+      className={getButtonClassName({ variant, size, className })}
+      {...props}
+    />
+  );
+}
+
+export { Button, ButtonLink, getButtonClassName };
 export type { ButtonVariant, ButtonSize };

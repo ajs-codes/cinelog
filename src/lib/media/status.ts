@@ -1,4 +1,9 @@
-import { MOVIE_STATUS, SERIES_STATUS } from "@/lib/constants";
+import {
+  MOVIE_STATUS,
+  SERIES_STATUS,
+  WATCHABLE_MOVIE_STATUSES,
+  WATCHABLE_SERIES_STATUSES,
+} from "@/lib/constants";
 
 export type MovieStatusValue =
   (typeof MOVIE_STATUS)[keyof typeof MOVIE_STATUS]["value"];
@@ -60,18 +65,6 @@ export function toSeriesStatusDisplay(
     null
   );
 }
-
-export const WATCHABLE_MOVIE_STATUSES: ReadonlySet<MovieStatusValue> = new Set([
-  MOVIE_STATUS.released.value,
-]);
-
-export const WATCHABLE_SERIES_STATUSES: ReadonlySet<SeriesStatusValue> =
-  new Set([
-    SERIES_STATUS.returning_series.value,
-    SERIES_STATUS.ended.value,
-    SERIES_STATUS.canceled.value,
-    SERIES_STATUS.pilot.value,
-  ]);
 
 export function canUpdateMovieWatchActivity(
   status: string | null | undefined,

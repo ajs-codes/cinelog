@@ -1,6 +1,6 @@
 import { LoaderCircle } from "lucide-react";
 
-export function ContentLoadingOverlay() {
+export function LoadingOverlay() {
   return (
     <div
       aria-label="Loading content"

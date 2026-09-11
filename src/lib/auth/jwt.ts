@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import { AUTH_TOKEN_TTL_SECONDS } from "@/lib/constants";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "default_super_secret_key_change_in_production"
@@ -6,7 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(
 
 export async function signToken(payload: { userId: number; username: string }) {
   const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + 8 * 60 * 60; // 8 hours
+  const exp = iat + AUTH_TOKEN_TTL_SECONDS;
 
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })

@@ -2,6 +2,7 @@ import type { SagaIterator } from "redux-saga";
 import { call, put, select, takeEvery, takeLatest } from "redux-saga/effects";
 
 import { LIBRARY_PAGE_SIZE } from "@/lib/constants";
+import { apiFetch } from "@/lib/http/client";
 import type {
   LibraryMetadata,
   LibraryMovie,
@@ -184,7 +185,7 @@ function* mutateLibraryItem(
 
   try {
     const response: Response = yield call(
-      fetch,
+      apiFetch,
       `/api/${mediaType}/${tmdbId}`,
       {
         method: "PATCH",

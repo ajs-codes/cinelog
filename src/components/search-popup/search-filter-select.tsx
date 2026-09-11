@@ -14,9 +14,7 @@ import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-const OPTION_HEIGHT_PX = 40;
-const VISIBLE_OPTIONS = 5;
+import { OPTION_HEIGHT_PX, VISIBLE_OPTIONS } from "@/lib/constants";
 
 export type SearchFilterOption = {
   value: string;

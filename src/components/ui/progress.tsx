@@ -1,7 +1,7 @@
-import * as React from "react";
+import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-type ProgressProps = React.ComponentProps<"div"> & {
+type ProgressProps = ComponentProps<"div"> & {
   value?: number;
   max?: number;
 };
@@ -16,7 +16,6 @@ function Progress({
 
   return (
     <div
-      data-slot="progress"
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={max}
@@ -28,7 +27,6 @@ function Progress({
       {...props}
     >
       <div
-        data-slot="progress-indicator"
         className="h-full rounded-full bg-brand-primary transition-all duration-200"
         style={{ width: `${percentage}%` }}
       />

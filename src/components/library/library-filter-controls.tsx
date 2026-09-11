@@ -1,28 +1,8 @@
-import Link from "next/link";
-import { Clapperboard, TvMinimal, type LucideIcon } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { MEDIA_TYPES } from "@/lib/constants";
+import type { LibraryMediaType } from "@/lib/types";
 
-export type LibraryMediaType = "movie" | "series";
-
-const MEDIA_TYPES: {
-  icon: LucideIcon;
-  label: string;
-  value: LibraryMediaType;
-  href: string;
-}[] = [
-  {
-    icon: Clapperboard,
-    label: "Movies",
-    value: "movie",
-    href: "/library/movies",
-  },
-  {
-    icon: TvMinimal,
-    label: "Series",
-    value: "series",
-    href: "/library/series",
-  },
-];
+export type { LibraryMediaType };
 
 type LibraryFilterControlsProps = {
   movieCount: number;
@@ -43,43 +23,28 @@ export function LibraryFilterControls({
   };
 
   return (
-    <div
+    <SegmentedControl
       aria-label="Filter library by media type"
-      className="flex w-fit items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1"
-      role="group"
-    >
-      {MEDIA_TYPES.map(({ icon: Icon, label, value, href }) => {
-        const count = counts[value];
-        const isActive = mediaType === value;
-
-        return (
-          <Link
-            aria-pressed={isActive}
-            aria-current={isActive ? "page" : undefined}
-            className={buttonVariants({
-              variant: isActive ? "primaryFilled" : "darkFilled",
-              className:
-                "rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm",
-            })}
-            href={href}
-            key={value}
-            onClick={() => onMediaTypeChange?.(value)}
+      onChange={onMediaTypeChange}
+      options={MEDIA_TYPES.map(({ icon: Icon, label, value, href }) => ({
+        value,
+        label,
+        href,
+        icon: <Icon className="size-3.5 shrink-0" />,
+        badge: (
+          <span
+            aria-label={`${counts[value]} ${value === "movie" ? "movies" : "series"}`}
+            className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-md px-1.5 font-public-sans text-[10px] leading-none font-medium ${
+              mediaType === value
+                ? "bg-white/15 text-white"
+                : "bg-surface-container-high text-secondary"
+            }`}
           >
-            <Icon className="size-3.5 shrink-0" />
-            {label}
-            <span
-              aria-label={`${count} ${value === "movie" ? "movies" : "series"}`}
-              className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-md px-1.5 font-public-sans text-[10px] font-medium leading-none ${
-                isActive
-                  ? "bg-white/15 text-white"
-                  : "bg-surface-container-high text-secondary"
-              }`}
-            >
-              {count}
-            </span>
-          </Link>
-        );
-      })}
-    </div>
+            {counts[value]}
+          </span>
+        ),
+      }))}
+      value={mediaType}
+    />
   );
 }
