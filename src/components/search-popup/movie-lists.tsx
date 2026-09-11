@@ -19,7 +19,7 @@ export function MovieLists({
   onItemClick,
 }: MovieListsProps) {
   return (
-    <div className="movie-lists-scrollbar min-h-0 max-h-[calc(100dvh-13.5rem)] space-y-2 overflow-y-auto overscroll-contain pr-1 sm:max-h-[calc(100dvh-12rem)] sm:pr-1">
+    <div className="movie-lists-scrollbar min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1">
       {status === "loading" ? (
         <MovieItem state="loading" />
       ) : status === "success" && results.length === 0 ? (
@@ -38,6 +38,7 @@ export function MovieLists({
             rating={result.vote_average}
             synopsis={result.overview}
             title={result.title}
+            watchStatus={result.watch_status}
             year={result.release_date}
           />
         ))

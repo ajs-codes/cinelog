@@ -74,6 +74,9 @@ export const CUSTOM_COLLECTIONS = {
 export const LIBRARY_PAGE_SIZE = 20;
 export const LIBRARY_PAGE_SIZE_MAX = 50;
 
+export const SEARCH_YEAR_MIN = 1900;
+export const SEARCH_PAGE_MAX = 500;
+
 export const WATCH_STATUS = {
   0: { value: 0, display_value: "Plan to Watch" },
   1: { value: 1, display_value: "Watching" },

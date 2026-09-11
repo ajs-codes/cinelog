@@ -3,6 +3,21 @@ import { getDb } from "@/db";
 import { genres, movies, series } from "@/db/schema";
 import type { SearchType } from "@/lib/types";
 
+const emptyLookups = {
+  genreRows: [] as Array<{ tmdbId: number; name: string }>,
+  watchlistedTmdbIds: new Set<number>(),
+  watchStatusByTmdbId: new Map<number, number>(),
+};
+
+function watchlistMaps(rows: Array<{ tmdbId: number; watchStatus: number }>) {
+  return {
+    watchlistedTmdbIds: new Set(rows.map((row) => row.tmdbId)),
+    watchStatusByTmdbId: new Map(
+      rows.map((row) => [row.tmdbId, row.watchStatus]),
+    ),
+  };
+}
+
 export async function findSearchLookups(
   type: SearchType,
   genreIds: number[],
@@ -10,7 +25,7 @@ export async function findSearchLookups(
   userId?: number,
 ) {
   if (genreIds.length === 0 && (!userId || tmdbIds.length === 0)) {
-    return { genreRows: [], watchlistedTmdbIds: new Set<number>() };
+    return emptyLookups;
   }
 
   const db = getDb();
@@ -18,13 +33,13 @@ export async function findSearchLookups(
   const watchlistQuery =
     type === "movie"
       ? db
-          .select({ tmdbId: movies.tmdbId })
+          .select({ tmdbId: movies.tmdbId, watchStatus: movies.watchStatus })
           .from(movies)
           .where(
             and(eq(movies.userId, userId ?? 0), inArray(movies.tmdbId, tmdbIds)),
           )
       : db
-          .select({ tmdbId: series.tmdbId })
+          .select({ tmdbId: series.tmdbId, watchStatus: series.watchStatus })
           .from(series)
           .where(
             and(
@@ -37,7 +52,7 @@ export async function findSearchLookups(
     const watchlistRows = await watchlistQuery;
     return {
       genreRows: [],
-      watchlistedTmdbIds: new Set(watchlistRows.map((row) => row.tmdbId)),
+      ...watchlistMaps(watchlistRows),
     };
   }
 
@@ -48,7 +63,11 @@ export async function findSearchLookups(
 
   if (!shouldLoadWatchlist) {
     const genreRows = await genreQuery;
-    return { genreRows, watchlistedTmdbIds: new Set<number>() };
+    return {
+      genreRows,
+      watchlistedTmdbIds: new Set<number>(),
+      watchStatusByTmdbId: new Map<number, number>(),
+    };
   }
 
   const [genreRows, watchlistRows] = await db.batch([
@@ -58,6 +77,6 @@ export async function findSearchLookups(
 
   return {
     genreRows,
-    watchlistedTmdbIds: new Set(watchlistRows.map((row) => row.tmdbId)),
+    ...watchlistMaps(watchlistRows),
   };
 }
