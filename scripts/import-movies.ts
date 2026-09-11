@@ -385,7 +385,11 @@ async function reviewAndImportRow(
     return;
   }
 
-  const { results } = await searchTitles(title, "movie", userId);
+  const { results } = await searchTitles({
+    query: title,
+    type: "movie",
+    userId,
+  });
   const topResults = pickSearchResults(results, csvYear);
 
   if (topResults.length === 0) {

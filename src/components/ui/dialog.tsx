@@ -156,7 +156,7 @@ function DialogContent({
       <div
         aria-modal="true"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid grid-cols-1 w-full max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-hidden rounded-xl bg-popover p-4 text-sm text-popover-foreground shadow-xl outline-none",
+          "fixed top-1/2 left-1/2 z-50 flex flex-col w-full max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-hidden rounded-xl bg-popover p-4 text-sm text-popover-foreground shadow-xl outline-none",
           className,
         )}
         role="dialog"

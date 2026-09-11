@@ -2,6 +2,12 @@ import { Check, Languages, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { WATCH_STATUS } from "@/lib/constants";
+import {
+  WATCH_STATUS_ICONS,
+  WATCH_STATUS_INDICATOR,
+  WATCH_STATUS_INDICATOR_TEXT,
+} from "@/lib/media/watch-status";
 import { cn, formatLanguage, formatRating } from "@/lib/utils";
 
 type MovieItemProps = {
@@ -20,6 +26,7 @@ type MovieItemProps = {
   onItemClick?: () => void;
   className?: string;
   state?: "default" | "loading" | "failed";
+  watchStatus?: number | null;
 };
 
 function MovieItem({
@@ -35,10 +42,26 @@ function MovieItem({
   rating,
   synopsis,
   title,
+  watchStatus,
   year,
   state = "default",
 }: MovieItemProps) {
   const showWatchlistBadge = state === "default" && isPresentInWatchlist;
+  const status =
+    watchStatus != null
+      ? WATCH_STATUS[watchStatus as keyof typeof WATCH_STATUS]
+      : undefined;
+  const statusIndicator =
+    watchStatus != null
+      ? (WATCH_STATUS_INDICATOR[watchStatus] ?? WATCH_STATUS_INDICATOR[0])
+      : undefined;
+  const StatusIcon =
+    watchStatus != null
+      ? (WATCH_STATUS_ICONS[
+          watchStatus as keyof typeof WATCH_STATUS_ICONS
+        ] ?? WATCH_STATUS_ICONS[0])
+      : undefined;
+  const showWatchStatus = showWatchlistBadge && status && StatusIcon;
 
   return (
     <article
@@ -48,11 +71,27 @@ function MovieItem({
       )}
     >
       {showWatchlistBadge ? (
-        <Badge
-          className="pointer-events-none absolute right-2 top-2 z-10 border-status-success/30 bg-status-success/10 px-2 py-0.5 text-[10px] text-status-success sm:right-3 sm:top-3 sm:px-3 sm:py-1 sm:text-xs"
-          inlineStart={<Check className="size-3 sm:size-3.5" />}
-          text="In Watchlist"
-        />
+        <div className="pointer-events-none absolute right-2 top-2 z-10 flex items-center gap-1.5 sm:right-3 sm:top-3">
+          {showWatchStatus && statusIndicator ? (
+            <span
+              aria-label={status.display_value}
+              className="flex size-8 items-center justify-center rounded-[6px] bg-surface-container-low p-1.5"
+              title={status.display_value}
+            >
+              <StatusIcon
+                className={cn(
+                  "size-4",
+                  WATCH_STATUS_INDICATOR_TEXT[statusIndicator],
+                )}
+              />
+            </span>
+          ) : null}
+          <Badge
+            className="h-8 rounded-[6px] border-status-success/30 bg-status-success/10 px-2.5 py-1.5 text-[10px] text-status-success sm:px-3 sm:text-xs"
+            inlineStart={<Check className="size-3 sm:size-3.5" />}
+            text="In Watchlist"
+          />
+        </div>
       ) : null}
       {state === "loading" ? (
         <div className="flex w-full animate-pulse items-center gap-2.5 px-1 py-1 sm:gap-4 sm:px-2 sm:py-3">
@@ -94,7 +133,8 @@ function MovieItem({
             <div
               className={cn(
                 "flex min-w-0 flex-1 flex-col justify-start py-1 sm:py-3",
-                showWatchlistBadge && "pr-24 sm:pr-32",
+                showWatchlistBadge &&
+                  (showWatchStatus ? "pr-36 sm:pr-44" : "pr-24 sm:pr-32"),
               )}
             >
               <div className="flex min-w-0 items-baseline gap-1.5 sm:gap-2">

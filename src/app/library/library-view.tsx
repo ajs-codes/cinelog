@@ -189,16 +189,6 @@ function LibrarySection({
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-4">
-      <h2
-        className="flex items-center gap-2 font-heading text-xl tracking-tight text-on-surface"
-        id={headingId}
-      >
-        {title}
-        <span className="rounded-md bg-surface-container-high px-1.5 py-0.5 font-public-sans text-[10px] font-medium leading-none text-secondary">
-          {count}
-        </span>
-      </h2>
-
       {count > 0 ? (
         <>
           <div className="grid grid-cols-2 justify-items-stretch gap-3 sm:grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] sm:gap-x-4 sm:gap-y-6">

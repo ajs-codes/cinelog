@@ -1,23 +1,37 @@
 import { getSession } from "@/lib/auth/session";
 import { fail, ok, toErrorResponse } from "@/lib/http/response";
-import { searchQuerySchema } from "@/lib/validations/search";
+import { parseSearchQuery } from "@/lib/validations/search";
 import { searchTitles } from "@/services/search";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {
-    const query = new URL(request.url).searchParams.get("query");
-    const parsedQuery = searchQuerySchema.safeParse({ query });
+    const parsedQuery = parseSearchQuery(request.url);
 
     if (!parsedQuery.success) {
-      return fail("The query parameter must be a non-empty string", 400);
+      const queryIssue = parsedQuery.error.issues.find(
+        (issue) => issue.path[0] === "query",
+      );
+      return fail(
+        queryIssue
+          ? "The query parameter must be a non-empty string"
+          : "Invalid search parameters",
+        400,
+      );
     }
 
     const session = await getSession();
+    const { query, year, page } = parsedQuery.data;
 
     return ok(
-      await searchTitles(parsedQuery.data.query, "tv", session?.userId),
+      await searchTitles({
+        query,
+        type: "tv",
+        userId: session?.userId,
+        year,
+        page,
+      }),
     );
   } catch (error) {
     return toErrorResponse(

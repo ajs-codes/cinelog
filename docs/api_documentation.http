@@ -37,15 +37,19 @@ GET /api/auth/me
 POST /api/auth/logout
 
 ### Search movies (anonymous)
-# Optional cookie: logged-in users get library flags on results
+# Optional cookie: logged-in users get is_present_in_watchlist and watch_status
+# Query: query (required), year, region (ISO 3166-1 e.g. IN), page (default 1)
+# Response: { results, page, total_pages, total_results }
 # @no-cookie-jar
-GET /api/search/movie?query={{query}}
+GET /api/search/movie?query={{query}}&year=2024&region=IN&page=1
 
 ### Search movies (with session)
-GET /api/search/movie?query={{query}}
+GET /api/search/movie?query={{query}}&year=2024&region=IN&page=1
 
 ### Search series
-GET /api/search/series?query={{query}}
+# Query: query (required), year (maps to TMDB first_air_date_year), page (default 1)
+# Response: { results, page, total_pages, total_results }
+GET /api/search/series?query={{query}}&year=2024&page=1
 
 ### Get library
 # Requires cookie

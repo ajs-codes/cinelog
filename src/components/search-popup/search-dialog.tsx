@@ -12,6 +12,7 @@ import {
   SearchControls,
   type SearchMediaType,
 } from "@/components/search-popup/search-controls";
+import { SearchPagination } from "@/components/search-popup/search-pagination";
 import { useSearchShortcut } from "@/hooks/search-popup/use-search-shortcut";
 import { searchCleared, searchRequested } from "@/store/slices/searchSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -26,15 +27,59 @@ function SearchDialogContent() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [mediaType, setMediaType] = useState<SearchMediaType>("movie");
+  const [year, setYear] = useState<number>();
+  const [region, setRegion] = useState<string>();
+  const [page, setPage] = useState(1);
   const dispatch = useAppDispatch();
   const searchState = useAppSelector((state) => state.search[mediaType]);
+
+  const requestSearch = useCallback(
+    (nextPage: number, nextQuery = query.trim()) => {
+      dispatch(
+        searchRequested({
+          mediaType,
+          query: nextQuery,
+          year,
+          region: mediaType === "movie" ? region : undefined,
+          page: nextPage,
+        }),
+      );
+    },
+    [dispatch, mediaType, query, region, year],
+  );
 
   const handleOpenChange = useCallback((nextOpen: boolean) => {
     setOpen(nextOpen);
 
     if (!nextOpen) {
       setQuery("");
+      setYear(undefined);
+      setRegion(undefined);
+      setPage(1);
     }
+  }, []);
+
+  const handleMediaTypeChange = useCallback((nextType: SearchMediaType) => {
+    setMediaType(nextType);
+    setPage(1);
+    if (nextType === "series") {
+      setRegion(undefined);
+    }
+  }, []);
+
+  const handleQueryChange = useCallback((nextQuery: string) => {
+    setQuery(nextQuery);
+    setPage(1);
+  }, []);
+
+  const handleYearChange = useCallback((nextYear?: number) => {
+    setYear(nextYear);
+    setPage(1);
+  }, []);
+
+  const handleRegionChange = useCallback((nextRegion?: string) => {
+    setRegion(nextRegion);
+    setPage(1);
   }, []);
 
   useSearchShortcut(
@@ -52,7 +97,10 @@ function SearchDialogContent() {
   const resultText =
     searchState.status === "idle"
       ? `Search for ${mediaType === "movie" ? "movies" : "series"}`
-      : `${searchState.results.length} results`;
+      : `${searchState.total_results} results`;
+  const showPagination =
+    searchState.total_pages > 1 &&
+    (searchState.status === "success" || searchState.status === "loading");
 
   useEffect(() => {
     const normalizedQuery = query.trim();
@@ -63,11 +111,19 @@ function SearchDialogContent() {
     }
 
     const timeoutId = window.setTimeout(() => {
-      dispatch(searchRequested({ mediaType, query: normalizedQuery }));
+      dispatch(
+        searchRequested({
+          mediaType,
+          query: normalizedQuery,
+          year,
+          region: mediaType === "movie" ? region : undefined,
+          page: 1,
+        }),
+      );
     }, 500);
 
     return () => window.clearTimeout(timeoutId);
-  }, [dispatch, mediaType, query]);
+  }, [dispatch, mediaType, query, region, year]);
 
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>
@@ -78,9 +134,10 @@ function SearchDialogContent() {
       >
         <SearchGroup
           autoFocus
+          className="shrink-0"
           endIcon={<X className="size-4" />}
-          onClear={() => setQuery("")}
-          onValueChange={setQuery}
+          onClear={() => handleQueryChange("")}
+          onValueChange={handleQueryChange}
           placeholder="Search movies and series"
           showClearButton
           startIcon={<Search className="size-5" />}
@@ -89,24 +146,25 @@ function SearchDialogContent() {
 
         <SearchControls
           mediaType={mediaType}
-          onMediaTypeChange={setMediaType}
+          onMediaTypeChange={handleMediaTypeChange}
+          onRegionChange={handleRegionChange}
+          onYearChange={handleYearChange}
+          region={region}
           resultIndicator={resultIndicator}
           resultText={resultText}
+          year={year}
         />
 
         {searchState.status === "failed" ? (
-          <ContentErrorState
-            compact
-            message={searchState.error ?? "The search request failed."}
-            onRetry={() =>
-              dispatch(
-                searchRequested({
-                  mediaType,
-                  query: searchState.query,
-                }),
-              )
-            }
-          />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <ContentErrorState
+              compact
+              message={searchState.error ?? "The search request failed."}
+              onRetry={() =>
+                requestSearch(page, searchState.query || query.trim())
+              }
+            />
+          </div>
         ) : (
           <MovieLists
             mediaType={mediaType}
@@ -115,6 +173,20 @@ function SearchDialogContent() {
             status={searchState.status}
           />
         )}
+
+        {showPagination ? (
+          <div className="-mx-3 -mb-3 shrink-0 border-t border-outline-alt bg-surface-container-low px-3 py-2 sm:-mx-4 sm:-mb-4 sm:px-4">
+            <SearchPagination
+              disabled={searchState.status === "loading"}
+              onPageChange={(nextPage) => {
+                setPage(nextPage);
+                requestSearch(nextPage);
+              }}
+              page={page}
+              totalPages={searchState.total_pages}
+            />
+          </div>
+        ) : null}
       </DialogContent>
     </Dialog>
   );
