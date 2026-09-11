@@ -1,12 +1,7 @@
 import { cookies } from "next/headers";
 import { AppError } from "@/lib/http/errors";
-import {
-  AUTH_TOKEN_TTL_SECONDS,
-  signToken,
-  verifyToken,
-} from "@/lib/auth/jwt";
-
-const AUTH_COOKIE = "auth_token";
+import { signToken, verifyToken } from "@/lib/auth/jwt";
+import { AUTH_COOKIE, AUTH_TOKEN_TTL_SECONDS } from "@/lib/constants";
 
 function cookieOptions(maxAge: number) {
   return {

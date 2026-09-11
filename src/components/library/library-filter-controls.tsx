@@ -1,28 +1,9 @@
 import Link from "next/link";
-import { Clapperboard, TvMinimal, type LucideIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { MEDIA_TYPES } from "@/lib/constants";
+import type { LibraryMediaType } from "@/lib/types";
 
-export type LibraryMediaType = "movie" | "series";
-
-const MEDIA_TYPES: {
-  icon: LucideIcon;
-  label: string;
-  value: LibraryMediaType;
-  href: string;
-}[] = [
-  {
-    icon: Clapperboard,
-    label: "Movies",
-    value: "movie",
-    href: "/library/movies",
-  },
-  {
-    icon: TvMinimal,
-    label: "Series",
-    value: "series",
-    href: "/library/series",
-  },
-];
+export type { LibraryMediaType };
 
 type LibraryFilterControlsProps = {
   movieCount: number;

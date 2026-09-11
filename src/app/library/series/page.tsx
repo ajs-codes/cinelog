@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { LibraryView } from "../library-view";
+import { LibraryView } from "@/components/library/library-view";
 
 export default function LibrarySeriesPage() {
   return (

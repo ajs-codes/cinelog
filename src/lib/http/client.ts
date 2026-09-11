@@ -1,4 +1,4 @@
-const MUTATING_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
+import { MUTATING_METHODS } from "@/lib/constants";
 
 function requestUrl(input: RequestInfo | URL): string {
   if (typeof input === "string") return input;

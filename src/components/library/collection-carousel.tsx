@@ -10,24 +10,8 @@ import type {
   LibraryMovie,
   LibrarySeries,
 } from "@/lib/types";
+import { FIELD_LABELS, OPERATOR_SYMBOLS } from "@/lib/constants";
 import { filterCollectionItems } from "@/lib/media/collection-filter";
-
-const OPERATOR_SYMBOLS: Record<number, string> = {
-  0: "=",
-  1: "!=",
-  2: ">",
-  3: "<",
-  4: "in",
-  5: "contains",
-};
-
-const FIELD_LABELS: Record<string, string> = {
-  release_year: "Year",
-  certification: "Cert",
-  original_language: "Lang",
-  origin_country: "Origin",
-  genre: "Genre",
-};
 
 export function CollectionCarousel({
   collection,

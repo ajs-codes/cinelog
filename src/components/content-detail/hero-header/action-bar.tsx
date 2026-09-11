@@ -4,18 +4,14 @@ import { useEffect, useRef } from "react";
 import {
   BookmarkPlus,
   Check,
-  Heart,
   Loader2,
-  ThumbsDown,
-  ThumbsUp,
-  type LucideIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
 import { ShareButton } from "@/components/content-detail/hero-header/share-button";
 import { ProgressStatus } from "@/components/content-detail/progress/progress-status";
-import { IMPRESSION } from "@/lib/constants";
+import { IMPRESSION, IMPRESSION_CONFIG } from "@/lib/constants";
 import {
   canUpdateMovieWatchActivity,
   canUpdateSeriesWatchActivity,
@@ -28,15 +24,6 @@ import {
   type ContentMutationStatus,
   type ContentMutation,
 } from "@/store/slices/contentDetailsSlice";
-
-const IMPRESSION_CONFIG: Record<
-  number,
-  { icon: LucideIcon; iconClassName: string }
-> = {
-  0: { icon: ThumbsDown, iconClassName: "text-outline-muted" },
-  1: { icon: ThumbsUp, iconClassName: "text-status-info" },
-  2: { icon: Heart, iconClassName: "text-status-error" },
-};
 
 type ActionBarProps = {
   id?: number;
@@ -161,7 +148,7 @@ export function ActionBar({
                 key={imp.value}
                 icon={config.icon}
                 iconClassName={
-                  isActive && config.iconClassName ? config.iconClassName : ""
+                  isActive && config.className ? config.className : ""
                 }
                 label={imp.display_value}
                 active={isActive}

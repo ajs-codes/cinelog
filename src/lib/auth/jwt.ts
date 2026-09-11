@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-
-export const AUTH_TOKEN_TTL_SECONDS = 24 * 60 * 60;
+import { AUTH_TOKEN_TTL_SECONDS } from "@/lib/constants";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "default_super_secret_key_change_in_production"

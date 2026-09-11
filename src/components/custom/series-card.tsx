@@ -8,15 +8,16 @@ import { CardImpressionToggle } from "@/components/custom/card-impression-toggle
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { WATCH_STATUS } from "@/lib/constants";
-import { getYearString, posterUrl } from "@/lib/media/display";
-import { calculateSeriesProgress } from "@/lib/media/series-progress";
-import { canUpdateSeriesWatchActivity } from "@/lib/media/status";
 import {
+  FALLBACK_POSTER,
+  WATCH_STATUS,
   WATCH_STATUS_ICONS,
   WATCH_STATUS_INDICATOR,
   WATCH_STATUS_INDICATOR_TEXT,
-} from "@/lib/media/watch-status";
+} from "@/lib/constants";
+import { getYearString, posterUrl } from "@/lib/media/display";
+import { calculateSeriesProgress } from "@/lib/media/series-progress";
+import { canUpdateSeriesWatchActivity } from "@/lib/media/status";
 import type { LibrarySeries } from "@/lib/types";
 import { cn, formatCountry, formatLanguage } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -24,8 +25,6 @@ import {
   libraryItemKey,
   libraryItemMutationRequested,
 } from "@/store/slices/librarySlice";
-
-const FALLBACK_POSTER = "/file.svg";
 
 function seriesMeta(series: LibrarySeries) {
   const language = series.original_language?.trim();

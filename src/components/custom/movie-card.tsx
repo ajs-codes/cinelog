@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CardImpressionToggle } from "@/components/custom/card-impression-toggle";
 import { CardStatusToggle } from "@/components/custom/card-status-toggle";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { FALLBACK_POSTER } from "@/lib/constants";
 import { getYearString, posterUrl } from "@/lib/media/display";
 import { canUpdateMovieWatchActivity } from "@/lib/media/status";
 import type { LibraryMovie } from "@/lib/types";
@@ -15,8 +16,6 @@ import {
   libraryItemKey,
   libraryItemMutationRequested,
 } from "@/store/slices/librarySlice";
-
-const FALLBACK_POSTER = "/file.svg";
 
 function movieMeta(movie: LibraryMovie) {
   const language = movie.original_language?.trim();

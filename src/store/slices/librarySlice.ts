@@ -1,15 +1,16 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import type {
+  LibraryMediaType,
   LibraryMetadata,
   LibraryMovie,
   LibrarySeries,
   LibrarySeriesSeason,
 } from "@/lib/types";
 
-export type LibraryStatus = "idle" | "loading" | "succeeded" | "failed";
+export type { LibraryMediaType };
 
-export type LibraryMediaType = "movie" | "series";
+export type LibraryStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export type LibraryItemMutation = {
   tmdbId: number;

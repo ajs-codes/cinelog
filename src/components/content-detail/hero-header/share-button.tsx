@@ -13,9 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Toast } from "@/components/ui/toast";
-
-const TMDB_LOGO_URL = "/tmdb_logo.svg";
-const IMDB_LOGO_URL = "/imdb_logo.svg";
+import { IMDB_LOGO_URL, TMDB_LOGO_URL } from "@/lib/constants";
 
 type ShareButtonProps = {
   id?: number;

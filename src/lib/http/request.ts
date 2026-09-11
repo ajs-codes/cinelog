@@ -1,4 +1,5 @@
 import type { ZodType } from "zod";
+import { DIRECT_VALIDATION_MESSAGES } from "@/lib/constants";
 import { AppError } from "@/lib/http/errors";
 
 export async function parseJson<T = unknown>(req: Request): Promise<T> {
@@ -18,13 +19,6 @@ export function parsePositiveIntId(id: string, label: string) {
 
   return value;
 }
-
-const DIRECT_VALIDATION_MESSAGES = new Set([
-  "Invalid watch_status",
-  "Invalid impression",
-  "No valid fields to update",
-  "Current password is required to set a new password",
-]);
 
 export function parseSchema<T>(schema: ZodType<T>, data: unknown): T {
   const result = schema.safeParse(data);

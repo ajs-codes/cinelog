@@ -9,19 +9,14 @@ import { MovieCard } from "@/components/custom/movie-card";
 import { SeriesCard } from "@/components/custom/series-card";
 import { CollectionCarousel } from "@/components/library/collection-carousel";
 import { LibraryFilterControls } from "@/components/library/library-filter-controls";
-import type { LibraryMediaType } from "@/components/library/library-filter-controls";
 import { Button } from "@/components/ui/button";
-import type { CustomCollectionWithFilters } from "@/lib/types";
+import { COLLECTION_MEDIA_TYPE } from "@/lib/constants";
+import type { CustomCollectionWithFilters, LibraryMediaType } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   libraryPageRequested,
   libraryRequested,
 } from "@/store/slices/librarySlice";
-
-const COLLECTION_MEDIA_TYPE: Record<LibraryMediaType, number> = {
-  movie: 0,
-  series: 1,
-};
 
 type LibraryViewProps = {
   mediaType?: LibraryMediaType;

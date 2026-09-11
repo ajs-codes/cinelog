@@ -1,20 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, SmilePlus, ThumbsDown, ThumbsUp } from "lucide-react";
+import { SmilePlus } from "lucide-react";
 
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { IMPRESSION } from "@/lib/constants";
+import { IMPRESSION, IMPRESSION_CONFIG, TRIGGER_CLASS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-const IMPRESSION_CONFIG = {
-  0: { icon: ThumbsDown, className: "text-outline-muted" },
-  1: { icon: ThumbsUp, className: "text-status-info" },
-  2: { icon: Heart, className: "text-status-error" },
-} as const;
-
-const TRIGGER_CLASS =
-  "flex h-8 w-8 items-center justify-center rounded-[6px] bg-surface-container-high transition-colors hover:bg-surface-container disabled:pointer-events-none disabled:opacity-50";
 
 type CardImpressionToggleProps = {
   impression: number | null;

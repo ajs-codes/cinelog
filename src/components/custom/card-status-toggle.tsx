@@ -3,16 +3,14 @@
 import { useState } from "react";
 
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { WATCH_STATUS } from "@/lib/constants";
 import {
+  TRIGGER_CLASS,
+  WATCH_STATUS,
   WATCH_STATUS_ICONS,
   WATCH_STATUS_INDICATOR,
   WATCH_STATUS_INDICATOR_TEXT,
-} from "@/lib/media/watch-status";
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-const TRIGGER_CLASS =
-  "flex h-8 w-8 items-center justify-center rounded-[6px] bg-surface-container-high transition-colors hover:bg-surface-container disabled:pointer-events-none disabled:opacity-50";
 
 type CardStatusToggleProps = {
   watchStatus: number;

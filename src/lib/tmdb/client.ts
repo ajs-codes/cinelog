@@ -1,6 +1,5 @@
+import { TMDB_API_BASE } from "@/lib/constants";
 import { AppError } from "@/lib/http/errors";
-
-const TMDB_API_BASE = "https://api.themoviedb.org/3";
 
 export async function tmdbFetch<T>(
   path: string,
