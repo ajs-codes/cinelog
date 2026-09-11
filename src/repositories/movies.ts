@@ -4,15 +4,13 @@ import {
   credits,
   genres,
   movies,
+  moviesToCredits,
   moviesToGenres,
+  moviesToProductionCompanies,
   productionCompanies,
 } from "@/db/schema";
 import { normalizeMovieStatus } from "@/lib/media/status";
 import type { MoviePayload } from "@/lib/types";
-
-function parentMovieIdSql(tmdbId: number, userId: number) {
-  return sql`(select ${movies.id} from ${movies} where ${movies.tmdbId} = ${tmdbId} and ${movies.userId} = ${userId})`;
-}
 
 export async function findUserMovieImpression(tmdbId: number, userId: number) {
   return getDb()
@@ -39,7 +37,6 @@ export async function insertUserMovie(
   body: MoviePayload,
 ) {
   const db = getDb();
-  const movieId = parentMovieIdSql(tmdbId, userId);
   const certificate = body.certification?.certification || null;
   const voteAvg =
     typeof body.vote_average === "number" ? body.vote_average : null;
@@ -86,39 +83,98 @@ export async function insertUserMovie(
       ? body.credits
       : [...(body.credits?.cast || []), ...(body.credits?.crew || [])];
 
-  const creditsToInsert = rawCredits.filter(
-    (credit): credit is typeof credit & { id: number; name: string } =>
-      Boolean(credit.id && credit.name),
-  );
+  const uniqueCreditsMap = new Map<
+    number,
+    { id: number; name: string; known_for_department?: string }
+  >();
+  for (const credit of rawCredits) {
+    if (credit?.id && credit?.name && !uniqueCreditsMap.has(credit.id)) {
+      uniqueCreditsMap.set(credit.id, {
+        id: credit.id,
+        name: credit.name,
+        known_for_department: credit.known_for_department,
+      });
+    }
+  }
+  const creditsToInsert = Array.from(uniqueCreditsMap.values());
+  const creditTmdbIds = creditsToInsert.map((c) => c.id);
 
   if (creditsToInsert.length > 0) {
     queries.push(
-      db.insert(credits).values(
-        creditsToInsert.map((credit) => ({
-          movieId,
-          tmdbId: credit.id,
-          name: credit.name,
-          knownForDepartment: credit.known_for_department || "Acting",
-        })),
+      db
+        .insert(credits)
+        .values(
+          creditsToInsert.map((credit) => ({
+            tmdbId: credit.id,
+            name: credit.name,
+            knownForDepartment: credit.known_for_department || "Acting",
+          })),
+        )
+        .onConflictDoNothing(),
+    );
+
+    queries.push(
+      db.insert(moviesToCredits).select(
+        db
+          .select({
+            id: sql<number | null>`null`.as("id"),
+            movieId: movies.id,
+            creditId: credits.id,
+            createdAt: sql`(unixepoch())`.as("createdAt"),
+          })
+          .from(movies)
+          .innerJoin(credits, inArray(credits.tmdbId, creditTmdbIds))
+          .where(and(eq(movies.tmdbId, tmdbId), eq(movies.userId, userId))),
       ),
     );
   }
 
   if (body.production_companies && Array.isArray(body.production_companies)) {
-    const companiesToInsert = body.production_companies.filter(
-      (company): company is typeof company & { id: number; name: string } =>
-        Boolean(company.id && company.name),
-    );
+    const uniqueCompaniesMap = new Map<
+      number,
+      { id: number; name: string; origin_country?: string }
+    >();
+    for (const company of body.production_companies) {
+      if (company?.id && company?.name && !uniqueCompaniesMap.has(company.id)) {
+        uniqueCompaniesMap.set(company.id, {
+          id: company.id,
+          name: company.name,
+          origin_country: company.origin_country,
+        });
+      }
+    }
+    const companiesToInsert = Array.from(uniqueCompaniesMap.values());
+    const companyTmdbIds = companiesToInsert.map((c) => c.id);
 
     if (companiesToInsert.length > 0) {
       queries.push(
-        db.insert(productionCompanies).values(
-          companiesToInsert.map((company) => ({
-            movieId,
-            tmdbId: company.id,
-            name: company.name,
-            originCountry: company.origin_country || null,
-          })),
+        db
+          .insert(productionCompanies)
+          .values(
+            companiesToInsert.map((company) => ({
+              tmdbId: company.id,
+              name: company.name,
+              originCountry: company.origin_country || null,
+            })),
+          )
+          .onConflictDoNothing(),
+      );
+
+      queries.push(
+        db.insert(moviesToProductionCompanies).select(
+          db
+            .select({
+              id: sql<number | null>`null`.as("id"),
+              movieId: movies.id,
+              companyId: productionCompanies.id,
+              createdAt: sql`(unixepoch())`.as("createdAt"),
+            })
+            .from(movies)
+            .innerJoin(
+              productionCompanies,
+              inArray(productionCompanies.tmdbId, companyTmdbIds),
+            )
+            .where(and(eq(movies.tmdbId, tmdbId), eq(movies.userId, userId))),
         ),
       );
     }

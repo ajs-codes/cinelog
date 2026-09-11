@@ -7,7 +7,10 @@ import {
   productionCompanies,
   seasons,
   series,
+  seriesToCreators,
+  seriesToCredits,
   seriesToGenres,
+  seriesToProductionCompanies,
 } from "@/db/schema";
 import type { NewSeries, Season, Series } from "@/db/schema";
 import { normalizeSeriesStatus } from "@/lib/media/status";
@@ -208,19 +211,43 @@ export async function insertUserSeries(
   }
 
   if (body.created_by && Array.isArray(body.created_by)) {
-    const creatorsToInsert = body.created_by.filter(
-      (creator): creator is { id: number; name: string } =>
-        Boolean(creator.id && creator.name),
-    );
+    const uniqueCreatorsMap = new Map<number, { id: number; name: string }>();
+    for (const creator of body.created_by) {
+      if (creator?.id && creator?.name && !uniqueCreatorsMap.has(creator.id)) {
+        uniqueCreatorsMap.set(creator.id, {
+          id: creator.id,
+          name: creator.name,
+        });
+      }
+    }
+    const creatorsToInsert = Array.from(uniqueCreatorsMap.values());
+    const creatorTmdbIds = creatorsToInsert.map((c) => c.id);
 
     if (creatorsToInsert.length > 0) {
       queries.push(
-        db.insert(creators).values(
-          creatorsToInsert.map((creator) => ({
-            seriesId,
-            tmdbId: creator.id,
-            name: creator.name,
-          })),
+        db
+          .insert(creators)
+          .values(
+            creatorsToInsert.map((creator) => ({
+              tmdbId: creator.id,
+              name: creator.name,
+            })),
+          )
+          .onConflictDoNothing(),
+      );
+
+      queries.push(
+        db.insert(seriesToCreators).select(
+          db
+            .select({
+              id: sql<number | null>`null`.as("id"),
+              seriesId: series.id,
+              creatorId: creators.id,
+              createdAt: sql`(unixepoch())`.as("createdAt"),
+            })
+            .from(series)
+            .innerJoin(creators, inArray(creators.tmdbId, creatorTmdbIds))
+            .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId))),
         ),
       );
     }
@@ -231,39 +258,98 @@ export async function insertUserSeries(
       ? body.credits
       : [...(body.credits?.cast || []), ...(body.credits?.crew || [])];
 
-  const creditsToInsert = rawCredits.filter(
-    (credit): credit is typeof credit & { id: number; name: string } =>
-      Boolean(credit.id && credit.name),
-  );
+  const uniqueCreditsMap = new Map<
+    number,
+    { id: number; name: string; known_for_department?: string }
+  >();
+  for (const credit of rawCredits) {
+    if (credit?.id && credit?.name && !uniqueCreditsMap.has(credit.id)) {
+      uniqueCreditsMap.set(credit.id, {
+        id: credit.id,
+        name: credit.name,
+        known_for_department: credit.known_for_department,
+      });
+    }
+  }
+  const creditsToInsert = Array.from(uniqueCreditsMap.values());
+  const creditTmdbIds = creditsToInsert.map((c) => c.id);
 
   if (creditsToInsert.length > 0) {
     queries.push(
-      db.insert(credits).values(
-        creditsToInsert.map((credit) => ({
-          seriesId,
-          tmdbId: credit.id,
-          name: credit.name,
-          knownForDepartment: credit.known_for_department || "Acting",
-        })),
+      db
+        .insert(credits)
+        .values(
+          creditsToInsert.map((credit) => ({
+            tmdbId: credit.id,
+            name: credit.name,
+            knownForDepartment: credit.known_for_department || "Acting",
+          })),
+        )
+        .onConflictDoNothing(),
+    );
+
+    queries.push(
+      db.insert(seriesToCredits).select(
+        db
+          .select({
+            id: sql<number | null>`null`.as("id"),
+            seriesId: series.id,
+            creditId: credits.id,
+            createdAt: sql`(unixepoch())`.as("createdAt"),
+          })
+          .from(series)
+          .innerJoin(credits, inArray(credits.tmdbId, creditTmdbIds))
+          .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId))),
       ),
     );
   }
 
   if (body.production_companies && Array.isArray(body.production_companies)) {
-    const companiesToInsert = body.production_companies.filter(
-      (company): company is typeof company & { id: number; name: string } =>
-        Boolean(company.id && company.name),
-    );
+    const uniqueCompaniesMap = new Map<
+      number,
+      { id: number; name: string; origin_country?: string }
+    >();
+    for (const company of body.production_companies) {
+      if (company?.id && company?.name && !uniqueCompaniesMap.has(company.id)) {
+        uniqueCompaniesMap.set(company.id, {
+          id: company.id,
+          name: company.name,
+          origin_country: company.origin_country,
+        });
+      }
+    }
+    const companiesToInsert = Array.from(uniqueCompaniesMap.values());
+    const companyTmdbIds = companiesToInsert.map((c) => c.id);
 
     if (companiesToInsert.length > 0) {
       queries.push(
-        db.insert(productionCompanies).values(
-          companiesToInsert.map((company) => ({
-            seriesId,
-            tmdbId: company.id,
-            name: company.name,
-            originCountry: company.origin_country || null,
-          })),
+        db
+          .insert(productionCompanies)
+          .values(
+            companiesToInsert.map((company) => ({
+              tmdbId: company.id,
+              name: company.name,
+              originCountry: company.origin_country || null,
+            })),
+          )
+          .onConflictDoNothing(),
+      );
+
+      queries.push(
+        db.insert(seriesToProductionCompanies).select(
+          db
+            .select({
+              id: sql<number | null>`null`.as("id"),
+              seriesId: series.id,
+              companyId: productionCompanies.id,
+              createdAt: sql`(unixepoch())`.as("createdAt"),
+            })
+            .from(series)
+            .innerJoin(
+              productionCompanies,
+              inArray(productionCompanies.tmdbId, companyTmdbIds),
+            )
+            .where(and(eq(series.tmdbId, tmdbId), eq(series.userId, userId))),
         ),
       );
     }
