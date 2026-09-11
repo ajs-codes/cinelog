@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type SearchGroupProps = Omit<React.ComponentProps<typeof Input>, "onChange"> & {
+type SearchFieldProps = Omit<React.ComponentProps<typeof Input>, "onChange"> & {
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   showClearButton?: boolean;
@@ -11,7 +11,7 @@ type SearchGroupProps = Omit<React.ComponentProps<typeof Input>, "onChange"> & {
   onClear?: () => void;
 };
 
-function SearchGroup({
+function SearchField({
   className,
   endIcon,
   onClear,
@@ -20,19 +20,19 @@ function SearchGroup({
   startIcon,
   value,
   ...props
-}: SearchGroupProps) {
+}: SearchFieldProps) {
   const hasValue = Boolean(value);
   const showEndIcon = showClearButton && hasValue && endIcon;
 
   return (
     <div
       className={cn(
-        "relative flex h-11 sm:h-12.5 w-full min-w-0 items-center rounded-xl border border-outline-alt bg-surface shadow-[0_0_0_2px_rgb(51_102_204/30%)] transition-colors",
+        "relative flex h-11 w-full min-w-0 items-center rounded-xl border border-outline-alt bg-surface shadow-[0_0_0_2px_rgb(51_102_204/30%)] transition-colors sm:h-12.5",
         className,
       )}
     >
       {startIcon ? (
-        <span className="pointer-events-none absolute left-3 sm:left-4 flex size-4.5 sm:size-5 items-center justify-center text-outline-muted [&>svg]:size-full">
+        <span className="pointer-events-none absolute left-3 flex size-4.5 items-center justify-center text-outline-muted sm:left-4 sm:size-5 [&>svg]:size-full">
           {startIcon}
         </span>
       ) : null}
@@ -40,7 +40,7 @@ function SearchGroup({
         {...props}
         aria-label={props["aria-label"] ?? "Search"}
         className={cn(
-          "h-full border-0 bg-transparent font-public-sans text-sm sm:text-base text-white shadow-none outline-none ring-0 placeholder:text-text-secondary placeholder:text-sm sm:placeholder:text-base focus-visible:border-0 focus-visible:ring-0",
+          "h-full border-0 bg-transparent font-public-sans text-sm text-white shadow-none outline-none ring-0 placeholder:text-sm placeholder:text-secondary focus-visible:border-0 focus-visible:ring-0 sm:text-base sm:placeholder:text-base",
           startIcon ? "pl-9.5 sm:pl-12" : "pl-3",
           endIcon ? "pr-9.5 sm:pr-12" : "pr-3",
         )}
@@ -50,7 +50,7 @@ function SearchGroup({
       {showEndIcon ? (
         <Button
           aria-label="Clear search"
-          className="absolute right-2 size-6 sm:size-7 p-0 text-outline-muted"
+          className="absolute right-2 size-6 p-0 text-outline-muted sm:size-7"
           onClick={onClear}
           size="icon-sm"
           type="button"
@@ -63,4 +63,4 @@ function SearchGroup({
   );
 }
 
-export { SearchGroup };
+export { SearchField };

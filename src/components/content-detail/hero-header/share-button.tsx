@@ -3,7 +3,6 @@
 import { Link, Share2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Toast } from "@/components/ui/toast";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { IMDB_LOGO_URL, TMDB_LOGO_URL } from "@/lib/constants";
 
 type ShareButtonProps = {
@@ -22,19 +22,8 @@ type ShareButtonProps = {
 };
 
 export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleCopyLink = async () => {
-    setIsOpen(false);
-
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setToastMessage("Link copied. You can share it now.");
-    } catch {
-      setToastMessage("Unable to copy the link. Please copy the URL manually.");
-    }
-  };
+  const { message, copy, clear } = useCopyToClipboard();
 
   const tmdbUrl =
     id !== undefined
@@ -46,12 +35,12 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog onOpenChange={setIsOpen} open={isOpen}>
         <DialogTrigger>
           <button
-            type="button"
             aria-label="Share title"
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-surface-container text-slate-200 transition hover:bg-surface-container-high"
+            type="button"
           >
             <Share2 className="h-4 w-4" />
           </button>
@@ -59,17 +48,17 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
 
         <DialogContent className="max-w-xs border border-outline-alt bg-surface-container text-on-surface">
           <DialogHeader className="pr-8">
-            <DialogTitle className="text-lg font-semibold font-noto-sans text-accent">
+            <DialogTitle className="font-noto-sans text-lg font-semibold text-accent">
               Share title
             </DialogTitle>
-            <DialogDescription className="text-secondary text-xs">
+            <DialogDescription className="text-xs text-secondary">
               Choose where you want to view or share this title.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
             <button
-              type="button"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
               disabled={!tmdbUrl}
               onClick={() => {
                 if (tmdbUrl) {
@@ -77,20 +66,20 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
                   setIsOpen(false);
                 }
               }}
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
+              type="button"
             >
               <Image
-                src={TMDB_LOGO_URL}
                 alt="TMDB Logo"
                 className="h-8 w-auto object-contain"
-                width={48}
                 height={32}
+                src={TMDB_LOGO_URL}
+                width={48}
               />
-              <span className="font-medium text-xs">TMDB</span>
+              <span className="text-xs font-medium">TMDB</span>
             </button>
 
             <button
-              type="button"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
               disabled={!imdbUrl}
               onClick={() => {
                 if (imdbUrl) {
@@ -98,35 +87,40 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
                   setIsOpen(false);
                 }
               }}
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
+              type="button"
             >
               <Image
-                src={IMDB_LOGO_URL}
                 alt="IMDB Logo"
                 className="h-8 w-auto object-contain"
-                width={48}
                 height={32}
+                src={IMDB_LOGO_URL}
+                width={48}
               />
-              <span className="font-medium text-xs">IMDb</span>
+              <span className="text-xs font-medium">IMDb</span>
             </button>
 
             <button
-              type="button"
-              onClick={handleCopyLink}
               className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10"
+              onClick={() => {
+                setIsOpen(false);
+                void copy(
+                  window.location.href,
+                  "Link copied. You can share it now.",
+                  "Unable to copy the link. Please copy the URL manually.",
+                );
+              }}
+              type="button"
             >
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-status-info/15">
                 <Link className="size-4 text-status-info" />
               </span>
-              <span className="font-medium text-xs">Copy link</span>
+              <span className="text-xs font-medium">Copy link</span>
             </button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {toastMessage && (
-        <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
-      )}
+      {message ? <Toast message={message} onDismiss={clear} /> : null}
     </>
   );
 }

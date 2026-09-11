@@ -4,8 +4,8 @@ import { CastCrew } from "@/components/content-detail/cast-crew";
 import { HeroHeader } from "@/components/content-detail/hero-header/hero-header";
 import { ContentProgress } from "@/components/content-detail/progress/content-progress";
 import { SpecificationsMeta } from "@/components/content-detail/specifications-meta";
-import { ContentErrorState } from "@/components/custom/content-error-state";
-import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
+import { ErrorState } from "@/components/ui/error-state";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 import { useContentDetails } from "@/hooks/title-details/use-content-details";
 import type { MovieDetails } from "@/lib/types";
 import { useParams } from "next/navigation";
@@ -27,14 +27,14 @@ export function MoviePage() {
           <SpecificationsMeta type="movie" />
           <ContentProgress type="movie" />
         </div>
-        <ContentLoadingOverlay />
+        <LoadingOverlay />
       </main>
     );
   }
 
   if (error || !movie) {
     return (
-      <ContentErrorState
+      <ErrorState
         message={error?.message ?? "The movie could not be loaded."}
         onRetry={retry}
       />

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { SeasonSelect } from "@/components/content-detail/progress/season-select";
 import type { SeasonOption } from "@/hooks/title-details/use-progress-seasons";
+import { useContentMutation } from "@/hooks/title-details/use-content-mutation";
+import { usePopover } from "@/hooks/use-popover";
 import { useProgressStatus } from "@/hooks/title-details/use-progress-status";
 import type { SeriesDetails } from "@/lib/types";
 import { WATCH_STATUS } from "@/lib/constants";
@@ -13,11 +14,9 @@ import {
   WATCH_STATUS_INDICATOR_TEXT,
 } from "@/lib/media/watch-status";
 import { cn } from "@/lib/utils";
-import { useAppDispatch } from "@/store";
-import {
-  mutationRequested,
-  type ContentMutationStatus,
-  type ContentMutation,
+import type {
+  ContentMutationStatus,
+  ContentMutation,
 } from "@/store/slices/contentDetailsSlice";
 
 type ProgressStatusProps = {
@@ -45,40 +44,16 @@ export function ProgressStatus({
   selectedSeason,
   onSeasonChange,
 }: ProgressStatusProps) {
-  const dispatch = useAppDispatch();
   const { episodeCount } = useProgressStatus(series);
-  const [isOpen, setIsOpen] = useState(false);
+  const { requestMutation, isMutating } = useContentMutation({
+    id,
+    mediaType: type,
+    mutationStatus,
+  });
   const status = watchStatus ?? 0;
-  const isPendingRef = useRef(false);
-
-  useEffect(() => {
-    if (mutationStatus !== "loading") {
-      isPendingRef.current = false;
-    }
-  }, [mutationStatus]);
-
-  const isMutating = mutationStatus === "loading";
   const isDisabled = disabled || isMutating;
+  const { isOpen, containerRef, toggle, close } = usePopover(isDisabled);
   const isStatusMutating = isMutating && lastMutation === "update-watch-status";
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  if (isDisabled && isOpen) {
-    setIsOpen(false);
-  }
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const currentStatusObj =
     WATCH_STATUS[status as keyof typeof WATCH_STATUS] ?? WATCH_STATUS[1];
   const currentIndicator = WATCH_STATUS_INDICATOR[status] ?? "accentAlt";
@@ -91,12 +66,12 @@ export function ProgressStatus({
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="relative" ref={dropdownRef}>
+      <div className="relative" ref={containerRef}>
         <button
-          type="button"
+          className="inline-flex min-h-10 items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50"
           disabled={isDisabled}
-          onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high transition-colors disabled:pointer-events-none disabled:opacity-50"
+          onClick={toggle}
+          type="button"
         >
           {isStatusMutating ? (
             <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
@@ -119,8 +94,8 @@ export function ProgressStatus({
           />
         </button>
 
-        {isOpen && (
-          <div className="absolute top-full left-0 mt-2 w-45 rounded-xl border border-outline-alt bg-surface-container shadow-[0_8px_24px_rgb(0_0_0/25%)] z-50 overflow-hidden">
+        {isOpen ? (
+          <div className="absolute top-full left-0 z-50 mt-2 w-full max-w-[min(18rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-outline-alt bg-surface-container shadow-[0_8px_24px_rgb(0_0_0/25%)]">
             <div className="flex flex-col py-1.5">
               {Object.values(WATCH_STATUS).map((ws) => {
                 const isSelected = ws.value === status;
@@ -128,32 +103,22 @@ export function ProgressStatus({
                 const Icon = WATCH_STATUS_ICONS[ws.value];
                 return (
                   <button
-                    key={ws.value}
-                    type="button"
-                    disabled={isDisabled}
-                    onClick={() => {
-                      setIsOpen(false);
-                      if (
-                        id === undefined ||
-                        isDisabled ||
-                        isPendingRef.current ||
-                        ws.value === status
-                      )
-                        return;
-                      isPendingRef.current = true;
-                      dispatch(
-                        mutationRequested({
-                          id: String(id),
-                          mediaType: type,
-                          mutation: "update-watch-status",
-                          value: ws.value,
-                        }),
-                      );
-                    }}
                     className={cn(
-                      "inline-flex items-center justify-between px-3.5 py-2.5 text-sm text-on-surface hover:bg-surface-container-high transition-colors text-left",
+                      "inline-flex items-center justify-between px-3.5 py-2.5 text-left text-sm text-on-surface transition-colors hover:bg-surface-container-high",
                       isSelected && "bg-surface-container-high",
                     )}
+                    disabled={isDisabled}
+                    key={ws.value}
+                    onClick={() => {
+                      close();
+                      if (ws.value === status) return;
+                      requestMutation("update-watch-status", {
+                        value: ws.value,
+                        requireWatchlist: false,
+                        requireWatchActivity: false,
+                      });
+                    }}
+                    type="button"
                   >
                     <div className="inline-flex items-center gap-3">
                       <Icon
@@ -164,23 +129,23 @@ export function ProgressStatus({
                       />
                       <span className="font-medium">{ws.display_value}</span>
                     </div>
-                    {isSelected && (
+                    {isSelected ? (
                       <Check className="h-4 w-4 text-brand-primary" />
-                    )}
+                    ) : null}
                   </button>
                 );
               })}
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       {type === "series" ? (
         <div className="flex flex-wrap items-center gap-3">
           <SeasonSelect
+            onSelect={(seasonNumber) => onSeasonChange?.(seasonNumber)}
             seasons={seasons}
             selectedSeason={selectedSeason}
-            onSelect={(seasonNumber) => onSeasonChange?.(seasonNumber)}
           />
           <ProgressMetadata
             label="EPISODE"

@@ -29,8 +29,7 @@ function Badge({
   return (
     <span
       className={cn(
-        "inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 font-public-sans text-xs leading-4 font-medium whitespace-nowrap",
-        "bg-surface-container-low border border-outline-alt",
+        "inline-flex w-fit max-w-full items-center gap-1.5 rounded-full border border-outline-alt bg-surface-container-low px-3 py-1 font-public-sans text-xs leading-4 font-medium whitespace-nowrap",
         className,
       )}
       {...props}
@@ -49,7 +48,7 @@ function Badge({
           {inlineStart}
         </span>
       ) : null}
-      <span className="min-w-0">{text ?? children}</span>
+      <span className="min-w-0 truncate">{text ?? children}</span>
       {inlineEnd ? (
         <span className="flex size-3.5 shrink-0 items-center justify-center [&>svg]:size-full">
           {inlineEnd}

@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Clapperboard, TvMinimal } from "lucide-react";
 import { SearchFilterSelect } from "@/components/search-popup/search-filter-select";
 import { Badge, type BadgeIndicator } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { getSearchYears, TMDB_REGIONS } from "@/lib/search/filters";
 
 export type SearchMediaType = "movie" | "series";
@@ -54,30 +54,24 @@ export function SearchControls({
   return (
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pt-0.5 sm:gap-3 sm:pt-1">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <div className="flex shrink-0 items-center gap-1 rounded-xl border border-[#232527] bg-[#101112] p-1">
-          <Button
-            className="rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm"
-            onClick={() => onMediaTypeChange("movie")}
-            size="default"
-            type="button"
-            variant={mediaType === "movie" ? "primaryFilled" : "darkFilled"}
-          >
-            <Clapperboard className="size-3.5 shrink-0" />
-            Movies
-          </Button>
-          <Button
-            className="rounded-lg px-2.5 py-1 text-xs text-text-secondary no-underline sm:px-3.5 sm:py-1.5 sm:text-sm"
-            onClick={() => onMediaTypeChange("series")}
-            size="default"
-            type="button"
-            variant={mediaType === "series" ? "primaryFilled" : "darkFilled"}
-          >
-            <TvMinimal className="size-3.5 shrink-0" />
-            Series
-          </Button>
-        </div>
+        <SegmentedControl
+          onChange={onMediaTypeChange}
+          options={[
+            {
+              value: "movie",
+              label: "Movies",
+              icon: <Clapperboard className="size-3.5 shrink-0" />,
+            },
+            {
+              value: "series",
+              label: "Series",
+              icon: <TvMinimal className="size-3.5 shrink-0" />,
+            },
+          ]}
+          value={mediaType}
+        />
 
-        <div className="flex shrink-0 items-center gap-1 rounded-xl border border-[#232527] bg-[#101112] p-1">
+        <div className="flex min-w-0 shrink-0 items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1">
           <SearchFilterSelect
             aria-label="Filter by year"
             heading="Year"
@@ -92,9 +86,7 @@ export function SearchControls({
             <SearchFilterSelect
               aria-label="Filter by region"
               heading="Region"
-              onChange={(nextRegion) =>
-                onRegionChange(nextRegion || undefined)
-              }
+              onChange={(nextRegion) => onRegionChange(nextRegion || undefined)}
               options={regionOptions}
               placeholder="Any region"
               searchPlaceholder="Search regions"
@@ -106,7 +98,7 @@ export function SearchControls({
       </div>
 
       <Badge
-        className="max-w-full truncate border-[#262626] bg-[#161718] px-2.5 py-1 text-xs text-on-surface sm:px-3.25 sm:py-1.75 shrink-0"
+        className="max-w-full shrink-0 truncate border-outline-alt bg-surface-container-low px-2.5 py-1 text-xs text-on-surface sm:px-3.25 sm:py-1.75"
         indicator={resultIndicator}
         text={resultText}
       />

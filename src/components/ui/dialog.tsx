@@ -87,10 +87,6 @@ function DialogTrigger({
   });
 }
 
-function DialogPortal({ children }: { children: ReactNode }) {
-  return <>{children}</>;
-}
-
 function DialogClose({ children, ...props }: ComponentProps<typeof Button>) {
   const { setOpen } = useDialogContext();
   return (
@@ -151,12 +147,12 @@ function DialogContent({
   }
 
   return createPortal(
-    <DialogPortal>
+    <>
       <DialogOverlay />
       <div
         aria-modal="true"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex flex-col w-full max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-hidden rounded-xl bg-popover p-4 text-sm text-popover-foreground shadow-xl outline-none",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-[100dvh] w-full max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-hidden rounded-xl bg-surface-container p-4 text-sm text-on-surface shadow-xl outline-none",
           className,
         )}
         role="dialog"
@@ -175,7 +171,7 @@ function DialogContent({
           </DialogClose>
         )}
       </div>
-    </DialogPortal>,
+    </>,
     document.body,
   );
 }
@@ -193,7 +189,7 @@ function DialogFooter({
   return (
     <div
       className={cn(
-        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end",
+        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t border-outline-alt bg-surface-container-low p-4 sm:flex-row sm:justify-end",
         className,
       )}
       {...props}
@@ -218,7 +214,7 @@ function DialogTitle({ className, ...props }: ComponentProps<"h2">) {
 
 function DialogDescription({ className, ...props }: ComponentProps<"p">) {
   return (
-    <p className={cn("text-sm text-muted-foreground", className)} {...props} />
+    <p className={cn("text-sm text-secondary", className)} {...props} />
   );
 }
 
@@ -229,8 +225,6 @@ export {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 };

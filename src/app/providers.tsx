@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "@/store";
 import { useEffect, useRef } from "react";
 import { initAuthRequest } from "@/store/slices/authSlice";
-import { GlobalToast } from "@/components/ui/global-toast";
+import { GlobalToast } from "@/components/layout/global-toast";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const initialized = useRef(false);

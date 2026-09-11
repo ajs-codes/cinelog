@@ -22,12 +22,12 @@ export function Toast({
   const Icon = config.icon;
 
   return (
-    <div className="pointer-events-none fixed top-16 right-0 z-50 flex w-full max-w-md flex-col items-end gap-2 p-4 sm:w-auto">
+    <div className="pointer-events-none fixed top-16 right-0 z-50 flex w-full max-w-md flex-col items-end gap-2 p-3 sm:w-auto sm:p-4">
       <div
         role="status"
         aria-live="polite"
         className={cn(
-          "pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-lg border bg-surface-container px-4 py-3 pr-10 text-sm text-on-surface shadow-2xl shadow-black/30 transition-colors animate-in fade-in slide-in-from-top-2 duration-200",
+          "pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-lg border bg-surface-container px-4 py-3 pr-10 text-sm text-on-surface shadow-2xl shadow-black/30",
           config.border,
         )}
       >
@@ -44,7 +44,7 @@ export function Toast({
           type="button"
           aria-label="Dismiss notification"
           onClick={onDismiss}
-          className="absolute top-2 right-2 rounded-md p-1 text-neutral transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:outline-none"
+          className="absolute top-2 right-2 min-h-8 min-w-8 rounded-md p-1 text-neutral transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:outline-none"
         >
           <X className="size-4" />
         </button>

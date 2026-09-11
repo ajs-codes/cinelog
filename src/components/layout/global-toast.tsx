@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { hideToast } from "@/store/slices/toastSlice";
-import { Toast } from "./toast";
+import { Toast } from "@/components/ui/toast";
 
 export function GlobalToast() {
   const dispatch = useAppDispatch();

@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
-import { Loader2 } from "lucide-react";
-
-import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
-import { MovieCard } from "@/components/custom/movie-card";
-import { SeriesCard } from "@/components/custom/series-card";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { MovieCard } from "@/components/ui/movie-card";
+import { SeriesCard } from "@/components/ui/series-card";
 import { CollectionCarousel } from "@/components/library/collection-carousel";
 import { LibraryFilterControls } from "@/components/library/library-filter-controls";
-import { Button } from "@/components/ui/button";
+import { LibrarySection } from "@/components/library/library-section";
 import { COLLECTION_MEDIA_TYPE } from "@/lib/constants";
 import type { CustomCollectionWithFilters, LibraryMediaType } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store";
@@ -85,7 +82,7 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
     <main className="relative min-h-[calc(100vh-3.5rem)] px-3.5 py-6 sm:px-8 lg:py-10">
       <div
         aria-hidden={isLoading}
-        className={`mx-auto flex w-full flex-col gap-6 sm:gap-8 ${
+        className={`mx-auto flex w-full min-w-0 flex-col gap-6 sm:gap-8 ${
           isLoading ? "blur-sm" : ""
         }`}
       >
@@ -115,7 +112,7 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
         ) : (
           <>
             {activeLibraryCollections.length > 0 && (
-              <div className="flex flex-col gap-8">
+              <div className="flex min-w-0 flex-col gap-8">
                 {activeLibraryCollections.map((collection) => (
                   <CollectionCarousel
                     key={collection.id}
@@ -160,57 +157,7 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
           </>
         )}
       </div>
-      {isLoading && <ContentLoadingOverlay />}
+      {isLoading && <LoadingOverlay />}
     </main>
-  );
-}
-
-function LibrarySection({
-  title,
-  count,
-  hasMore,
-  loadingMore,
-  onLoadMore,
-  children,
-}: {
-  title: string;
-  count: number;
-  hasMore: boolean;
-  loadingMore: boolean;
-  onLoadMore: () => void;
-  children: ReactNode;
-}) {
-  const headingId = `${title.toLowerCase()}-heading`;
-
-  return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-4">
-      {count > 0 ? (
-        <>
-          <div className="grid grid-cols-2 justify-items-stretch gap-3 sm:grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] sm:gap-x-4 sm:gap-y-6">
-            {children}
-          </div>
-          {hasMore ? (
-            <div className="flex justify-center pt-2">
-              <Button
-                type="button"
-                variant="darkFilled"
-                disabled={loadingMore}
-                onClick={onLoadMore}
-                className="min-w-32"
-              >
-                {loadingMore ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null}
-                {loadingMore ? "Loading" : "Load more"}
-              </Button>
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <p className="rounded-lg border border-white/10 bg-surface-container-low px-4 py-8 text-center font-public-sans text-sm text-secondary">
-          No {title.toLowerCase()} in your watchlist yet.
-        </p>
-      )}
-    </section>
   );
 }

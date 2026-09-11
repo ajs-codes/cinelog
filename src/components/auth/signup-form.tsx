@@ -1,22 +1,23 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, type FieldError } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { signupRequest } from "@/store/slices/authSlice";
-
+import { AlertBanner } from "@/components/ui/alert-banner";
 import { Button } from "@/components/ui/button";
-import type { FieldError } from "react-hook-form";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
 
-const ErrorList = ({ error }: { error?: FieldError }) => {
+function ErrorList({ error }: { error?: FieldError }) {
   if (!error) return null;
 
   if (error.types) {
     const messages = Object.values(error.types).flat();
     return (
-      <ul className="list-inside list-disc text-xs text-status-error space-y-0.5 mt-1">
+      <ul className="mt-1 list-inside list-disc space-y-0.5 text-xs text-status-error">
         {messages.map((msg, idx) => (
           <li key={idx}>{String(msg)}</li>
         ))}
@@ -25,11 +26,11 @@ const ErrorList = ({ error }: { error?: FieldError }) => {
   }
 
   return (
-    <span className="text-xs text-status-error mt-1 inline-block">
+    <span className="mt-1 inline-block text-xs text-status-error">
       {error.message}
     </span>
   );
-};
+}
 
 export function SignupForm() {
   const dispatch = useAppDispatch();
@@ -49,88 +50,79 @@ export function SignupForm() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex w-full flex-col gap-6">
       <div className="text-center">
-        <h1 className="font-heading text-3xl text-on-surface">
+        <h1 className="font-heading text-2xl text-on-surface sm:text-3xl">
           Create Account
         </h1>
         <p className="mt-2 text-sm text-outline-muted">Join Cinelog today</p>
       </div>
 
-      {error && (
-        <div className="rounded-md bg-status-error/10 p-3 text-sm text-status-error">
-          {error}
-        </div>
-      )}
+      {error ? <AlertBanner message={error} variant="error" /> : null}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label
-            className="text-sm font-medium text-secondary"
-            htmlFor="username"
-          >
-            Username
-          </label>
-          <input
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <FormField
+          error={<ErrorList error={errors.username} />}
+          id="username"
+          label="Username"
+        >
+          <Input
             {...register("username")}
+            className="h-10 border-white/10 bg-surface-container px-3 py-2"
             id="username"
-            className="rounded-lg border border-white/10 bg-surface-container px-3 py-2 text-on-surface focus:border-brand-primary focus:outline-none"
             placeholder="username"
           />
-          <ErrorList error={errors.username} />
-        </div>
+        </FormField>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-secondary" htmlFor="email">
-            Email
-          </label>
-          <input
+        <FormField
+          error={<ErrorList error={errors.email} />}
+          id="email"
+          label="Email"
+        >
+          <Input
             {...register("email")}
+            className="h-10 border-white/10 bg-surface-container px-3 py-2"
             id="email"
-            type="email"
-            className="rounded-lg border border-white/10 bg-surface-container px-3 py-2 text-on-surface focus:border-brand-primary focus:outline-none"
             placeholder="email@example.com"
+            type="email"
           />
-          <ErrorList error={errors.email} />
-        </div>
+        </FormField>
 
-        <div className="flex flex-col gap-1.5">
-          <label
-            className="text-sm font-medium text-secondary"
-            htmlFor="displayName"
-          >
-            Display Name <span className="text-outline-muted">(Optional)</span>
-          </label>
-          <input
+        <FormField
+          error={<ErrorList error={errors.displayName} />}
+          id="displayName"
+          label={
+            <>
+              Display Name <span className="text-outline-muted">(Optional)</span>
+            </>
+          }
+        >
+          <Input
             {...register("displayName")}
+            className="h-10 border-white/10 bg-surface-container px-3 py-2"
             id="displayName"
-            className="rounded-lg border border-white/10 bg-surface-container px-3 py-2 text-on-surface focus:border-brand-primary focus:outline-none"
             placeholder="Enter your name"
           />
-          <ErrorList error={errors.displayName} />
-        </div>
+        </FormField>
 
-        <div className="flex flex-col gap-1.5">
-          <label
-            className="text-sm font-medium text-secondary"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <input
+        <FormField
+          error={<ErrorList error={errors.password} />}
+          id="password"
+          label="Password"
+        >
+          <Input
             {...register("password")}
+            className="h-10 border-white/10 bg-surface-container px-3 py-2"
             id="password"
-            type="password"
-            className="rounded-lg border border-white/10 bg-surface-container px-3 py-2 text-on-surface focus:border-brand-primary focus:outline-none"
             placeholder="••••••••"
+            type="password"
           />
-          <ErrorList error={errors.password} />
-        </div>
+        </FormField>
 
         <Button
-          type="submit"
-          disabled={status === "loading"}
           className="mt-2 h-10 w-full"
+          disabled={status === "loading"}
+          type="submit"
         >
           {status === "loading" ? "Creating account..." : "Sign up"}
         </Button>
@@ -138,7 +130,7 @@ export function SignupForm() {
 
       <p className="text-center text-sm text-outline-muted">
         Already have an account?{" "}
-        <Link href="/login" className="text-brand-primary hover:underline">
+        <Link className="text-brand-primary hover:underline" href="/login">
           Sign in
         </Link>
       </p>
