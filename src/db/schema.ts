@@ -205,69 +205,150 @@ export const seriesToGenres = sqliteTable(
 
 export const creators = sqliteTable("creators", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  seriesId: integer("series_id")
-    .notNull()
-    .references(() => series.id, { onDelete: "cascade" }),
+  tmdbId: integer("tmdb_id").notNull().unique(),
   name: text("name").notNull(),
-  tmdbId: integer("tmdb_id").notNull(),
   createdAt: numeric("created_at")
     .notNull()
     .default(sql`(unixepoch())`),
 });
 
-export const credits = sqliteTable(
-  "credits",
+export const seriesToCreators = sqliteTable(
+  "series_to_creators",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    movieId: integer("movie_id").references(() => movies.id, {
-      onDelete: "cascade",
-    }),
-    seriesId: integer("series_id").references(() => series.id, {
-      onDelete: "cascade",
-    }),
-    tmdbId: integer("tmdb_id").notNull(),
-    name: text("name").notNull(),
-    knownForDepartment: text("known_for_department").notNull(),
+    seriesId: integer("series_id")
+      .notNull()
+      .references(() => series.id, { onDelete: "cascade" }),
+    creatorId: integer("creator_id")
+      .notNull()
+      .references(() => creators.id, { onDelete: "cascade" }),
     createdAt: numeric("created_at")
       .notNull()
       .default(sql`(unixepoch())`),
   },
   (table) => [
-    check(
-      "credits_exactly_one_parent_check",
-      sql`(${table.movieId} IS NOT NULL AND ${table.seriesId} IS NULL) OR (${table.movieId} IS NULL AND ${table.seriesId} IS NOT NULL)`,
+    uniqueIndex("series_to_creators_unique").on(
+      table.seriesId,
+      table.creatorId,
     ),
-    index("credits_tmdb_id_index").on(table.tmdbId),
-    index("credits_movie_id_index").on(table.movieId),
-    index("credits_series_id_index").on(table.seriesId),
+    index("series_to_creators_series_id_index").on(table.seriesId),
+    index("series_to_creators_creator_id_index").on(table.creatorId),
   ],
 );
 
-export const productionCompanies = sqliteTable(
-  "production_companies",
+export const credits = sqliteTable("credits", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  tmdbId: integer("tmdb_id").notNull().unique(),
+  name: text("name").notNull(),
+  knownForDepartment: text("known_for_department").notNull(),
+  createdAt: numeric("created_at")
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const moviesToCredits = sqliteTable(
+  "movies_to_credits",
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    movieId: integer("movie_id").references(() => movies.id, {
-      onDelete: "cascade",
-    }),
-    seriesId: integer("series_id").references(() => series.id, {
-      onDelete: "cascade",
-    }),
-    tmdbId: integer("tmdb_id").notNull(),
-    name: text("name").notNull(),
-    originCountry: text("origin_country"),
+    movieId: integer("movie_id")
+      .notNull()
+      .references(() => movies.id, { onDelete: "cascade" }),
+    creditId: integer("credit_id")
+      .notNull()
+      .references(() => credits.id, { onDelete: "cascade" }),
     createdAt: numeric("created_at")
       .notNull()
       .default(sql`(unixepoch())`),
   },
   (table) => [
-    check(
-      "production_companies_exactly_one_parent_check",
-      sql`(${table.movieId} IS NOT NULL AND ${table.seriesId} IS NULL) OR (${table.movieId} IS NULL AND ${table.seriesId} IS NOT NULL)`,
+    uniqueIndex("movies_to_credits_unique").on(
+      table.movieId,
+      table.creditId,
     ),
-    index("production_companies_tmdb_id_index").on(table.tmdbId),
-    index("production_companies_movie_id_index").on(table.movieId),
-    index("production_companies_series_id_index").on(table.seriesId),
+    index("movies_to_credits_movie_id_index").on(table.movieId),
+    index("movies_to_credits_credit_id_index").on(table.creditId),
+  ],
+);
+
+export const seriesToCredits = sqliteTable(
+  "series_to_credits",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    seriesId: integer("series_id")
+      .notNull()
+      .references(() => series.id, { onDelete: "cascade" }),
+    creditId: integer("credit_id")
+      .notNull()
+      .references(() => credits.id, { onDelete: "cascade" }),
+    createdAt: numeric("created_at")
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => [
+    uniqueIndex("series_to_credits_unique").on(
+      table.seriesId,
+      table.creditId,
+    ),
+    index("series_to_credits_series_id_index").on(table.seriesId),
+    index("series_to_credits_credit_id_index").on(table.creditId),
+  ],
+);
+
+export const productionCompanies = sqliteTable("production_companies", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  tmdbId: integer("tmdb_id").notNull().unique(),
+  name: text("name").notNull(),
+  originCountry: text("origin_country"),
+  createdAt: numeric("created_at")
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const moviesToProductionCompanies = sqliteTable(
+  "movies_to_production_companies",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    movieId: integer("movie_id")
+      .notNull()
+      .references(() => movies.id, { onDelete: "cascade" }),
+    companyId: integer("company_id")
+      .notNull()
+      .references(() => productionCompanies.id, { onDelete: "cascade" }),
+    createdAt: numeric("created_at")
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => [
+    uniqueIndex("movies_to_production_companies_unique").on(
+      table.movieId,
+      table.companyId,
+    ),
+    index("movies_to_production_companies_movie_id_index").on(table.movieId),
+    index("movies_to_production_companies_company_id_index").on(table.companyId),
+  ],
+);
+
+export const seriesToProductionCompanies = sqliteTable(
+  "series_to_production_companies",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    seriesId: integer("series_id")
+      .notNull()
+      .references(() => series.id, { onDelete: "cascade" }),
+    companyId: integer("company_id")
+      .notNull()
+      .references(() => productionCompanies.id, { onDelete: "cascade" }),
+    createdAt: numeric("created_at")
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => [
+    uniqueIndex("series_to_production_companies_unique").on(
+      table.seriesId,
+      table.companyId,
+    ),
+    index("series_to_production_companies_series_id_index").on(table.seriesId),
+    index("series_to_production_companies_company_id_index").on(table.companyId),
   ],
 );
 
@@ -358,10 +439,24 @@ export type SeriesToGenre = typeof seriesToGenres.$inferSelect;
 export type NewSeriesToGenre = typeof seriesToGenres.$inferInsert;
 export type Creator = typeof creators.$inferSelect;
 export type NewCreator = typeof creators.$inferInsert;
+export type SeriesToCreator = typeof seriesToCreators.$inferSelect;
+export type NewSeriesToCreator = typeof seriesToCreators.$inferInsert;
 export type Credit = typeof credits.$inferSelect;
 export type NewCredit = typeof credits.$inferInsert;
+export type MovieToCredit = typeof moviesToCredits.$inferSelect;
+export type NewMovieToCredit = typeof moviesToCredits.$inferInsert;
+export type SeriesToCredit = typeof seriesToCredits.$inferSelect;
+export type NewSeriesToCredit = typeof seriesToCredits.$inferInsert;
 export type ProductionCompany = typeof productionCompanies.$inferSelect;
 export type NewProductionCompany = typeof productionCompanies.$inferInsert;
+export type MovieToProductionCompany =
+  typeof moviesToProductionCompanies.$inferSelect;
+export type NewMovieToProductionCompany =
+  typeof moviesToProductionCompanies.$inferInsert;
+export type SeriesToProductionCompany =
+  typeof seriesToProductionCompanies.$inferSelect;
+export type NewSeriesToProductionCompany =
+  typeof seriesToProductionCompanies.$inferInsert;
 export type CustomCollection = typeof customCollections.$inferSelect;
 export type NewCustomCollection = typeof customCollections.$inferInsert;
 export type CustomCollectionFilter =
