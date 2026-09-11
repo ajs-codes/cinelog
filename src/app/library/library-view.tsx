@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { Loader2 } from "lucide-react";
 
 import { ContentLoadingOverlay } from "@/components/custom/content-loading-overlay";
 import { MovieCard } from "@/components/custom/movie-card";
@@ -9,9 +10,13 @@ import { SeriesCard } from "@/components/custom/series-card";
 import { CollectionCarousel } from "@/components/library/collection-carousel";
 import { LibraryFilterControls } from "@/components/library/library-filter-controls";
 import type { LibraryMediaType } from "@/components/library/library-filter-controls";
+import { Button } from "@/components/ui/button";
 import type { CustomCollectionWithFilters } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { libraryRequested } from "@/store/slices/librarySlice";
+import {
+  libraryPageRequested,
+  libraryRequested,
+} from "@/store/slices/librarySlice";
 
 const COLLECTION_MEDIA_TYPE: Record<LibraryMediaType, number> = {
   movie: 0,
@@ -24,16 +29,25 @@ type LibraryViewProps = {
 
 export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
   const dispatch = useAppDispatch();
-  const { movies, series, status, error } = useAppSelector(
-    (state) => state.library,
-  );
+  const {
+    movies,
+    series,
+    movieCount,
+    seriesCount,
+    moviesHasMore,
+    seriesHasMore,
+    moviesLoadingMore,
+    seriesLoadingMore,
+    status,
+    error,
+  } = useAppSelector((state) => state.library);
   const [collections, setCollections] = useState<CustomCollectionWithFilters[]>(
     [],
   );
 
   useEffect(() => {
-    dispatch(libraryRequested());
-  }, [dispatch]);
+    dispatch(libraryRequested({ type: mediaType }));
+  }, [dispatch, mediaType]);
 
   const collectionsFetchedRef = useRef(false);
 
@@ -59,7 +73,7 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
     fetchCollections();
   }, []);
 
-  const total = movies.length + series.length;
+  const total = movieCount + seriesCount;
   const isLoading = status === "idle" || status === "loading";
   const isMovies = mediaType === "movie";
   const activeLibraryCollections = useMemo(
@@ -76,7 +90,7 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
     <main className="relative min-h-[calc(100vh-3.5rem)] px-3.5 py-6 sm:px-8 lg:py-10">
       <div
         aria-hidden={isLoading}
-        className={`mx-auto flex w-full max-w-[1720px] flex-col gap-6 sm:gap-8 ${
+        className={`mx-auto flex w-full flex-col gap-6 sm:gap-8 ${
           isLoading ? "blur-sm" : ""
         }`}
       >
@@ -85,7 +99,7 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
             <h1 className="font-heading text-2xl tracking-tight sm:text-4xl">
               My library
             </h1>
-            <p className="mt-1 sm:mt-2 font-public-sans text-xs text-secondary">
+            <p className="mt-1 font-public-sans text-xs text-secondary sm:mt-2">
               {isLoading
                 ? "Loading your watchlist"
                 : `${total} titles in your watchlist`}
@@ -93,8 +107,8 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
           </div>
 
           <LibraryFilterControls
-            movieCount={movies.length}
-            seriesCount={series.length}
+            movieCount={movieCount}
+            seriesCount={seriesCount}
             mediaType={mediaType}
           />
         </header>
@@ -120,13 +134,29 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
             )}
 
             {isMovies ? (
-              <LibrarySection title="Movies" count={movies.length}>
+              <LibrarySection
+                title="Movies"
+                count={movieCount}
+                hasMore={moviesHasMore}
+                loadingMore={moviesLoadingMore}
+                onLoadMore={() =>
+                  dispatch(libraryPageRequested({ type: "movie" }))
+                }
+              >
                 {movies.map((movie) => (
                   <MovieCard key={movie.tmdb_id} movie={movie} />
                 ))}
               </LibrarySection>
             ) : (
-              <LibrarySection title="Series" count={series.length}>
+              <LibrarySection
+                title="Series"
+                count={seriesCount}
+                hasMore={seriesHasMore}
+                loadingMore={seriesLoadingMore}
+                onLoadMore={() =>
+                  dispatch(libraryPageRequested({ type: "series" }))
+                }
+              >
                 {series.map((show) => (
                   <SeriesCard key={show.tmdb_id} series={show} />
                 ))}
@@ -143,10 +173,16 @@ export function LibraryView({ mediaType = "movie" }: LibraryViewProps) {
 function LibrarySection({
   title,
   count,
+  hasMore,
+  loadingMore,
+  onLoadMore,
   children,
 }: {
   title: string;
   count: number;
+  hasMore: boolean;
+  loadingMore: boolean;
+  onLoadMore: () => void;
   children: ReactNode;
 }) {
   const headingId = `${title.toLowerCase()}-heading`;
@@ -164,9 +200,27 @@ function LibrarySection({
       </h2>
 
       {count > 0 ? (
-        <div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-[repeat(auto-fill,15rem)] sm:justify-items-start sm:gap-x-4 sm:gap-y-6">
-          {children}
-        </div>
+        <>
+          <div className="grid grid-cols-2 justify-items-stretch gap-3 sm:grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] sm:gap-x-4 sm:gap-y-6">
+            {children}
+          </div>
+          {hasMore ? (
+            <div className="flex justify-center pt-2">
+              <Button
+                type="button"
+                variant="darkFilled"
+                disabled={loadingMore}
+                onClick={onLoadMore}
+                className="min-w-32"
+              >
+                {loadingMore ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
+                {loadingMore ? "Loading" : "Load more"}
+              </Button>
+            </div>
+          ) : null}
+        </>
       ) : (
         <p className="rounded-lg border border-white/10 bg-surface-container-low px-4 py-8 text-center font-public-sans text-sm text-secondary">
           No {title.toLowerCase()} in your watchlist yet.

@@ -101,6 +101,18 @@ type LibraryMovie = {
   genres?: string[];
 };
 
+type LibraryCount = {
+  movies: number;
+  series: number;
+};
+
+type LibraryMetadata = {
+  count: LibraryCount;
+  offset: number;
+  limit: number;
+  hasMore: boolean;
+};
+
 type LibrarySeriesSeason = {
   season_number: number;
   episode_count: number;
@@ -332,6 +344,8 @@ export type {
   CollectionSortItem,
   CreditMember,
   CustomCollectionWithFilters,
+  LibraryCount,
+  LibraryMetadata,
   LibraryMovie,
   LibrarySeries,
   LibrarySeriesSeason,
