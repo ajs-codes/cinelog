@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { SearchDialog } from "@/components/search-popup/search-dialog";
+import { PwaManager } from "@/components/layout/pwa-manager";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Noto_Serif, Public_Sans } from "next/font/google";
@@ -17,8 +18,47 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CineLog",
+  applicationName: "CineLog",
+  title: {
+    default: "CineLog",
+    template: "CineLog - %s",
+  },
   description: "Your Personal Movie Log",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      {
+        url: "/logo_light.svg",
+        media: "(prefers-color-scheme: light)",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/logo_dark.svg",
+        media: "(prefers-color-scheme: dark)",
+        type: "image/svg+xml",
+      },
+    ],
+    apple: [
+      { url: "/logo_dark.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "CineLog",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8f9fc" },
+    { media: "(prefers-color-scheme: dark)", color: "#121314" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -51,6 +91,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Providers>
           {children}
           <SearchDialog />
+          <PwaManager />
         </Providers>
       </body>
     </html>

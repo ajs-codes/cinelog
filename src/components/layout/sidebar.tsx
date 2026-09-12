@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "@/hooks/use-theme";
 import {
-  Clapperboard,
   LayoutDashboard,
   Library,
   Settings,
@@ -17,20 +18,31 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { theme, mounted } = useTheme();
+  const isDark = mounted ? theme === "dark" : true;
 
   return (
     <aside
       aria-label="Main navigation"
       className="fixed inset-y-0 left-0 z-30 hidden h-screen w-58 shrink-0 flex-col border-r border-outline-alt bg-surface-container-low lg:flex"
     >
-      <div className="flex h-14 items-center gap-3 border-b border-outline-alt px-7">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-brand-primary text-brand-on-primary">
-          <Clapperboard className="size-5" strokeWidth={2.2} />
+      <Link
+        href="/"
+        className="flex h-14 items-center gap-3 border-b border-outline-alt px-6 transition-opacity hover:opacity-90"
+      >
+        <div className="relative size-9 shrink-0 overflow-hidden rounded-lg">
+          <Image
+            src={isDark ? "/logo_dark.svg" : "/logo_light.svg"}
+            alt="CineLog Logo"
+            fill
+            priority
+            className="object-contain"
+          />
         </div>
         <span className="font-heading text-xl font-semibold tracking-tight text-on-surface">
           CineLog
         </span>
-      </div>
+      </Link>
 
       <nav
         className="flex flex-1 flex-col gap-1 px-4 py-8"
