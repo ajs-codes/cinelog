@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Navbar } from "@/components/layout/navbar";
 import { Sidebar } from "@/components/layout/sidebar";
+import { SearchDialog } from "@/components/search-popup/search-dialog";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </div>
       <BottomNav />
+      <SearchDialog />
     </div>
   );
 }

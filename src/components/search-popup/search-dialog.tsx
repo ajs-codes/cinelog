@@ -10,6 +10,7 @@ import { FloatingSearchButton } from "@/components/search-popup/floating-search-
 import { SearchControls } from "@/components/search-popup/search-controls";
 import { SearchPagination } from "@/components/search-popup/search-pagination";
 import { useSearchDialog } from "@/hooks/search-popup/use-search-dialog";
+import { useSearchDialogViewport } from "@/hooks/search-popup/use-search-dialog-viewport";
 
 export function SearchDialog() {
   const pathname = usePathname();
@@ -37,13 +38,16 @@ function SearchDialogContent() {
     handleRegionChange,
     handlePageChange,
   } = useSearchDialog();
+  const viewport = useSearchDialogViewport(open);
 
   return (
     <Dialog onOpenChange={handleOpenChange} open={open}>
       <DialogTrigger render={<FloatingSearchButton />} />
       <DialogContent
-        className="max-h-[calc(100dvh-1.5rem)] w-full max-w-[calc(100%-1.5rem)] gap-3 border border-outline-alt bg-surface-container p-3 shadow-[0_8px_24px_rgb(0_0_0/25%)] sm:max-h-[calc(100dvh-2rem)] sm:max-w-3xl sm:gap-4 sm:p-4"
+        align="top"
+        className="h-[min(39rem,calc(100dvh-1.5rem))] w-full max-w-[calc(100%-1.5rem)] gap-3 border border-outline-alt bg-surface-container p-3 shadow-[0_8px_24px_rgb(0_0_0/25%)] sm:h-[min(36rem,calc(100dvh-2rem))] sm:max-w-3xl sm:gap-4 sm:p-4"
         showCloseButton={false}
+        style={{ height: viewport.height, top: viewport.top }}
       >
         <SearchField
           autoFocus
