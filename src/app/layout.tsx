@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { SearchDialog } from "@/components/search-popup/search-dialog";
 import { PwaManager } from "@/components/layout/pwa-manager";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -93,7 +92,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <Providers>
           {children}
-          <SearchDialog />
           <PwaManager />
         </Providers>
       </body>

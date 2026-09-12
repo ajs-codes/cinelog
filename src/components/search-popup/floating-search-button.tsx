@@ -31,11 +31,13 @@ export function FloatingSearchButton({
       {...props}
     >
       {shortcutLabel ? (
-        <Badge
-          aria-hidden="true"
-          className="absolute -top-8 px-1.5 py-0.5 text-[10px] leading-3 text-secondary"
-          text={shortcutLabel}
-        />
+        <span className="absolute -top-8 hidden sm:block">
+          <Badge
+            aria-hidden="true"
+            className="px-1.5 py-0.5 text-[10px] leading-3 text-secondary"
+            text={shortcutLabel}
+          />
+        </span>
       ) : null}
       <Search className="size-6" strokeWidth={2} />
     </Button>

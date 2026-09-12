@@ -11,3 +11,21 @@ export const MEDIA_CARD_CLASS =
 
 export const SEGMENTED_CONTROL_CLASS =
   "flex w-fit min-w-0 max-w-full flex-wrap items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1";
+
+export const PWA_OFFLINE_TOAST_CLASS =
+  "fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-status-error/40 bg-surface-container-high px-4 py-2 text-xs font-medium text-status-error shadow-lg backdrop-blur-md transition-all duration-200 lg:bottom-6";
+
+export const PWA_INSTALL_BANNER_CLASS =
+  "fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300 lg:bottom-6";
+
+export const PWA_INSTALL_CARD_CLASS =
+  "flex items-center justify-between gap-3.5 rounded-2xl border border-outline-alt bg-surface-container-low/95 p-2.5 shadow-2xl backdrop-blur-xl";
+
+export const PWA_IOS_CARD_CLASS =
+  "flex items-start justify-between gap-3 rounded-2xl border border-outline-alt bg-surface-container-low/95 p-3.5 shadow-2xl backdrop-blur-xl";
+
+export const PWA_ICON_FRAME_CLASS =
+  "relative size-10 shrink-0 overflow-hidden rounded-xl border border-outline-alt bg-surface-container shadow-xs";
+
+export const PWA_DISMISS_BUTTON_CLASS =
+  "flex size-8 shrink-0 items-center justify-center rounded-lg text-secondary transition-colors hover:bg-surface-container-high hover:text-on-surface";
