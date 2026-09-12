@@ -28,6 +28,29 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
     totalEpisodes > 0
       ? Math.min(100, Math.round((episodesWatched / totalEpisodes) * 100))
       : 0;
+
+  const countableSeasons = (series.seasons_info ?? [])
+    .filter((season) => season.season_number > 0 && season.episode_count > 0)
+    .sort((a, b) => a.season_number - b.season_number);
+
+  const currentSeason =
+    (nextEpisode
+      ? countableSeasons.find(
+          (season) => season.season_number === nextEpisode.seasonNumber,
+        )
+      : null) ??
+    [...countableSeasons].reverse().find((season) => season.episodes_watched > 0) ??
+    countableSeasons[countableSeasons.length - 1];
+
+  const currentSeasonEpisodesWatched = currentSeason
+    ? Math.min(
+        Math.max(currentSeason.episodes_watched ?? 0, 0),
+        currentSeason.episode_count ?? 0,
+      )
+    : episodesWatched;
+
+  const currentSeasonTotalEpisodes =
+    currentSeason?.episode_count ?? totalEpisodes;
   const canUpdateWatchActivity = canUpdateSeriesWatchActivity(series.status);
   const isNextDisabled =
     isPending || !canUpdateWatchActivity || nextEpisode === null;
@@ -64,7 +87,7 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
             )}
             <span className="truncate">
               {nextEpisode
-                ? `Mark Episode ${nextEpisode.episodeNumber}`
+                ? `Mark Ep ${nextEpisode.episodeNumber}`
                 : "All Watched"}
             </span>
           </Button>
@@ -78,7 +101,7 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
               {completedSeasons}/{totalSeasons} seasons
             </span>
             <span>
-              {episodesWatched}/{totalEpisodes} episodes
+              {currentSeasonEpisodesWatched}/{currentSeasonTotalEpisodes} episodes
             </span>
           </div>
           <Progress
