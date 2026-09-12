@@ -29,7 +29,7 @@ export function CollectionCarousel({
     <Carousel
       extraHeader={
         <>
-          <span className="rounded-md border border-white/10 bg-surface-container-high px-2 py-0.5 font-public-sans text-[10px] font-medium text-secondary">
+          <span className="rounded-md border border-outline-variant bg-surface-container-high px-2 py-0.5 font-public-sans text-[10px] font-medium text-secondary">
             {collection.mediaType === 0 ? "Movies" : "Series"}
           </span>
           <span className="font-public-sans text-xs text-outline-muted">

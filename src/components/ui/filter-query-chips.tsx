@@ -33,7 +33,7 @@ export function FilterQueryChips({
       ))}
       {onAddClause ? (
         <button
-          className="ml-1 rounded border border-dashed border-white/20 px-2 py-0.5 text-[10px] text-brand-primary transition-colors hover:border-brand-primary hover:bg-brand-primary/10"
+          className="ml-1 rounded border border-dashed border-outline-variant px-2 py-0.5 text-[10px] text-brand-primary transition-colors hover:border-brand-primary hover:bg-brand-primary/10"
           onClick={onAddClause}
           type="button"
         >

@@ -165,7 +165,8 @@ function UserProfileForm({ user }: { user: User | null }) {
 
         <div className="flex justify-end">
           <Button
-            className="h-10 min-w-36 rounded-lg bg-brand-primary font-medium text-surface hover:bg-brand-primary/90"
+            variant="primaryFilled"
+            className="h-10 min-w-36 rounded-lg font-medium"
             disabled={!user || form.isLoading}
             type="submit"
           >

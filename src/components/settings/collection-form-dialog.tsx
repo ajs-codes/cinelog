@@ -185,7 +185,7 @@ export function CollectionFormDialog({
               Cancel
             </Button>
             <Button
-              className="bg-brand-primary text-surface hover:bg-brand-primary/90"
+              variant="primaryFilled"
               disabled={isSubmitting}
               type="submit"
             >

@@ -37,7 +37,7 @@ export function CustomCollectionsSection() {
             >
               Custom Stream Collections
             </h2>
-            <span className="inline-flex items-center rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 font-public-sans text-xs font-semibold text-amber-400">
+            <span className="inline-flex items-center rounded-md border border-brand-tertiary-accent/30 bg-brand-tertiary-accent/10 px-2.5 py-0.5 font-public-sans text-xs font-semibold text-brand-tertiary-accent">
               {activeCount} Active
             </span>
           </div>
@@ -47,7 +47,8 @@ export function CustomCollectionsSection() {
           </p>
         </div>
         <Button
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/10 bg-surface-container-high px-4 font-public-sans text-xs font-medium text-on-surface transition-colors hover:bg-surface-container hover:text-white"
+          variant="primaryFilled"
+          className="inline-flex h-9 items-center gap-2 rounded-lg px-4 font-public-sans text-xs font-semibold"
           onClick={form.openCreateDialog}
           type="button"
         >
@@ -65,13 +66,14 @@ export function CustomCollectionsSection() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12 text-secondary">
-          <Loader2 className="h-6 w-6 animate-spin" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-primary" />
         </div>
       ) : collections.length === 0 ? (
         <EmptyState
           action={
             <Button
-              className="mt-1 rounded-lg bg-brand-primary px-4 py-2 font-public-sans text-xs text-surface hover:bg-brand-primary/90"
+              variant="primaryFilled"
+              className="mt-1 rounded-lg px-4 py-2 font-public-sans text-xs font-semibold"
               onClick={form.openCreateDialog}
               type="button"
             >

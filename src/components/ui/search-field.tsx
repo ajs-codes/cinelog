@@ -40,7 +40,7 @@ function SearchField({
         {...props}
         aria-label={props["aria-label"] ?? "Search"}
         className={cn(
-          "h-full border-0 bg-transparent font-public-sans text-sm text-white shadow-none outline-none ring-0 placeholder:text-sm placeholder:text-secondary focus-visible:border-0 focus-visible:ring-0 sm:text-base sm:placeholder:text-base",
+          "h-full border-0 bg-transparent font-public-sans text-sm text-on-surface shadow-none outline-none ring-0 placeholder:text-sm placeholder:text-secondary focus-visible:border-0 focus-visible:ring-0 sm:text-base sm:placeholder:text-base",
           startIcon ? "pl-9.5 sm:pl-12" : "pl-3",
           endIcon ? "pr-9.5 sm:pr-12" : "pr-3",
         )}

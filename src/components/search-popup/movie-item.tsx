@@ -105,7 +105,7 @@ function MovieItem({
         </div>
       ) : state === "failed" ? (
         <div className="flex min-h-28 w-full items-center justify-center px-4 py-6 text-center sm:min-h-36 sm:py-8">
-          <h3 className="font-heading text-base font-semibold text-white sm:text-lg">
+          <h3 className="font-heading text-base font-semibold text-on-surface sm:text-lg">
             {title ?? "No results found"}
           </h3>
         </div>
@@ -117,7 +117,7 @@ function MovieItem({
             onClick={onItemClick}
           >
             <div className="flex w-20 shrink-0 self-stretch items-center justify-center sm:w-24">
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-surface-container-low shadow-md">
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-lg border border-outline-alt bg-surface-container-low shadow-md">
                 {poster && (
                   <Image
                     alt={posterAlt ?? `${title ?? "Movie"} poster`}
@@ -138,7 +138,7 @@ function MovieItem({
               )}
             >
               <div className="flex min-w-0 items-baseline gap-1.5 sm:gap-2">
-                <h3 className="truncate font-heading text-base font-semibold leading-6 text-white sm:text-lg sm:leading-7">
+                <h3 className="truncate font-heading text-base font-semibold leading-6 text-on-surface sm:text-lg sm:leading-7">
                   {title ?? "Untitled"}
                 </h3>
                 {year ? (

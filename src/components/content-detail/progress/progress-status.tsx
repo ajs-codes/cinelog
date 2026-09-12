@@ -68,7 +68,7 @@ export function ProgressStatus({
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="relative" ref={containerRef}>
         <button
-          className="inline-flex min-h-10 items-center gap-3 rounded-xl border border-white/10 bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex min-h-10 items-center gap-3 rounded-xl border border-outline-variant bg-surface-container-high/70 px-3.5 py-2.5 text-sm text-on-surface transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50"
           disabled={isDisabled}
           onClick={toggle}
           type="button"
@@ -161,7 +161,7 @@ export function ProgressStatus({
 
 function ProgressMetadata({ label, value }: { label: string; value: string }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface-container-high/70 px-3 py-2 text-[11px] font-semibold tracking-[0.12em] text-secondary uppercase">
+    <div className="inline-flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high/70 px-3 py-2 text-[11px] font-semibold tracking-[0.12em] text-secondary uppercase">
       <span className="text-outline-muted">{label}</span>
       <span className="text-on-surface">{value}</span>
     </div>

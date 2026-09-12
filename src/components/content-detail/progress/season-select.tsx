@@ -27,7 +27,7 @@ export function SeasonSelect({
   return (
     <div className="relative inline-block" ref={containerRef}>
       <button
-        className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/10 bg-surface-container-high/70 px-3 py-2 text-[11px] font-semibold tracking-[0.12em] text-secondary uppercase shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50"
+        className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high/70 px-3 py-2 text-[11px] font-semibold tracking-[0.12em] text-secondary uppercase transition-colors hover:bg-surface-container-high disabled:pointer-events-none disabled:opacity-50"
         disabled={isDisabled}
         onClick={toggle}
         type="button"

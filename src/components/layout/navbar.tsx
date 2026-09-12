@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { logoutRequest } from "@/store/slices/authSlice";
 
@@ -32,6 +33,7 @@ export function Navbar({ onMenuOpen }: NavbarProps) {
         <Menu className="size-4.5" strokeWidth={1.8} />
       </Button>
       <div className="ml-auto flex items-center gap-2 sm:gap-4">
+        <ThemeToggle />
         {isAuthenticated && user && (
           <div className="flex items-center gap-2 sm:gap-3">
             <Button
@@ -46,7 +48,7 @@ export function Navbar({ onMenuOpen }: NavbarProps) {
               <span className="hidden text-sm font-semibold text-on-surface sm:block">
                 {user.displayName || user.username}
               </span>
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary-container text-white border border-white/10 shadow-sm">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary-container text-white border border-outline-alt shadow-sm">
                 <span className="text-xs font-bold uppercase">
                   {(user.displayName || user.username).charAt(0)}
                 </span>

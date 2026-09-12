@@ -68,7 +68,7 @@ export function SignupForm() {
         >
           <Input
             {...register("username")}
-            className="h-10 border-white/10 bg-surface-container px-3 py-2"
+            className="h-10 border-outline-alt bg-surface-container px-3 py-2"
             id="username"
             placeholder="username"
           />
@@ -81,7 +81,7 @@ export function SignupForm() {
         >
           <Input
             {...register("email")}
-            className="h-10 border-white/10 bg-surface-container px-3 py-2"
+            className="h-10 border-outline-alt bg-surface-container px-3 py-2"
             id="email"
             placeholder="email@example.com"
             type="email"
@@ -99,7 +99,7 @@ export function SignupForm() {
         >
           <Input
             {...register("displayName")}
-            className="h-10 border-white/10 bg-surface-container px-3 py-2"
+            className="h-10 border-outline-alt bg-surface-container px-3 py-2"
             id="displayName"
             placeholder="Enter your name"
           />
@@ -112,7 +112,7 @@ export function SignupForm() {
         >
           <Input
             {...register("password")}
-            className="h-10 border-white/10 bg-surface-container px-3 py-2"
+            className="h-10 border-outline-alt bg-surface-container px-3 py-2"
             id="password"
             placeholder="••••••••"
             type="password"

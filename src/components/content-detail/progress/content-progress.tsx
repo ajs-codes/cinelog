@@ -55,7 +55,7 @@ export function ContentProgress({
             selectedSeason={selectedSeason}
             onSeasonChange={setPickedSeason}
           />
-          <div className="mt-5 h-px w-full bg-white/15" />
+          <div className="mt-5 h-px w-full bg-outline-variant" />
           <div className="mt-5">
             <ProgressMetrics series={series} selectedSeason={selectedSeason} />
           </div>
