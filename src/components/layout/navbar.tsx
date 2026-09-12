@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { Clapperboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useTheme } from "@/hooks/use-theme";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { logoutRequest } from "@/store/slices/authSlice";
 
@@ -12,6 +13,8 @@ export function Navbar() {
   const { isAuthenticated, user, status } = useAppSelector(
     (state) => state.auth,
   );
+  const { theme, mounted } = useTheme();
+  const isDark = mounted ? theme === "dark" : true;
 
   const handleLogout = () => {
     dispatch(logoutRequest());
@@ -22,8 +25,14 @@ export function Navbar() {
       {/* Mobile & Tab: App Logo & Title in Center */}
       <div className="flex w-full items-center justify-center lg:hidden">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary text-brand-on-primary shadow-xs">
-            <Clapperboard className="size-4.5" strokeWidth={2.2} />
+          <div className="relative size-8 shrink-0 overflow-hidden rounded-lg">
+            <Image
+              src={isDark ? "/logo_dark.svg" : "/logo_light.svg"}
+              alt="CineLog Logo"
+              fill
+              priority
+              className="object-contain"
+            />
           </div>
           <span className="font-heading text-lg font-semibold tracking-tight text-on-surface">
             CineLog
