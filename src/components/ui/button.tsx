@@ -18,12 +18,12 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-brand-primary-container text-white hover:bg-brand-primary-container/85 active:bg-brand-primary-container",
   accentFilled: "bg-brand-primary text-brand-on-primary hover:bg-brand-primary/85",
   darkFilled:
-    "border border-outline-variant bg-surface-container-low text-secondary hover:bg-surface-container hover:text-on-surface",
+    "border border-outline-variant bg-surface-container-high text-on-surface hover:bg-surface-container-highest",
   darkTonal:
-    "border border-brand-primary/30 bg-surface-container-high text-brand-primary hover:bg-surface-container hover:text-brand-primary",
+    "border border-current/30 bg-current/10 text-brand-primary hover:bg-current/20 hover:text-brand-primary",
   ghost:
-    "bg-surface-container-high text-brand-primary hover:bg-surface-container-highest",
-  dark: "bg-surface-container-low text-on-surface hover:bg-surface-container",
+    "border border-current/25 bg-current/10 text-secondary hover:bg-current/20 hover:text-on-surface",
+  dark: "border border-outline-variant bg-surface-container text-on-surface hover:bg-surface-container-high",
   link: "text-brand-primary underline-offset-4 hover:underline",
 };
 

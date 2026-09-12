@@ -47,13 +47,9 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
               sizes="100vw"
               src={`https://image.tmdb.org/t/p/original${backdropPath}`}
             />
-            <div className="absolute inset-0 bg-linear-to-t from-surface/85 via-surface/30 to-transparent" />
           </>
         ) : (
-          <>
-            <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-tertiary/10 blur-xl" />
-            <div className="absolute bottom-22 left-[26%] right-[42%] h-80 rounded-full bg-status-info/10 blur-xl" />
-          </>
+          <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-tertiary/10 blur-xl" />
         )}
       </div>
 
@@ -69,7 +65,7 @@ export function HeroHeader({ movie, series, type }: HeroHeaderProps) {
                 {title}
               </h1>
               {tagline && (
-                <p className="max-w-full wrap-break-words text-[16px] font-medium text-outline-muted md:max-w-230">
+                <p className="max-w-full wrap-break-words text-[16px] font-medium text-on-surface-variant md:max-w-230">
                   {tagline}
                 </p>
               )}

@@ -64,19 +64,19 @@ export function Carousel({
           >
             <Button
               aria-label="Scroll left"
-              className="h-8 w-8 rounded-full border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container"
+              className="h-8 w-8 rounded-full border border-current/30 bg-current/10 text-on-surface hover:bg-current/20 hover:text-on-surface"
               onClick={() => scroll("left")}
               size="icon"
-              variant="darkFilled"
+              variant="ghost"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button
               aria-label="Scroll right"
-              className="h-8 w-8 rounded-full border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container"
+              className="h-8 w-8 rounded-full border border-current/30 bg-current/10 text-on-surface hover:bg-current/20 hover:text-on-surface"
               onClick={() => scroll("right")}
               size="icon"
-              variant="darkFilled"
+              variant="ghost"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

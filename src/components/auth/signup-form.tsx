@@ -6,6 +6,7 @@ import Link from "next/link";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { signupRequest } from "@/store/slices/authSlice";
+import { Loader2 } from "lucide-react";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
@@ -120,11 +121,18 @@ export function SignupForm() {
         </FormField>
 
         <Button
-          className="mt-2 h-10 w-full"
+          className="mt-2 h-10 w-full gap-2"
           disabled={status === "loading"}
           type="submit"
         >
-          {status === "loading" ? "Creating account..." : "Sign up"}
+          {status === "loading" ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Creating account...</span>
+            </>
+          ) : (
+            "Sign up"
+          )}
         </Button>
       </form>
 

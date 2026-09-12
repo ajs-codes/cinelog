@@ -50,7 +50,7 @@ function SearchField({
       {showEndIcon ? (
         <Button
           aria-label="Clear search"
-          className="absolute right-2 size-6 p-0 text-outline-muted sm:size-7"
+          className="absolute right-2 size-6 p-0 text-brand-primary border border-current/30 bg-current/10 hover:bg-current/20 sm:size-7"
           onClick={onClear}
           size="icon-sm"
           type="button"

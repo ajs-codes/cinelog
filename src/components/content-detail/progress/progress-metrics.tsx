@@ -49,7 +49,7 @@ function ProgressRow({
         </span>
       </div>
 
-      <div className="h-2.5 w-full overflow-hidden rounded-full bg-surface-container-high/90">
+      <div className="h-2.5 w-full overflow-hidden rounded-full bg-surface-container-high">
         <div
           className={`h-full rounded-full ${colorClass}`}
           style={{ width: `${percent}%` }}

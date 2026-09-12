@@ -92,7 +92,7 @@ export function CollectionStreamCard({
           }
         />
         <Button
-          className="h-8 w-8 text-secondary hover:text-on-surface"
+          className="h-8 w-8 text-secondary border border-current/30 bg-current/10 hover:text-on-surface hover:bg-current/20"
           onClick={onEdit}
           size="icon"
           title="Edit Stream"

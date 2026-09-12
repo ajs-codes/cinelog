@@ -58,9 +58,9 @@ export function Sidebar() {
             <Link
               key={label}
               href={href}
-              className={`flex h-11 items-center gap-3 rounded-lg px-3 font-public-sans text-sm transition-colors ${
+              className={`flex h-11 items-center gap-3 rounded-lg px-3 font-public-sans text-sm font-semibold transition-colors ${
                 active
-                  ? "bg-brand-primary-container/20 font-semibold text-brand-primary"
+                  ? "bg-brand-primary-container/20 text-brand-primary"
                   : "text-secondary hover:bg-surface-container-high hover:text-on-surface"
               }`}
               aria-current={active ? "page" : undefined}

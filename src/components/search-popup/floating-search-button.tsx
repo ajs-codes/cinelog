@@ -20,7 +20,7 @@ export function FloatingSearchButton({
         shortcutLabel ? `Search movies (${shortcutLabel})` : "Search movies"
       }
       className={cn(
-        "fixed right-4 bottom-20 sm:right-6 sm:bottom-20 lg:right-6 lg:bottom-6 z-30 size-12 sm:size-14 rounded-xl shadow-[0_4px_8px_rgb(0_0_0/30%)]",
+        "fixed right-4 bottom-20 sm:right-6 sm:bottom-20 lg:right-6 lg:bottom-6 z-30 size-12 sm:size-14 rounded-full shadow-[0_4px_8px_rgb(0_0_0/30%)]",
         className,
       )}
       size="icon-lg"

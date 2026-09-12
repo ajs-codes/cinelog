@@ -39,7 +39,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
         <DialogTrigger>
           <button
             aria-label="Share title"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-outline-variant bg-surface-container text-on-surface transition hover:bg-surface-container-high"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-current/30 bg-current/10 text-on-surface transition hover:bg-current/20"
             type="button"
           >
             <Share2 className="h-4 w-4" />

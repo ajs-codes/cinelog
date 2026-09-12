@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/hooks/use-theme";
@@ -48,10 +49,17 @@ export function Navbar() {
             <Button
               variant="dark"
               onClick={handleLogout}
-              className="hover:bg-status-error/80! px-4 py-2 text-sm"
+              className="hover:bg-status-error/80! px-4 py-2 text-sm gap-2"
               disabled={status === "loading"}
             >
-              Logout
+              {status === "loading" ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Signing out...</span>
+                </>
+              ) : (
+                "Logout"
+              )}
             </Button>
             <div className="flex items-center gap-2.5">
               <span className="text-sm font-semibold text-on-surface">

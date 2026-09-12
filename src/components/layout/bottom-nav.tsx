@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Library,
+  Loader2,
   LogIn,
   LogOut,
   Menu,
@@ -135,7 +136,7 @@ export function BottomNav() {
                 variant="ghost"
                 aria-label="Close menu"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-secondary hover:text-on-surface"
+                className="text-secondary border border-current/30 bg-current/10 hover:text-on-surface hover:bg-current/20"
               >
                 <X className="size-4.5" />
               </Button>
@@ -186,8 +187,17 @@ export function BottomNav() {
                       disabled={status === "loading"}
                       className="w-full justify-center gap-2 text-status-error border-status-error/30 hover:bg-status-error/10 hover:text-status-error"
                     >
-                      <LogOut className="size-4" />
-                      {status === "loading" ? "Signing out..." : "Sign Out"}
+                      {status === "loading" ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" />
+                          <span>Signing out...</span>
+                        </>
+                      ) : (
+                        <>
+                          <LogOut className="size-4" />
+                          <span>Sign Out</span>
+                        </>
+                      )}
                     </Button>
                   </div>
                 ) : (

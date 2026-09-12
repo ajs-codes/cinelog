@@ -17,18 +17,18 @@ export function MetaRow({ movie, series, type }: MetaRowProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-xs text-on-surface">
-      <span className="inline-flex items-center gap-2 rounded-md border border-brand-primary-container/40 bg-brand-primary-container/10 px-2.5 py-1.5 font-semibold uppercase tracking-[0.08em] text-brand-primary-container">
-        <TvMinimal className="h-3.5 w-3.5 text-brand-primary" />
+      <span className="inline-flex items-center gap-2 rounded-full border border-brand-primary bg-brand-primary px-2.5 py-1.5 font-semibold uppercase tracking-[0.08em] text-brand-on-primary">
+        <TvMinimal className="h-3.5 w-3.5 text-brand-on-primary" />
         <span className="font-bold">{contentType}</span>
       </span>
-      <span className="text-secondary">{year}</span>
-      <span className="text-secondary">•</span>
-      <span className="text-secondary">{duration}</span>
-      <span className="text-secondary">•</span>
-      <span className="inline-flex items-center rounded-md border border-outline-variant bg-surface-container px-2 py-1 text-[11px] font-semibold text-secondary">
+      <span className="text-on-surface-variant">{year}</span>
+      <span className="text-on-surface-variant">•</span>
+      <span className="text-on-surface-variant">{duration}</span>
+      <span className="text-on-surface-variant">•</span>
+      <span className="inline-flex items-center rounded-xl border border-outline-alt bg-surface-container-high px-2 py-1 text-[11px] font-semibold text-secondary">
         {rating}
       </span>
-      <span className="ml-2 inline-flex items-center rounded-full border border-brand-tertiary-accent bg-brand-tertiary-accent/10 px-2.5 py-1 text-[11px] font-medium text-brand-tertiary-accent-alt">
+      <span className="ml-2 inline-flex items-center rounded-full bg-surface-container-high px-2.5 py-1 text-[11px] font-semibold text-brand-tertiary-accent-alt border border-outline-alt">
         {status}
       </span>
     </div>

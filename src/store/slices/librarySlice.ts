@@ -38,6 +38,7 @@ export type SeriesProgressFields = {
 type LibraryItemSnapshot = {
   watch_status: number;
   impression: number | null;
+  pendingType?: "watch_status" | "impression" | "progress";
 };
 
 export type LibraryState = {
@@ -229,14 +230,24 @@ const librarySlice = createSlice({
       state,
       action: PayloadAction<LibraryItemMutation>,
     ) => {
-      const { mediaType, tmdbId, watch_status, impression } = action.payload;
+      const { mediaType, tmdbId, watch_status, impression, progress } = action.payload;
       const item = findItem(state, mediaType, tmdbId);
       if (!item) return;
 
       const key = libraryItemKey(mediaType, tmdbId);
-      state.pending[key] ??= {
-        watch_status: item.watch_status,
-        impression: item.impression,
+      const pendingType =
+        watch_status !== undefined
+          ? "watch_status"
+          : impression !== undefined
+            ? "impression"
+            : progress !== undefined
+              ? "progress"
+              : undefined;
+
+      state.pending[key] = {
+        watch_status: state.pending[key]?.watch_status ?? item.watch_status,
+        impression: state.pending[key]?.impression ?? item.impression,
+        pendingType,
       };
 
       if (watch_status !== undefined) {
