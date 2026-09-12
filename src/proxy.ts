@@ -14,6 +14,20 @@ export async function proxy(request: NextRequest) {
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isApiAuthRoute = pathname.startsWith("/api/auth/");
+  const isPublicAsset =
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/manifest.json" ||
+    pathname === "/sw.js" ||
+    pathname === "/favicon.ico" ||
+    pathname.endsWith(".svg") ||
+    pathname.endsWith(".png") ||
+    pathname.endsWith(".ico") ||
+    pathname.endsWith(".webp");
+
+  // 0. Allow public assets, PWA manifest, and service worker to pass through
+  if (isPublicAsset) {
+    return NextResponse.next();
+  }
 
   // 1. If user is already logged in, prevent them from accessing /login or /signup
   if (isAuthRoute) {
@@ -60,12 +74,12 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
+     * Match all request paths except for:
      * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - PWA assets: manifest.webmanifest, manifest.json, sw.js, favicon.ico, images/svgs
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|manifest\\.webmanifest|manifest\\.json|sw\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
