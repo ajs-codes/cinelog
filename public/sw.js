@@ -1,4 +1,4 @@
-const CACHE_NAME = "cinelog-v1";
+const CACHE_NAME = "cinelog-v2";
 
 const PRECACHE_ASSETS = [
   "/",
@@ -6,6 +6,17 @@ const PRECACHE_ASSETS = [
   "/icon.svg",
   "/logo_dark.svg",
   "/logo_light.svg",
+  "/icon-192x192.png",
+  "/icon-512x512.png",
+  "/icon-maskable-192x192.png",
+  "/icon-maskable-512x512.png",
+  "/logo-dark-192x192.png",
+  "/logo-dark-512x512.png",
+  "/logo-light-192x192.png",
+  "/logo-light-512x512.png",
+  "/apple-touch-icon.png",
+  "/favicon-32x32.png",
+  "/favicon-16x16.png",
   "/file.svg",
   "/tmdb_logo.svg",
   "/imdb_logo.svg",
@@ -53,7 +64,7 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests and cross-origin requests
+  // Skip non-GET requests
   if (request.method !== "GET") return;
 
   // Don't intercept API requests or dynamic auth endpoints with cache
@@ -86,7 +97,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets (images, svg, fonts, css, js): Stale-While-Revalidate / Cache-first
+  // Static assets (images, png, svg, fonts, css, js): Stale-While-Revalidate / Cache-first
   if (
     url.origin === self.location.origin &&
     (url.pathname.endsWith(".svg") ||
@@ -138,8 +149,8 @@ self.addEventListener("push", (event) => {
     const data = event.data.json();
     const options = {
       body: data.body || "New update from CineLog",
-      icon: data.icon || "/icon.svg",
-      badge: "/icon.svg",
+      icon: data.icon || "/icon-192x192.png",
+      badge: "/icon-192x192.png",
       vibrate: [100, 50, 100],
       data: {
         url: data.url || "/",

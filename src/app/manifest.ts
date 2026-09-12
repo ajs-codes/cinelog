@@ -17,6 +17,54 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["entertainment", "movies", "lifestyle"],
     icons: [
       {
+        src: "/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon-maskable-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/icon-maskable-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/logo-dark-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/logo-dark-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/logo-light-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/logo-light-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
         src: "/icon.svg",
         sizes: "any",
         type: "image/svg+xml",
@@ -53,14 +101,14 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: "Library",
         description: "View your saved movies, series, and custom lists",
         url: "/library",
-        icons: [{ src: "/logo_dark.svg", sizes: "any" }],
+        icons: [{ src: "/icon-192x192.png", sizes: "192x192", type: "image/png" }],
       },
       {
         name: "Settings",
         short_name: "Settings",
         description: "Customize theme, profile, and collections",
         url: "/settings",
-        icons: [{ src: "/logo_dark.svg", sizes: "any" }],
+        icons: [{ src: "/icon-192x192.png", sizes: "192x192", type: "image/png" }],
       },
     ],
   };
