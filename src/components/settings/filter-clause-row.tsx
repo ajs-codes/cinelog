@@ -119,7 +119,7 @@ export function FilterClauseRow({
         )}
       </div>
       <Button
-        className="ml-auto h-8 w-8 shrink-0 text-secondary hover:text-status-error disabled:opacity-30 sm:ml-0"
+        className="ml-auto h-8 w-8 shrink-0 text-status-error border border-current/30 bg-current/10 hover:bg-current/20 disabled:opacity-30 sm:ml-0"
         disabled={!canRemove}
         onClick={onRemove}
         size="icon"

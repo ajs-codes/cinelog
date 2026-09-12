@@ -9,10 +9,12 @@ import { canUpdateMovieWatchActivity } from "@/lib/media/status";
 import type { LibraryMovie } from "@/lib/types";
 
 export function MovieCard({ movie }: { movie: LibraryMovie }) {
-  const { isPending, requestMutation } = useLibraryItemMutation(
-    "movie",
-    movie.tmdb_id,
-  );
+  const {
+    isPending,
+    isImpressionPending,
+    isStatusPending,
+    requestMutation,
+  } = useLibraryItemMutation("movie", movie.tmdb_id);
   const canUpdateWatchActivity = canUpdateMovieWatchActivity(movie.status);
 
   return (
@@ -21,11 +23,13 @@ export function MovieCard({ movie }: { movie: LibraryMovie }) {
         <>
           <CardImpressionToggle
             disabled={isPending || !canUpdateWatchActivity}
+            loading={isImpressionPending}
             impression={movie.impression}
             onSelect={(impression) => requestMutation({ impression })}
           />
           <CardStatusToggle
             disabled={isPending || !canUpdateWatchActivity}
+            loading={isStatusPending}
             onSelect={(watchStatus) =>
               requestMutation({ watch_status: watchStatus })
             }

@@ -7,12 +7,14 @@ import { IMPRESSION, IMPRESSION_CONFIG } from "@/lib/constants";
 type CardImpressionToggleProps = {
   impression: number | null;
   disabled?: boolean;
+  loading?: boolean;
   onSelect: (impression: number | null) => void;
 };
 
 export function CardImpressionToggle({
   impression,
   disabled = false,
+  loading = false,
   onSelect,
 }: CardImpressionToggleProps) {
   const current =
@@ -24,6 +26,7 @@ export function CardImpressionToggle({
     <IconPopover
       allowDeselect
       disabled={disabled}
+      loading={loading}
       onSelect={(value) => onSelect(impression === value ? null : value)}
       options={Object.values(IMPRESSION).map((option) => {
         const config =

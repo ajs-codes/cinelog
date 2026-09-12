@@ -23,7 +23,10 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
       className={cn(
-        "relative size-9 rounded-lg border border-outline-alt bg-surface-container-low text-secondary hover:bg-surface-container hover:text-on-surface transition-all duration-200",
+        "relative size-9 rounded-lg transition-all duration-200",
+        isDark
+          ? "border border-brand-tertiary-accent-alt/30 bg-brand-tertiary-accent-alt/10 text-brand-tertiary-accent-alt hover:bg-brand-tertiary-accent-alt/20"
+          : "border border-brand-primary/30 bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20",
         className,
       )}
     >

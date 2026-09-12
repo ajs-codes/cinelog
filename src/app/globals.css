@@ -102,55 +102,55 @@
 
 /* Light Mode (Alexandria Light) */
 :root {
-  --radius: 0.25rem;
+  --radius: 0.55rem;
 
-  --surface: #f8f9fa;
-  --surface-dim: #d8dadd;
-  --surface-bright: #f8f9fc;
+  --surface: #edf1f7;
+  --surface-dim: #d5dce6;
+  --surface-bright: #f4f6fa;
   --surface-container-lowest: #ffffff;
   --surface-container-low: #ffffff;
-  --surface-container: #f1f3f5;
-  --surface-container-high: #e9ecef;
-  --surface-container-highest: #dee2e6;
-  --surface-variant: #e1e2e5;
+  --surface-container: #e3e8ef;
+  --surface-container-high: #d8e0ea;
+  --surface-container-highest: #ccd6e2;
+  --surface-variant: #d4dde8;
 
-  --text-on-surface: #191c1e;
-  --text-on-surface-variant: #43474e;
-  --text-secondary: #5a5f63;
-  --text-outline-muted: #8d909e;
+  --text-on-surface: #0f172a;
+  --text-on-surface-variant: #334155;
+  --text-secondary: #475569;
+  --text-outline-muted: #64748b;
 
-  --outline: #c3c7cf;
-  --outline-variant: #e1e3e8;
-  --outline-alt: rgb(0 0 0 / 8%);
-  --neutral: #54595d;
+  --outline: #94a3b8;
+  --outline-variant: #cbd5e1;
+  --outline-alt: rgb(15 23 42 / 12%);
+  --neutral: #475569;
 
   --brand-primary: #094cb2;
   --brand-on-primary: #ffffff;
-  --brand-primary-container: #3366cc;
+  --brand-primary-container: #2563eb;
   --brand-on-primary-container: #001946;
 
-  --brand-tertiary: #715c00;
-  --brand-tertiary-container: #c6a93d;
-  --brand-tertiary-accent: #8c7300;
-  --brand-tertiary-accent-alt: #dcc661;
+  --brand-tertiary: #854d0e;
+  --brand-tertiary-container: #d97706;
+  --brand-tertiary-accent: #b45309;
+  --brand-tertiary-accent-alt: #a16207;
 
-  --status-success: #16a34a;
-  --status-error: #ba1a1a;
-  --status-error-light: #ffdad6;
-  --status-info: #0284c7;
+  --status-success: #15803d;
+  --status-error: #b91c1c;
+  --status-error-light: #fee2e2;
+  --status-info: #0369a1;
 
-  --background: #f8f9fc;
-  --foreground: #191c1e;
+  --background: #edf1f7;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #191c1e;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #191c1e;
-  --border: rgb(0 0 0 / 8%);
-  --input: #f1f3f5;
-  --ring: #3366cc;
-  --destructive: #ba1a1a;
-  --muted: #f1f3f5;
-  --muted-foreground: #5a5f63;
+  --popover-foreground: #0f172a;
+  --border: rgb(15 23 42 / 12%);
+  --input: #e3e8ef;
+  --ring: #2563eb;
+  --destructive: #b91c1c;
+  --muted: #e3e8ef;
+  --muted-foreground: #475569;
 }
 
 /* Dark Mode (Alexandria Dark) */

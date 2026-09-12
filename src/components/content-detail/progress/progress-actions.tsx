@@ -59,7 +59,7 @@ export function ProgressActions({
   return (
     <div className="grid gap-3 md:grid-cols-2">
       <Button
-        className="h-12 justify-center gap-2 rounded-xl border border-brand-primary-container/40 bg-brand-primary-container px-4 text-sm font-semibold text-white hover:bg-brand-primary-container/90 sm:h-14 sm:text-base"
+        className="h-12 justify-center gap-2 rounded-xl border border-brand-primary-container bg-brand-primary-container px-4 text-sm font-semibold text-white hover:bg-brand-primary-container/90 sm:h-14 sm:text-base"
         disabled={isDisabled}
         onClick={() => updateProgress(nextEpisode)}
         type="button"
@@ -76,7 +76,7 @@ export function ProgressActions({
       </Button>
 
       <Button
-        className="h-12 justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high/70 px-4 text-sm font-semibold text-on-surface hover:bg-surface-container-high sm:h-14 sm:text-base"
+        className="h-12 justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high px-4 text-sm font-semibold text-on-surface hover:bg-surface-container-highest sm:h-14 sm:text-base"
         disabled={isDisabled}
         onClick={() => updateProgress(episodeCount)}
         type="button"

@@ -56,7 +56,7 @@ export function ActionBar({
     <div className="mt-6 border-t border-outline-variant pt-4">
       <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
         <Button
-          className="h-10 gap-2 rounded-lg border border-outline-variant bg-surface-container px-3.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high! sm:px-4 sm:text-sm"
+          className="h-10 gap-2 rounded-full border border-outline-variant bg-surface-container px-3.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high! sm:px-4 sm:text-sm"
           disabled={isMutating || isPresentInWatchlist}
           onClick={() => requestMutation("add-watchlist")}
           type="button"
@@ -91,7 +91,7 @@ export function ActionBar({
           />
         )}
 
-        <div className="inline-flex items-center gap-1 rounded-xl border border-outline-variant bg-surface-container/70 p-1">
+        <div className="inline-flex items-center gap-1 rounded-xl border border-outline-variant bg-surface-container-high p-1">
           {Object.values(IMPRESSION).map((imp) => {
             const config =
               IMPRESSION_CONFIG[imp.value as keyof typeof IMPRESSION_CONFIG];
@@ -127,7 +127,7 @@ export function ActionBar({
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-neutral">
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px] text-on-surface-variant">
         <span>TMDB ID: {tmdbId}</span>
         <span className="text-outline-muted">•</span>
         <span>IMDB ID: {displayImdbId}</span>

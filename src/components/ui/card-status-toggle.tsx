@@ -11,12 +11,14 @@ import {
 type CardStatusToggleProps = {
   watchStatus: number;
   disabled?: boolean;
+  loading?: boolean;
   onSelect: (watchStatus: number) => void;
 };
 
 export function CardStatusToggle({
   watchStatus,
   disabled = false,
+  loading = false,
   onSelect,
 }: CardStatusToggleProps) {
   const currentIndicator =
@@ -25,6 +27,7 @@ export function CardStatusToggle({
   return (
     <IconPopover
       disabled={disabled}
+      loading={loading}
       onSelect={onSelect}
       options={Object.values(WATCH_STATUS).map((option) => ({
         value: option.value,

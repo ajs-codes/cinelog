@@ -1,6 +1,6 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import { Loader2, type LucideIcon } from "lucide-react";
 import { usePopover } from "@/hooks/use-popover";
 import { ICON_POPOVER_MENU_CLASS, TRIGGER_CLASS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ type IconPopoverProps<T> = {
   options: IconPopoverOption<T>[];
   value: T | null;
   disabled?: boolean;
+  loading?: boolean;
   triggerAriaLabel: string;
   triggerClassName?: string;
   triggerIcon?: LucideIcon;
@@ -27,13 +28,14 @@ export function IconPopover<T>({
   options,
   value,
   disabled = false,
+  loading = false,
   triggerAriaLabel,
   triggerClassName,
   triggerIcon,
   allowDeselect = false,
   onSelect,
 }: IconPopoverProps<T>) {
-  const { isOpen, containerRef, toggle, close } = usePopover(disabled);
+  const { isOpen, containerRef, toggle, close } = usePopover(disabled || loading);
   const current = options.find((option) => option.value === value);
   const CurrentIcon = current?.icon ?? triggerIcon ?? options[0]?.icon;
 
@@ -82,12 +84,17 @@ export function IconPopover<T>({
         aria-expanded={isOpen}
         aria-label={triggerAriaLabel}
         className={cn(TRIGGER_CLASS, triggerClassName)}
-        disabled={disabled}
+        disabled={disabled || loading}
         onClick={toggle}
         type="button"
       >
-        {CurrentIcon ? <CurrentIcon className="h-4 w-4" /> : null}
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
+        ) : CurrentIcon ? (
+          <CurrentIcon className="h-4 w-4" />
+        ) : null}
       </button>
     </div>
   );
 }
+

@@ -13,9 +13,13 @@ export function useLibraryItemMutation(
   tmdbId: number,
 ) {
   const dispatch = useAppDispatch();
-  const isPending = useAppSelector(
-    (state) => state.library.pending[libraryItemKey(mediaType, tmdbId)] !== undefined,
+  const pendingSnapshot = useAppSelector(
+    (state) => state.library.pending[libraryItemKey(mediaType, tmdbId)],
   );
+  const isPending = pendingSnapshot !== undefined;
+  const isImpressionPending = pendingSnapshot?.pendingType === "impression";
+  const isStatusPending = pendingSnapshot?.pendingType === "watch_status";
+  const isProgressPending = pendingSnapshot?.pendingType === "progress";
 
   function requestMutation(
     payload: Omit<LibraryItemMutation, "mediaType" | "tmdbId">,
@@ -29,5 +33,11 @@ export function useLibraryItemMutation(
     );
   }
 
-  return { isPending, requestMutation };
+  return {
+    isPending,
+    isImpressionPending,
+    isStatusPending,
+    isProgressPending,
+    requestMutation,
+  };
 }

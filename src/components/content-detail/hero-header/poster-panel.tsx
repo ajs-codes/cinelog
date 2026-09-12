@@ -26,8 +26,8 @@ export function PosterPanel({ posterPath, rating, title }: PosterPanelProps) {
         />
       ) : null}
 
-      <div className="absolute right-2.5 top-2.5 inline-flex items-center gap-1 rounded-full border border-brand-tertiary-accent/30 bg-black/80 px-2.5 py-1.5 text-xs font-bold tracking-wider text-white backdrop-blur-[6px]">
-        <Star className="size-3 fill-brand-tertiary-accent text-brand-tertiary-accent" />
+      <div className="absolute right-2.5 top-2.5 inline-flex items-center gap-1.5 rounded-full border border-outline-variant bg-surface-container-highest px-2.5 py-1 text-xs font-bold tracking-wider text-on-surface shadow-md">
+        <Star className="size-3.5 fill-brand-tertiary-accent text-brand-tertiary-accent" />
         <span>{formattedRating}</span>
       </div>
     </div>
