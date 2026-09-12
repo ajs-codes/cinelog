@@ -25,7 +25,7 @@ export function MetaRow({ movie, series, type }: MetaRowProps) {
       <span className="text-secondary">•</span>
       <span className="text-secondary">{duration}</span>
       <span className="text-secondary">•</span>
-      <span className="inline-flex items-center rounded-md border border-white/10 bg-surface-container px-2 py-1 text-[11px] font-semibold text-secondary">
+      <span className="inline-flex items-center rounded-md border border-outline-variant bg-surface-container px-2 py-1 text-[11px] font-semibold text-secondary">
         {rating}
       </span>
       <span className="ml-2 inline-flex items-center rounded-full border border-brand-tertiary-accent bg-brand-tertiary-accent/10 px-2.5 py-1 text-[11px] font-medium text-brand-tertiary-accent-alt">

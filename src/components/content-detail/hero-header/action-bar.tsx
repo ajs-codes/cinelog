@@ -53,10 +53,10 @@ export function ActionBar({
   const isAddingWatchlist = isMutating && lastMutation === "add-watchlist";
 
   return (
-    <div className="mt-6 border-t border-white/10 pt-4">
+    <div className="mt-6 border-t border-outline-variant pt-4">
       <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
         <Button
-          className="h-10 gap-2 rounded-lg border border-white/10 bg-surface-container px-3.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-surface-container-high! sm:px-4 sm:text-sm"
+          className="h-10 gap-2 rounded-lg border border-outline-variant bg-surface-container px-3.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high! sm:px-4 sm:text-sm"
           disabled={isMutating || isPresentInWatchlist}
           onClick={() => requestMutation("add-watchlist")}
           type="button"
@@ -78,7 +78,7 @@ export function ActionBar({
 
         <ShareButton id={id} imdbId={imdbId} type={type} />
 
-        <div className="mx-1 hidden h-6 w-px bg-white/15 sm:block" />
+        <div className="mx-1 hidden h-6 w-px bg-outline-variant sm:block" />
 
         {type === "movie" && (
           <ProgressStatus
@@ -91,7 +91,7 @@ export function ActionBar({
           />
         )}
 
-        <div className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-surface-container/70 p-1">
+        <div className="inline-flex items-center gap-1 rounded-xl border border-outline-variant bg-surface-container/70 p-1">
           {Object.values(IMPRESSION).map((imp) => {
             const config =
               IMPRESSION_CONFIG[imp.value as keyof typeof IMPRESSION_CONFIG];
@@ -105,7 +105,7 @@ export function ActionBar({
             return (
               <ReactionButton
                 active={isActive}
-                className={isActive ? "text-white" : "text-on-surface"}
+                className={isActive ? "text-brand-primary" : "text-on-surface"}
                 disabled={
                   !isPresentInWatchlist || isMutating || !canUpdateWatchActivity
                 }

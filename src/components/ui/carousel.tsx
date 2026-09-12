@@ -64,7 +64,7 @@ export function Carousel({
           >
             <Button
               aria-label="Scroll left"
-              className="h-8 w-8 rounded-full border-white/10 bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-white"
+              className="h-8 w-8 rounded-full border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container"
               onClick={() => scroll("left")}
               size="icon"
               variant="darkFilled"
@@ -73,7 +73,7 @@ export function Carousel({
             </Button>
             <Button
               aria-label="Scroll right"
-              className="h-8 w-8 rounded-full border-white/10 bg-surface-container-low text-on-surface hover:bg-surface-container hover:text-white"
+              className="h-8 w-8 rounded-full border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container"
               onClick={() => scroll("right")}
               size="icon"
               variant="darkFilled"

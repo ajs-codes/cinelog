@@ -54,7 +54,7 @@ export function LoginForm() {
         >
           <Input
             {...register("username")}
-            className="h-10 border-white/10 bg-surface-container px-3 py-2"
+            className="h-10 border-outline-alt bg-surface-container px-3 py-2"
             id="username"
             placeholder="username"
           />
@@ -73,7 +73,7 @@ export function LoginForm() {
         >
           <Input
             {...register("password")}
-            className="h-10 border-white/10 bg-surface-container px-3 py-2"
+            className="h-10 border-outline-alt bg-surface-container px-3 py-2"
             id="password"
             placeholder="••••••••"
             type="password"

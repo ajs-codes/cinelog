@@ -74,7 +74,7 @@ export function SpecificationsMeta({
       {/* Top Grid Cards */}
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
         {/* Age Rating */}
-        <div className="flex items-center gap-3.5 rounded-xl border border-white/10 bg-surface-container-high p-4">
+        <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-surface-container-high p-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-outline-muted">
             <Shield className="h-6 w-6" />
           </div>
@@ -89,7 +89,7 @@ export function SpecificationsMeta({
         </div>
 
         {/* Runtime / EP */}
-        <div className="flex items-center gap-3.5 rounded-xl border border-white/10 bg-surface-container-high p-4">
+        <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-surface-container-high p-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-outline-muted">
             <Clock className="h-6 w-6" />
           </div>
@@ -104,7 +104,7 @@ export function SpecificationsMeta({
         </div>
 
         {/* Audio Tracks */}
-        <div className="flex items-center gap-3.5 rounded-xl border border-white/10 bg-surface-container-high p-4">
+        <div className="flex items-center gap-3.5 rounded-xl border border-outline-variant bg-surface-container-high p-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-outline-muted">
             <Languages className="h-6 w-6" />
           </div>
@@ -130,7 +130,7 @@ export function SpecificationsMeta({
       </div>
 
       {/* Footer Meta Grid */}
-      <div className="border-t border-white/10 pt-5">
+      <div className="border-t border-outline-variant pt-5">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div>
             <span className="block text-xs font-medium text-outline-muted">

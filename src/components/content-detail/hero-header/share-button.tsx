@@ -39,7 +39,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
         <DialogTrigger>
           <button
             aria-label="Share title"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-surface-container text-slate-200 transition hover:bg-surface-container-high"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-outline-variant bg-surface-container text-on-surface transition hover:bg-surface-container-high"
             type="button"
           >
             <Share2 className="h-4 w-4" />
@@ -48,7 +48,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
 
         <DialogContent className="max-w-xs border border-outline-alt bg-surface-container text-on-surface">
           <DialogHeader className="pr-8">
-            <DialogTitle className="font-noto-sans text-lg font-semibold text-accent">
+            <DialogTitle className="font-noto-sans text-lg font-semibold text-on-surface">
               Share title
             </DialogTitle>
             <DialogDescription className="text-xs text-secondary">
@@ -58,7 +58,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
 
           <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
             <button
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high p-3 text-sm text-on-surface transition hover:bg-surface-container-highest disabled:pointer-events-none disabled:opacity-40"
               disabled={!tmdbUrl}
               onClick={() => {
                 if (tmdbUrl) {
@@ -79,7 +79,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
             </button>
 
             <button
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-40"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high p-3 text-sm text-on-surface transition hover:bg-surface-container-highest disabled:pointer-events-none disabled:opacity-40"
               disabled={!imdbUrl}
               onClick={() => {
                 if (imdbUrl) {
@@ -100,7 +100,7 @@ export function ShareButton({ id, imdbId, type }: ShareButtonProps) {
             </button>
 
             <button
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 p-3 text-sm text-on-surface transition hover:bg-white/10"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border border-outline-variant bg-surface-container-high p-3 text-sm text-on-surface transition hover:bg-surface-container-highest"
               onClick={() => {
                 setIsOpen(false);
                 void copy(

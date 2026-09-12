@@ -32,8 +32,8 @@ export function ReactionButton({
       className={[
         "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition",
         active
-          ? "border border-brand-primary-container/40 bg-brand-primary-container/20 text-white hover:bg-brand-primary-container/30"
-          : "text-on-surface hover:bg-white/5",
+          ? "border border-brand-primary-container/40 bg-brand-primary-container/20 text-brand-primary hover:bg-brand-primary-container/30"
+          : "text-on-surface hover:bg-surface-container-high",
         className,
       ]
         .filter(Boolean)

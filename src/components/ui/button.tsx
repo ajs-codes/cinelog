@@ -15,16 +15,16 @@ type ButtonSize = "default" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primaryFilled:
-    "bg-brand-primary-container text-white hover:bg-brand-primary-container/80",
-  accentFilled: "bg-brand-primary text-black hover:bg-brand-primary/80",
+    "bg-brand-primary-container text-white hover:bg-brand-primary-container/85 active:bg-brand-primary-container",
+  accentFilled: "bg-brand-primary text-brand-on-primary hover:bg-brand-primary/85",
   darkFilled:
-    "border border-outline-muted bg-surface-container-low text-secondary hover:bg-surface-container-low/80",
+    "border border-outline-variant bg-surface-container-low text-secondary hover:bg-surface-container hover:text-on-surface",
   darkTonal:
-    "border border-brand-primary bg-surface-container-high text-brand-primary hover:bg-surface-container-high/80",
+    "border border-brand-primary/30 bg-surface-container-high text-brand-primary hover:bg-surface-container hover:text-brand-primary",
   ghost:
-    "bg-surface-container-high text-brand-primary hover:bg-surface-container-high/80",
-  dark: "bg-surface-container-low text-on-surface hover:bg-surface-container-low/80",
-  link: "text-primary underline-offset-4 hover:underline",
+    "bg-surface-container-high text-brand-primary hover:bg-surface-container-highest",
+  dark: "bg-surface-container-low text-on-surface hover:bg-surface-container",
+  link: "text-brand-primary underline-offset-4 hover:underline",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

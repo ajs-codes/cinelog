@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark, .dark *));
 
 @layer utilities {
   .movie-lists-scrollbar,
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: var(--surface) transparent;
+    scrollbar-color: var(--surface-container-highest) transparent;
   }
 
   .movie-lists-scrollbar::-webkit-scrollbar,
@@ -23,13 +23,13 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     border: 1px solid transparent;
     border-radius: 999px;
-    background: var(--surface);
+    background: var(--surface-container-high);
     background-clip: padding-box;
   }
 
   .movie-lists-scrollbar::-webkit-scrollbar-thumb:hover,
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--surface-container-high);
+    background: var(--surface-container-highest);
     background-clip: padding-box;
   }
 }
@@ -37,35 +37,16 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+  --color-muted-foreground: var(--muted-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -74,130 +55,153 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Custom Colors and fonts */
+  /* Alexandria Surface & Elevation Tokens */
   --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
   --color-surface-container: var(--surface-container);
   --color-surface-container-high: var(--surface-container-high);
-  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-variant: var(--surface-variant);
 
+  /* Typography & Neutral Tokens */
   --color-on-surface: var(--text-on-surface);
+  --color-on-surface-variant: var(--text-on-surface-variant);
   --color-secondary: var(--text-secondary);
   --color-outline-muted: var(--text-outline-muted);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --color-outline-alt: var(--outline-alt);
+  --color-neutral: var(--neutral);
 
+  /* Brand Primary */
   --color-brand-primary: var(--brand-primary);
+  --color-brand-on-primary: var(--brand-on-primary);
   --color-brand-primary-container: var(--brand-primary-container);
+  --color-brand-on-primary-container: var(--brand-on-primary-container);
 
+  /* Brand Tertiary / Accents */
   --color-brand-tertiary: var(--brand-tertiary);
+  --color-brand-tertiary-container: var(--brand-tertiary-container);
   --color-brand-tertiary-accent: var(--brand-tertiary-accent);
   --color-brand-tertiary-accent-alt: var(--brand-tertiary-accent-alt);
 
+  /* Status Colors */
   --color-status-success: var(--status-success);
   --color-status-error: var(--status-error);
   --color-status-error-light: var(--status-error-light);
   --color-status-info: var(--status-info);
 
-  --color-outline-variant: var(--outline-variant);
-  --color-neutral: var(--neutral);
-  --color-outline-alt: var(--outline-alt);
-
+  /* Fonts */
   --font-noto-sans: var(--font-noto-serif);
   --font-public-sans: var(--font-public-sans);
   --font-heading: var(--font-noto-serif);
 }
 
+/* Light Mode (Alexandria Light) */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.25rem;
 
-  /* Custom Colors */
+  --surface: #f8f9fa;
+  --surface-dim: #d8dadd;
+  --surface-bright: #f8f9fc;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #ffffff;
+  --surface-container: #f1f3f5;
+  --surface-container-high: #e9ecef;
+  --surface-container-highest: #dee2e6;
+  --surface-variant: #e1e2e5;
+
+  --text-on-surface: #191c1e;
+  --text-on-surface-variant: #43474e;
+  --text-secondary: #5a5f63;
+  --text-outline-muted: #8d909e;
+
+  --outline: #c3c7cf;
+  --outline-variant: #e1e3e8;
+  --outline-alt: rgb(0 0 0 / 8%);
+  --neutral: #54595d;
+
+  --brand-primary: #094cb2;
+  --brand-on-primary: #ffffff;
+  --brand-primary-container: #3366cc;
+  --brand-on-primary-container: #001946;
+
+  --brand-tertiary: #715c00;
+  --brand-tertiary-container: #c6a93d;
+  --brand-tertiary-accent: #8c7300;
+  --brand-tertiary-accent-alt: #dcc661;
+
+  --status-success: #16a34a;
+  --status-error: #ba1a1a;
+  --status-error-light: #ffdad6;
+  --status-info: #0284c7;
+
+  --background: #f8f9fc;
+  --foreground: #191c1e;
+  --card: #ffffff;
+  --card-foreground: #191c1e;
+  --popover: #ffffff;
+  --popover-foreground: #191c1e;
+  --border: rgb(0 0 0 / 8%);
+  --input: #f1f3f5;
+  --ring: #3366cc;
+  --destructive: #ba1a1a;
+  --muted: #f1f3f5;
+  --muted-foreground: #5a5f63;
+}
+
+/* Dark Mode (Alexandria Dark) */
+.dark {
   --surface: #121314;
+  --surface-dim: #121314;
+  --surface-bright: #38393a;
+  --surface-container-lowest: #0d0e0f;
+  --surface-container-low: #1b1c1d;
   --surface-container: #1f2021;
   --surface-container-high: #292a2b;
-  --surface-container-low: #1b1c1d;
+  --surface-container-highest: #343536;
+  --surface-variant: #343536;
 
   --text-on-surface: #e3e2e3;
+  --text-on-surface-variant: #c3c6d5;
   --text-secondary: #c2c7cc;
   --text-outline-muted: #8d909e;
 
-  --brand-primary-container: #3366cc;
+  --outline: #8d909e;
+  --outline-variant: #434653;
+  --outline-alt: rgb(255 255 255 / 8%);
+  --neutral: #64748b;
+
   --brand-primary: #b1c5ff;
+  --brand-on-primary: #002c70;
+  --brand-primary-container: #3366cc;
+  --brand-on-primary-container: #e7ebff;
 
   --brand-tertiary: #dcc661;
+  --brand-tertiary-container: #bfab49;
   --brand-tertiary-accent: #f59e0b;
   --brand-tertiary-accent-alt: #facc15;
 
   --status-success: #34d399;
-  --status-error: #ef4444;
-  --status-error-light: #ffb4ab;
+  --status-error: #ffb4ab;
+  --status-error-light: #ffdad6;
   --status-info: #38bdf8;
 
-  --outline-variant: #434653;
-  --neutral: #64748b;
-  --outline-alt: rgb(255 255 255 / 8%);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #121314;
+  --foreground: #e3e2e3;
+  --card: #1b1c1d;
+  --card-foreground: #e3e2e3;
+  --popover: #1f2021;
+  --popover-foreground: #e3e2e3;
+  --border: rgb(255 255 255 / 8%);
+  --input: #292a2b;
+  --ring: #b1c5ff;
+  --destructive: #ffb4ab;
+  --muted: #1f2021;
+  --muted-foreground: #c2c7cc;
 }
 
 @layer base {
@@ -205,9 +209,10 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply bg-surface;
+    @apply bg-surface text-on-surface;
   }
   body {
-    @apply bg-surface text-foreground font-public-sans;
+    @apply bg-surface text-on-surface font-public-sans transition-colors duration-150;
   }
 }
+

@@ -25,8 +25,28 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${notoSerif.variable} ${publicSans.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`dark ${notoSerif.variable} ${publicSans.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function() {
+  try {
+    var stored = localStorage.getItem('cinelog-theme');
+    var theme = stored || 'dark';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    }
+  } catch (e) {}
+})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>
           {children}

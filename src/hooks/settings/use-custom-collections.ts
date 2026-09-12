@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/http/client";
 import type {
   CollectionFilterItem,
@@ -15,19 +15,20 @@ export function useCustomCollections() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const hasLoadedRef = useRef(false);
-
   useEffect(() => {
-    if (hasLoadedRef.current) return;
-    hasLoadedRef.current = true;
     let ignore = false;
 
     async function loadCollections() {
+      setIsLoading(true);
       try {
         const res = await fetch("/api/collections");
-        if (res.ok && !ignore) {
+        if (res.ok) {
           const data = await res.json();
-          setCollections(data.collections ?? data.data?.collections ?? []);
+          if (!ignore) {
+            setCollections(data.collections ?? data.data?.collections ?? []);
+          }
+        } else if (!ignore) {
+          setErrorMessage("Failed to load custom collections.");
         }
       } catch {
         if (!ignore) {
@@ -40,7 +41,7 @@ export function useCustomCollections() {
       }
     }
 
-    loadCollections();
+    void loadCollections();
 
     return () => {
       ignore = true;

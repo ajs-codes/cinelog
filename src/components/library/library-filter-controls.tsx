@@ -36,8 +36,8 @@ export function LibraryFilterControls({
             aria-label={`${counts[value]} ${value === "movie" ? "movies" : "series"}`}
             className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-md px-1.5 font-public-sans text-[10px] leading-none font-medium ${
               mediaType === value
-                ? "bg-white/15 text-white"
-                : "bg-surface-container-high text-secondary"
+                ? "bg-white/25 text-white"
+                : "bg-surface-container text-secondary"
             }`}
           >
             {counts[value]}

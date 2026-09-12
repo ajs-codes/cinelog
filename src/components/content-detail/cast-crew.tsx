@@ -86,7 +86,7 @@ function CreditCard({ member }: { member: CreditMember }) {
     : (member.job ?? member.known_for_department ?? "Crew");
 
   return (
-    <div className="flex w-24 sm:w-30 shrink-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-surface-container-high">
+    <div className="flex w-24 sm:w-30 shrink-0 flex-col overflow-hidden rounded-xl border border-outline-variant bg-surface-container-high">
       <div className="relative aspect-2/3 w-full bg-surface-container">
         {member.profile_path ? (
           <Image
