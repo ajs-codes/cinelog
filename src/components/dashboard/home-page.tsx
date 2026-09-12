@@ -21,13 +21,13 @@ export function HomePage() {
             <div className="flex flex-col gap-2">
               <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-brand-primary/20 bg-brand-primary-container/10 px-2 py-0.5 text-[11px] font-semibold text-brand-primary">
                 <Sparkles className="h-3 w-3" />
-                <span>Welcome Back</span>
+                <span>Ready for your next adventure?</span>
               </div>
               <div>
                 <h1 className="font-heading text-2xl font-bold tracking-tight text-on-surface sm:text-3xl md:text-4xl">
                   {displayName
-                    ? `Welcome back, ${displayName}!`
-                    : "Welcome to CineLog"}
+                    ? `Welcome ${displayName}!`
+                    : "Welcome"}
                 </h1>
                 <p className="mt-1 max-w-xl font-public-sans text-xs text-secondary sm:mt-2 sm:text-sm">
                   Track your movies, binge series, and continue right where you

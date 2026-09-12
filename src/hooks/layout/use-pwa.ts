@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import {
+  PWA_DISMISS_COOLDOWN_MS,
+  PWA_DISMISSED_AT_KEY,
+  PWA_INSTALLED_KEY,
+  PWA_SERVICE_WORKER_URL,
+} from "@/lib/constants";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -9,6 +15,43 @@ interface BeforeInstallPromptEvent extends Event {
     platform: string;
   }>;
   prompt(): Promise<void>;
+}
+
+function readLocalStorage(key: string) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalStorage(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+    window.dispatchEvent(new Event("storage"));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+function isDismissCooldownActive(now = Date.now()) {
+  const raw = readLocalStorage(PWA_DISMISSED_AT_KEY);
+  if (!raw) return false;
+  const dismissedAt = Number(raw);
+  if (!Number.isFinite(dismissedAt)) return false;
+  return now - dismissedAt < PWA_DISMISS_COOLDOWN_MS;
+}
+
+function isStoredAsInstalled() {
+  return readLocalStorage(PWA_INSTALLED_KEY) === "true";
+}
+
+function persistDismissed() {
+  writeLocalStorage(PWA_DISMISSED_AT_KEY, String(Date.now()));
+}
+
+function persistInstalled() {
+  writeLocalStorage(PWA_INSTALLED_KEY, "true");
 }
 
 function subscribeOnline(callback: () => void) {
@@ -20,18 +63,19 @@ function subscribeOnline(callback: () => void) {
   };
 }
 
+function subscribeStandalone(callback: () => void) {
+  const mediaQuery = window.matchMedia("(display-mode: standalone)");
+  mediaQuery.addEventListener("change", callback);
+  return () => mediaQuery.removeEventListener("change", callback);
+}
+
+function subscribePwaStorage(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
 function getOnlineSnapshot() {
   return navigator.onLine;
-}
-
-function getOnlineServerSnapshot() {
-  return true;
-}
-
-function subscribeStandalone(callback: () => void) {
-  const mql = window.matchMedia("(display-mode: standalone)");
-  mql.addEventListener("change", callback);
-  return () => mql.removeEventListener("change", callback);
 }
 
 function getStandaloneSnapshot() {
@@ -41,14 +85,6 @@ function getStandaloneSnapshot() {
   );
 }
 
-function getStandaloneServerSnapshot() {
-  return false;
-}
-
-function subscribeIos() {
-  return () => {};
-}
-
 function getIosSnapshot() {
   return (
     /iPad|iPhone|iPod/.test(navigator.userAgent) &&
@@ -56,56 +92,72 @@ function getIosSnapshot() {
   );
 }
 
-function getIosServerSnapshot() {
+function subscribeIos() {
+  return () => {};
+}
+
+function getFalseSnapshot() {
   return false;
+}
+
+function getTrueSnapshot() {
+  return true;
 }
 
 export function usePwa() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [hasDismissedPrompt, setHasDismissedPrompt] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return Boolean(sessionStorage.getItem("cinelog-pwa-dismissed"));
-  });
 
   const isOnline = useSyncExternalStore(
     subscribeOnline,
     getOnlineSnapshot,
-    getOnlineServerSnapshot,
+    getTrueSnapshot,
   );
-
-  const isInstalled = useSyncExternalStore(
+  const isStandalone = useSyncExternalStore(
     subscribeStandalone,
     getStandaloneSnapshot,
-    getStandaloneServerSnapshot,
+    getFalseSnapshot,
   );
-
-  const isIOS = useSyncExternalStore(
+  const isIosDevice = useSyncExternalStore(
     subscribeIos,
     getIosSnapshot,
-    getIosServerSnapshot,
+    getFalseSnapshot,
+  );
+  const hasDismissedPrompt = useSyncExternalStore(
+    subscribePwaStorage,
+    isDismissCooldownActive,
+    getFalseSnapshot,
+  );
+  const hasStoredInstall = useSyncExternalStore(
+    subscribePwaStorage,
+    isStoredAsInstalled,
+    getFalseSnapshot,
   );
 
+  const isInstalled = isStandalone || hasStoredInstall;
+
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    if (!isStandalone || isStoredAsInstalled()) return;
+    persistInstalled();
+  }, [isStandalone]);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event as BeforeInstallPromptEvent);
     };
 
     const handleAppInstalled = () => {
+      persistInstalled();
       setDeferredPrompt(null);
     };
 
-    window.addEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt,
-    );
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // Register Service Worker
     if ("serviceWorker" in navigator && process.env.NODE_ENV !== "test") {
       navigator.serviceWorker
-        .register("/sw.js", { scope: "/" })
+        .register(PWA_SERVICE_WORKER_URL, { scope: "/" })
         .catch((error) => {
           console.error("[PWA] Service worker registration failed:", error);
         });
@@ -126,29 +178,26 @@ export function usePwa() {
     try {
       await deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
       if (choiceResult.outcome === "accepted") {
-        setDeferredPrompt(null);
+        persistInstalled();
+      } else {
+        persistDismissed();
       }
-    } catch (err) {
-      console.error("[PWA] Error triggering install prompt:", err);
+    } catch (error) {
+      console.error("[PWA] Error triggering install prompt:", error);
     }
   }, [deferredPrompt]);
 
   const dismissPrompt = useCallback(() => {
-    setHasDismissedPrompt(true);
-    try {
-      sessionStorage.setItem("cinelog-pwa-dismissed", "true");
-    } catch {
-      // Ignore storage errors
-    }
+    persistDismissed();
+    setDeferredPrompt(null);
   }, []);
 
-  const isInstallable = Boolean(deferredPrompt) && !hasDismissedPrompt && !isInstalled;
-
   return {
-    isInstallable,
+    isInstallable: Boolean(deferredPrompt) && !hasDismissedPrompt && !isInstalled,
     isInstalled,
-    isIOS: isIOS && !isInstalled && !hasDismissedPrompt,
+    isIOS: isIosDevice && !isInstalled && !hasDismissedPrompt,
     isOnline,
     promptInstall,
     dismissPrompt,
