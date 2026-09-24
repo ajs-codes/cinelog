@@ -12,14 +12,28 @@ export async function proxy(request: NextRequest) {
 
   // 1. If user is already logged in, prevent them from accessing /login or /signup
   if (isAuthRoute) {
-    if (token && (await verifyToken(token))) {
-      return NextResponse.redirect(new URL("/", request.url));
+    if (token) {
+      const payload = await verifyToken(token);
+      if (payload) {
+        const completed = payload.onboarding === "completed";
+        return NextResponse.redirect(
+          new URL(completed ? "/" : "/onboarding", request.url),
+        );
+      }
     }
     return NextResponse.next();
   }
 
-  // 2. Allow the landing page through – page.tsx handles its own auth branch
+  // 2. Allow the landing page through – page.tsx handles its own auth branch,
+  //    but still push authenticated users who haven't onboarded to /onboarding.
   if (pathname === "/") {
+    if (!token) {
+      return NextResponse.next();
+    }
+    const payload = await verifyToken(token);
+    if (payload && payload.onboarding !== "completed") {
+      return NextResponse.redirect(new URL("/onboarding", request.url));
+    }
     return NextResponse.next();
   }
 
@@ -30,7 +44,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (await verifyToken(token)) {
+  const payload = await verifyToken(token);
+  if (payload) {
+    const onOnboarding =
+      pathname === "/onboarding" || pathname.startsWith("/onboarding/");
+    if (payload.onboarding !== "completed" && !onOnboarding) {
+      return NextResponse.redirect(new URL("/onboarding", request.url));
+    }
     return NextResponse.next();
   }
 

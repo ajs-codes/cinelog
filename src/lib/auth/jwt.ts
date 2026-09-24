@@ -4,7 +4,13 @@ import { getJwtSecret } from "@/lib/auth/jwt-secret";
 
 const JWT_SECRET = getJwtSecret();
 
-export async function signToken(payload: { userId: number; username: string }) {
+type TokenClaims = {
+  userId: number;
+  username: string;
+  onboarding?: "completed";
+};
+
+export async function signToken(payload: TokenClaims) {
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + AUTH_TOKEN_TTL_SECONDS;
 
@@ -19,7 +25,7 @@ export async function signToken(payload: { userId: number; username: string }) {
 export async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as { userId: number; username: string; exp: number };
+    return payload as TokenClaims & { exp: number };
   } catch {
     return null;
   }
