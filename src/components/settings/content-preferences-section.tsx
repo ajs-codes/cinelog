@@ -1,5 +1,6 @@
 "use client";
 
+import { Sparkles } from "lucide-react";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { Button } from "@/components/ui/button";
 import { StepMediaLean } from "@/components/onboarding/steps/step-media-lean";
@@ -21,7 +22,27 @@ export function ContentPreferencesSection() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <section
+      aria-labelledby="content-preferences-heading"
+      className="w-full space-y-6"
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary-container/20 text-brand-primary">
+          <Sparkles className="h-4.5 w-4.5" />
+        </div>
+        <div className="min-w-0">
+          <h2
+            className="font-heading text-xl font-semibold tracking-tight text-on-surface sm:text-2xl"
+            id="content-preferences-heading"
+          >
+            Content Preferences
+          </h2>
+          <p className="font-public-sans text-xs text-secondary">
+            Customize your media format lean, preferred genres, languages, and era ratings.
+          </p>
+        </div>
+      </div>
+
       {message ? (
         <AlertBanner
           message={message.text}
@@ -29,52 +50,54 @@ export function ContentPreferencesSection() {
         />
       ) : null}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          What do you watch
-        </h2>
-        <StepMediaLean value={draft.mediaLean} chosen onSelect={actions.setMediaLean} />
-      </section>
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <h2 className="font-public-sans text-sm font-semibold text-on-surface">
+            What do you watch
+          </h2>
+          <StepMediaLean value={draft.mediaLean} chosen onSelect={actions.setMediaLean} />
+        </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          Genres
-        </h2>
-        <StepGenres selected={draft.genreIds} onToggle={actions.toggleGenre} />
-      </section>
+        <section className="flex flex-col gap-3">
+          <h2 className="font-public-sans text-sm font-semibold text-on-surface">
+            Genres
+          </h2>
+          <StepGenres selected={draft.genreIds} onToggle={actions.toggleGenre} />
+        </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          Languages
-        </h2>
-        <StepLanguages
-          selected={draft.languages}
-          onToggle={actions.toggleLanguage}
-        />
-      </section>
+        <section className="flex flex-col gap-3">
+          <h2 className="font-public-sans text-sm font-semibold text-on-surface">
+            Languages
+          </h2>
+          <StepLanguages
+            selected={draft.languages}
+            onToggle={actions.toggleLanguage}
+          />
+        </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          Era & Rating
-        </h2>
-        <StepEraRating
-          eras={draft.eras}
-          minRating={draft.minRating}
-          onToggleEra={actions.toggleEra}
-          onSetRating={actions.setMinRating}
-        />
-      </section>
+        <section className="flex flex-col gap-3">
+          <h2 className="font-public-sans text-sm font-semibold text-on-surface">
+            Era & Rating
+          </h2>
+          <StepEraRating
+            eras={draft.eras}
+            minRating={draft.minRating}
+            onToggleEra={actions.toggleEra}
+            onSetRating={actions.setMinRating}
+          />
+        </section>
 
-      <div>
-        <Button
-          onClick={save}
-          disabled={
-            isSaving || draft.genreIds.length < 1 || draft.languages.length < 1
-          }
-        >
-          {isSaving ? "Saving…" : "Save preferences"}
-        </Button>
+        <div>
+          <Button
+            onClick={save}
+            disabled={
+              isSaving || draft.genreIds.length < 1 || draft.languages.length < 1
+            }
+          >
+            {isSaving ? "Saving…" : "Save preferences"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
