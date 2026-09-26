@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Settings, SlidersHorizontal, Sparkles, User } from "lucide-react";
+import { Layers, Settings, Sparkles, User } from "lucide-react";
 
 export type SettingsNavItem = {
   label: string;
@@ -49,7 +49,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       {
         label: "Smart Collections",
         href: "/settings/collections",
-        icon: SlidersHorizontal,
+        icon: Layers,
       },
     ],
   },

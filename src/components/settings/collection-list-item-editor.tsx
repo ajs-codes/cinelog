@@ -374,10 +374,7 @@ export function CollectionListItemEditor({
         <p className="font-public-sans text-xs text-status-error">{error}</p>
       ) : null}
 
-      <div className="flex flex-wrap justify-end gap-2">
-        <Button onClick={onCancel} type="button" variant="darkFilled">
-          Cancel
-        </Button>
+      <div className="flex flex-wrap gap-2">
         <Button
           disabled={isSubmitting}
           onClick={() => void handleSubmit()}
@@ -387,10 +384,13 @@ export function CollectionListItemEditor({
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : isEditing ? (
-            "Save"
+            "Save Collection"
           ) : (
-            "Create"
+            "Create Collection"
           )}
+        </Button>
+        <Button onClick={onCancel} type="button" variant="darkFilled">
+          Cancel
         </Button>
       </div>
     </div>

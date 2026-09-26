@@ -163,10 +163,9 @@ function UserProfileForm({ user }: { user: User | null }) {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div>
           <Button
             variant="primaryFilled"
-            className="h-10 min-w-36 rounded-lg font-medium"
             disabled={!user || form.isLoading}
             type="submit"
           >

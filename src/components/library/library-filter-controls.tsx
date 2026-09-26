@@ -57,7 +57,7 @@ export function LibraryFilterControls({
       disabled={presetActive}
       onClick={browse.openDialog}
       type="button"
-      variant={browse.hasActiveBrowse ? "primaryFilled" : "darkFilled"}
+      variant={browse.hasCustomFilters ? "primaryFilled" : "darkFilled"}
     >
       <SlidersHorizontal className="size-4" />
       <span>Filters</span>
@@ -73,6 +73,7 @@ export function LibraryFilterControls({
           content={LIBRARY_COLLECTION_ACTIVE_HINT}
           contentClassName="w-56 sm:w-64"
           side="top"
+          triggerClassName="w-full"
         >
           <span className="inline-flex w-full">{filtersButton}</span>
         </Tooltip>
