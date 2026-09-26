@@ -18,8 +18,9 @@ type SearchResult = {
   is_present_in_watchlist?: boolean;
 };
 
-// mediaType -> add endpoint segment / detail route segment
+// mediaType -> add endpoint segment / detail route segment / card label
 const MEDIA_SEGMENT = { 0: "movie", 1: "series" } as const;
+const MEDIA_LABEL = { 0: "Movie", 1: "Series" } as const;
 
 function candidateKey(candidate: Pick<TitleCandidate, "tmdbId" | "mediaType">) {
   return `${candidate.mediaType}-${candidate.tmdbId}`;
@@ -241,7 +242,7 @@ export function StepTitles({
             posterPath={candidate.posterPath}
             year={candidate.year ?? ""}
             rating={candidate.rating != null ? candidate.rating.toFixed(1) : "–"}
-            meta={candidate.title}
+            meta={MEDIA_LABEL[candidate.mediaType]}
             actions={renderCardAction(candidate)}
           />
         ))}
@@ -262,7 +263,7 @@ export function StepTitles({
         />
       </div>
 
-      <div className="relative flex min-h-[240px] flex-1 flex-col gap-2">
+      <div className="relative flex min-h-60 flex-1 flex-col gap-2">
         {trimmedQuery.length > 0 ? (
           // Search mode
           isSearching ? (
