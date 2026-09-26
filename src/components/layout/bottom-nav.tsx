@@ -5,13 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
+  ChevronRight,
   LayoutDashboard,
   Library,
   Loader2,
   LogIn,
   LogOut,
   Menu,
-  Settings,
   UserPlus,
   X,
 } from "lucide-react";
@@ -20,13 +20,13 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/hooks/use-theme";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logoutRequest } from "@/store/slices/authSlice";
+import { SETTINGS_ROOT_ITEM } from "@/lib/constants/settings";
 import { cn } from "@/lib/utils";
 
 const navigation = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "My library", href: "/library", icon: Library },
   { label: "Guide", href: "/guide", icon: BookOpen },
-  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function BottomNav() {
@@ -37,6 +37,8 @@ export function BottomNav() {
   );
   const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const SettingsIcon = SETTINGS_ROOT_ITEM.icon;
 
   const handleLogout = () => {
     dispatch(logoutRequest());
@@ -85,7 +87,6 @@ export function BottomNav() {
           );
         })}
 
-        {/* Menu Button */}
         <button
           type="button"
           onClick={() => setIsMenuOpen(true)}
@@ -101,9 +102,7 @@ export function BottomNav() {
           <div
             className={cn(
               "flex h-7 w-12 items-center justify-center rounded-full transition-colors",
-              isMenuOpen
-                ? "bg-brand-primary-container/20"
-                : "bg-transparent",
+              isMenuOpen ? "bg-brand-primary-container/20" : "bg-transparent",
             )}
           >
             <Menu className="size-5" strokeWidth={1.8} />
@@ -114,10 +113,8 @@ export function BottomNav() {
         </button>
       </nav>
 
-      {/* Menu Modal / Drawer */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center lg:hidden">
-          {/* Backdrop */}
           <button
             type="button"
             aria-label="Close menu"
@@ -125,14 +122,12 @@ export function BottomNav() {
             onClick={() => setIsMenuOpen(false)}
           />
 
-          {/* Modal Container */}
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Quick menu"
             className="relative z-10 w-full max-w-lg rounded-t-2xl border-t border-x border-outline-alt bg-surface-container p-5 pb-8 shadow-2xl animate-in slide-in-from-bottom-5 duration-200"
           >
-            {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-outline-alt">
               <div className="flex items-center gap-2.5">
                 <span className="font-heading text-lg font-semibold text-on-surface">
@@ -151,9 +146,7 @@ export function BottomNav() {
               </Button>
             </div>
 
-            {/* Content Area */}
             <div className="mt-4 space-y-4">
-              {/* Theme Toggle Section */}
               <div className="flex items-center justify-between rounded-xl border border-outline-variant bg-surface-container-low p-3.5">
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold text-on-surface">
@@ -167,7 +160,30 @@ export function BottomNav() {
                 <ThemeToggle />
               </div>
 
-              {/* Account Section */}
+              <Link
+                href={SETTINGS_ROOT_ITEM.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between rounded-xl border border-outline-variant bg-surface-container-low p-3.5 transition-colors hover:bg-surface-container-high"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-primary-container/20 text-brand-primary">
+                    <SettingsIcon className="size-4.5" strokeWidth={1.8} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-brand-primary">
+                      {SETTINGS_ROOT_ITEM.label}
+                    </span>
+                    <span className="text-[11px] text-secondary">
+                      {SETTINGS_ROOT_ITEM.description}
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight
+                  className="size-4 shrink-0 text-secondary"
+                  strokeWidth={1.8}
+                />
+              </Link>
+
               <div className="rounded-xl border border-outline-variant bg-surface-container-low p-3.5">
                 {isAuthenticated && user ? (
                   <div className="space-y-3">

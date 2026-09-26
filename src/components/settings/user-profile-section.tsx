@@ -32,7 +32,7 @@ function UserProfileForm({ user }: { user: User | null }) {
             className="font-heading text-xl font-semibold tracking-tight text-on-surface sm:text-2xl"
             id="profile-settings-heading"
           >
-            User Profile & Credentials
+            User Profile
           </h2>
           <p className="font-public-sans text-xs text-secondary">
             Update your account identity, email address, and authentication

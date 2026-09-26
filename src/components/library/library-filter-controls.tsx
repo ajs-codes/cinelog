@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Info, Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { LibraryBrowseDialog } from "@/components/library/library-browse-dialog";
 import { SearchFilterSelect } from "@/components/search-popup/search-filter-select";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useLibraryBrowse } from "@/hooks/library/use-library-browse";
 import {
   LIBRARY_COLLECTION_ACTIVE_HINT,
-  LIBRARY_CUSTOM_FILTERS_ACTIVE_HINT,
   MEDIA_TYPES,
 } from "@/lib/constants";
 import type { LibraryMediaType, SmartCollectionWithFilters } from "@/lib/types";
@@ -40,26 +38,6 @@ export function LibraryFilterControls({
   const browse = useLibraryBrowse(mediaType);
   const presetActive = browse.selectedCollectionId !== null;
   const customFiltersActive = browse.hasCustomFilters;
-  const collectionLocked = presetActive || customFiltersActive;
-  const [collectionTooltipOpen, setCollectionTooltipOpen] = useState(false);
-  const collectionTooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  function handleCollectionTooltipChange(open: boolean) {
-    if (collectionTooltipTimeoutRef.current) {
-      clearTimeout(collectionTooltipTimeoutRef.current);
-      collectionTooltipTimeoutRef.current = null;
-    }
-
-    if (open) {
-      collectionTooltipTimeoutRef.current = setTimeout(() => {
-        setCollectionTooltipOpen(true);
-        collectionTooltipTimeoutRef.current = null;
-      }, 0);
-      return;
-    }
-
-    setCollectionTooltipOpen(false);
-  }
 
   const collectionOptions = [
     { value: "", label: "Browse manually" },
@@ -69,10 +47,46 @@ export function LibraryFilterControls({
     })),
   ];
 
+  const hasCollectionSelect = libraryCollections.length > 0;
+  const pairedControlClass = "flex min-w-0 flex-1 basis-0";
+
+  const filtersButton = (
+    <Button
+      aria-label="Open library filters"
+      className="h-9 w-full px-3.5"
+      disabled={presetActive}
+      onClick={browse.openDialog}
+      type="button"
+      variant={browse.hasActiveBrowse ? "primaryFilled" : "darkFilled"}
+    >
+      <SlidersHorizontal className="size-4" />
+      <span>Filters</span>
+    </Button>
+  );
+
+  const filtersControl = (
+    <div className={pairedControlClass}>
+      {presetActive ? (
+        <Tooltip
+          align="responsive"
+          className="w-full"
+          content={LIBRARY_COLLECTION_ACTIVE_HINT}
+          contentClassName="w-56 sm:w-64"
+          side="top"
+        >
+          <span className="inline-flex w-full">{filtersButton}</span>
+        </Tooltip>
+      ) : (
+        filtersButton
+      )}
+    </div>
+  );
+
   return (
-    <div className="flex min-w-0 flex-col gap-3">
+    <div className="flex min-w-0 flex-wrap items-center gap-3">
       <SegmentedControl
         aria-label="Filter library by media type"
+        className="min-w-0 basis-full lg:basis-0 lg:flex-1"
         onChange={onMediaTypeChange}
         options={MEDIA_TYPES.map(({ icon: Icon, label, value, href }) => ({
           value,
@@ -92,86 +106,45 @@ export function LibraryFilterControls({
             </span>
           ),
         }))}
+        stretch
         value={mediaType}
       />
 
-      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-        <SearchField
-          aria-label="Search your library"
-          className="min-w-0 w-full shadow-none sm:max-w-xs sm:flex-1"
-          endIcon={<X className="size-3.5" />}
-          onClear={() => {
-            browse.setDraftQ("");
-            browse.applyQuery({ ...browse.query, q: "" });
-          }}
-          onValueChange={browse.setDraftQ}
-          placeholder="Search titles"
-          startIcon={<Search className="size-4" />}
-          value={browse.draftQ}
-        />
+      <SearchField
+        aria-label="Search your library"
+        className="min-w-0 w-full basis-full shadow-none lg:basis-0 lg:flex-1"
+        endIcon={<X className="size-3.5" />}
+        onClear={() => {
+          browse.setDraftQ("");
+          browse.applyQuery({ ...browse.query, q: "" });
+        }}
+        onValueChange={browse.setDraftQ}
+        placeholder="Search titles"
+        startIcon={<Search className="size-4" />}
+        value={browse.draftQ}
+      />
 
-        <div className="flex min-w-0 w-full items-center gap-2 sm:w-auto">
-          <Button
-            aria-label="Open library filters"
-            className="h-9 shrink-0 px-3.5"
-            disabled={presetActive}
-            onClick={browse.openDialog}
-            type="button"
-            variant={browse.hasActiveBrowse ? "primaryFilled" : "darkFilled"}
-          >
-            <SlidersHorizontal className="size-4" />
-            <span>Filters</span>
-          </Button>
+      <div className="flex min-w-0 basis-full items-center gap-2 lg:basis-0 lg:flex-1">
+        {filtersControl}
 
-          {libraryCollections.length > 0 ? (
-            <div className="flex min-w-0 flex-1 items-center gap-1">
-              {collectionLocked ? (
-                <Tooltip
-                  align="responsive"
-                  content={
-                    presetActive
-                      ? LIBRARY_COLLECTION_ACTIVE_HINT
-                      : LIBRARY_CUSTOM_FILTERS_ACTIVE_HINT
-                  }
-                  contentClassName="w-56 sm:w-64"
-                  isOpen={collectionTooltipOpen}
-                  onOpenChange={handleCollectionTooltipChange}
-                  side="top"
-                >
-                  <button
-                    aria-label="Smart collection filter info"
-                    className="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md text-secondary transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-primary"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      handleCollectionTooltipChange(!collectionTooltipOpen);
-                    }}
-                    type="button"
-                  >
-                    <Info className="size-4" />
-                  </button>
-                </Tooltip>
-              ) : null}
-              <SearchFilterSelect
-                aria-label="Library collection preset"
-                disabled={customFiltersActive}
-                heading="Collection"
-                hideHeading
-                labelClassName="min-w-0 flex-1 truncate text-left"
-                menuMinWidth={220}
-                onChange={(value) =>
-                  browse.selectCollection(value ? Number(value) : null)
-                }
-                options={collectionOptions}
-                placeholder="Browse manually"
-                triggerClassName="h-9 min-w-0 w-full max-w-none justify-between gap-1.5 overflow-hidden"
-                value={
-                  presetActive ? String(browse.selectedCollectionId) : ""
-                }
-                wrapperClassName="min-w-0 flex-1"
-              />
-            </div>
-          ) : null}
-        </div>
+        {hasCollectionSelect ? (
+          <SearchFilterSelect
+            aria-label="Library collection preset"
+            disabled={customFiltersActive}
+            heading="Collection"
+            hideHeading
+            labelClassName="min-w-0 flex-1 truncate text-left"
+            menuMinWidth={220}
+            onChange={(value) =>
+              browse.selectCollection(value ? Number(value) : null)
+            }
+            options={collectionOptions}
+            placeholder="Browse manually"
+            triggerClassName="h-9 w-full justify-between gap-1.5 overflow-hidden"
+            value={presetActive ? String(browse.selectedCollectionId) : ""}
+            wrapperClassName={pairedControlClass}
+          />
+        ) : null}
       </div>
 
       <LibraryBrowseDialog

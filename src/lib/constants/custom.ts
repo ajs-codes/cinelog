@@ -12,6 +12,9 @@ export const MEDIA_CARD_CLASS =
 export const SEGMENTED_CONTROL_CLASS =
   "flex w-fit min-w-0 max-w-full flex-wrap items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1";
 
+export const SEGMENTED_CONTROL_STRETCH_CLASS =
+  "grid w-full min-w-0 grid-flow-col auto-cols-fr items-center gap-1 rounded-xl border border-outline-alt bg-surface-container-low p-1";
+
 export const PWA_OFFLINE_TOAST_CLASS =
   "fixed bottom-20 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-status-error/40 bg-surface-container-high px-4 py-2 text-xs font-medium text-status-error shadow-lg backdrop-blur-md transition-all duration-200 lg:bottom-6";
 

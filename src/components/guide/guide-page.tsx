@@ -9,9 +9,9 @@ export type {
 
 export function GuidePage() {
   return (
-    <main className="relative min-h-[calc(100vh-3.5rem)] px-3.5 py-6 sm:px-8 lg:py-10">
+    <main className="relative min-h-[calc(100vh-3.5rem)] px-3.5 py-6 sm:px-6 lg:py-8">
       <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-6 sm:gap-8">
-        <header className="space-y-2 border-b border-outline-alt/60 pb-6">
+        <header className="space-y-2 border-b border-outline-alt pb-4">
           <div>
             <h1 className="font-heading text-2xl font-semibold tracking-tight text-on-surface sm:text-4xl">
               CineLog Feature Guide
