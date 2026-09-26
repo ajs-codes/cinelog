@@ -51,22 +51,27 @@ export function SmartCollectionsSection() {
         className={`space-y-6 ${isLoading ? "blur-sm" : ""}`}
       >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2
-              className="font-heading text-xl font-semibold tracking-tight text-on-surface sm:text-2xl"
-              id="smart-collections-heading"
-            >
-              Smart Collections
-            </h2>
-            <span className="inline-flex items-center rounded-md border border-brand-tertiary-accent/30 bg-brand-tertiary-accent/10 px-2.5 py-0.5 font-public-sans text-xs font-semibold text-brand-tertiary-accent">
-              {activeCount} Active
-            </span>
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary-container/20 text-brand-primary">
+            <Layers className="h-4.5 w-4.5" />
           </div>
-          <p className="mt-1 font-public-sans text-xs text-secondary">
-            Drag to reorder. Up to 3 filters (AND), one sort, and optional
-            group.
-          </p>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2
+                className="font-heading text-xl font-semibold tracking-tight text-on-surface sm:text-2xl"
+                id="smart-collections-heading"
+              >
+                Smart Collections
+              </h2>
+              <span className="inline-flex items-center rounded-md border border-brand-tertiary-accent/30 bg-brand-tertiary-accent/10 px-2.5 py-0.5 font-public-sans text-xs font-semibold text-brand-tertiary-accent">
+                {activeCount} Active
+              </span>
+            </div>
+            <p className="font-public-sans text-xs text-secondary">
+              Drag to reorder. Up to 3 filters (AND), one sort, and optional
+              group.
+            </p>
+          </div>
         </div>
         <Button
           className="inline-flex h-9 items-center gap-2 rounded-lg px-4 font-public-sans text-xs font-semibold"

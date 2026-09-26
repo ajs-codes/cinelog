@@ -4,19 +4,53 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/hooks/use-theme";
-import {
-  BookOpen,
-  LayoutDashboard,
-  Library,
-  Settings,
-} from "lucide-react";
+import { BookOpen, LayoutDashboard, Library } from "lucide-react";
+import { SETTINGS } from "@/lib/constants/settings";
 
 const navigation = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "My library", href: "/library", icon: Library },
   { label: "Guide", href: "/guide", icon: BookOpen },
-  { label: "Settings", href: "/settings", icon: Settings },
+  {
+    label: SETTINGS.navLabel,
+    href: SETTINGS.href,
+    icon: SETTINGS.icon,
+  },
 ];
+
+function NavLink({
+  label,
+  href,
+  icon: Icon,
+  pathname,
+}: {
+  label: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+  pathname: string;
+}) {
+  const active =
+    href === "/"
+      ? pathname === "/"
+      : href === "/settings"
+        ? pathname.startsWith("/settings")
+        : pathname.startsWith(href);
+
+  return (
+    <Link
+      href={href}
+      className={`flex h-11 items-center gap-3 rounded-lg px-3 font-public-sans text-sm font-semibold transition-colors ${
+        active
+          ? "bg-brand-primary-container/20 text-brand-primary"
+          : "text-secondary hover:bg-surface-container-high hover:text-on-surface"
+      }`}
+      aria-current={active ? "page" : undefined}
+    >
+      <Icon className="size-4.5" strokeWidth={1.8} />
+      {label}
+    </Link>
+  );
+}
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -53,25 +87,9 @@ export function Sidebar() {
         <p className="px-3 pb-3 font-public-sans text-[10px] font-semibold uppercase tracking-[0.12em] text-outline-muted">
           Workspace
         </p>
-        {navigation.map(({ label, href, icon: Icon }) => {
-          const active =
-            href === "/" ? pathname === "/" : pathname.startsWith(href);
-          return (
-            <Link
-              key={label}
-              href={href}
-              className={`flex h-11 items-center gap-3 rounded-lg px-3 font-public-sans text-sm font-semibold transition-colors ${
-                active
-                  ? "bg-brand-primary-container/20 text-brand-primary"
-                  : "text-secondary hover:bg-surface-container-high hover:text-on-surface"
-              }`}
-              aria-current={active ? "page" : undefined}
-            >
-              <Icon className="size-4.5" strokeWidth={1.8} />
-              {label}
-            </Link>
-          );
-        })}
+        {navigation.map((item) => (
+          <NavLink key={item.label} pathname={pathname} {...item} />
+        ))}
       </nav>
     </aside>
   );

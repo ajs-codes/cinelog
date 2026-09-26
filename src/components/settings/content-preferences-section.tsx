@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { AlertBanner } from "@/components/ui/alert-banner";
 import { Button } from "@/components/ui/button";
 import { StepMediaLean } from "@/components/onboarding/steps/step-media-lean";
@@ -55,7 +55,12 @@ export function ContentPreferencesSection() {
           <h2 className="font-public-sans text-sm font-semibold text-on-surface">
             What do you watch
           </h2>
-          <StepMediaLean value={draft.mediaLean} chosen onSelect={actions.setMediaLean} />
+          <StepMediaLean
+            chosen
+            layout="rowOnDesktop"
+            onSelect={actions.setMediaLean}
+            value={draft.mediaLean}
+          />
         </section>
 
         <section className="flex flex-col gap-3">
@@ -89,12 +94,21 @@ export function ContentPreferencesSection() {
 
         <div>
           <Button
+            variant="primaryFilled"
             onClick={save}
             disabled={
               isSaving || draft.genreIds.length < 1 || draft.languages.length < 1
             }
+            type="button"
           >
-            {isSaving ? "Saving…" : "Save preferences"}
+            {isSaving ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Saving...
+              </span>
+            ) : (
+              "Save preferences"
+            )}
           </Button>
         </div>
       </div>

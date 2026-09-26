@@ -38,9 +38,6 @@ export function FilterQueryChips({
 
   return (
     <div className="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-secondary">
-      <span className="text-[10px] font-semibold tracking-wider text-outline-muted uppercase">
-        Query:
-      </span>
       {filters.map((filter, index) => (
         <span className="inline-flex items-center gap-1" key={index}>
           <span className="rounded bg-surface-container-high px-1.5 py-0.5 text-on-surface">

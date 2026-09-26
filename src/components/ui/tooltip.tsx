@@ -10,6 +10,7 @@ export type TooltipProps = {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   className?: string;
+  triggerClassName?: string;
   contentClassName?: string;
   side?: "top" | "bottom";
   align?: "start" | "center" | "end" | "responsive";
@@ -22,6 +23,7 @@ export function Tooltip({
   isOpen: controlledIsOpen,
   onOpenChange,
   className,
+  triggerClassName,
   contentClassName,
   side = "top",
   align = "responsive",
@@ -90,7 +92,7 @@ export function Tooltip({
     >
       <div
         aria-expanded={isOpen}
-        className="inline-flex items-center"
+        className={cn("inline-flex items-center", triggerClassName)}
         onClick={() => setOpen(!isOpen)}
         onFocus={() => setOpen(true)}
         onBlur={(e) => {

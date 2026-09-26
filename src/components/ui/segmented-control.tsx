@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { SEGMENTED_CONTROL_CLASS } from "@/lib/constants";
+import {
+  SEGMENTED_CONTROL_CLASS,
+  SEGMENTED_CONTROL_STRETCH_CLASS,
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type SegmentedOption<T extends string> = {
@@ -16,6 +19,11 @@ type SegmentedControlProps<T extends string> = {
   value: T;
   onChange?: (value: T) => void;
   className?: string;
+  /**
+   * When true, the control fills its container and every option gets an
+   * equal share of the width (e.g. 50/50 for two options).
+   */
+  stretch?: boolean;
   "aria-label"?: string;
 };
 
@@ -24,18 +32,23 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
   className,
+  stretch = false,
   "aria-label": ariaLabel,
 }: SegmentedControlProps<T>) {
   return (
     <div
       aria-label={ariaLabel}
-      className={cn(SEGMENTED_CONTROL_CLASS, className)}
+      className={cn(
+        stretch ? SEGMENTED_CONTROL_STRETCH_CLASS : SEGMENTED_CONTROL_CLASS,
+        className,
+      )}
       role="group"
     >
       {options.map((option) => {
         const isActive = option.value === value;
         const className = cn(
           "min-h-8 rounded-lg px-2.5 py-1 text-xs sm:px-3.5 sm:py-1.5 sm:text-sm",
+          stretch && "min-w-0",
         );
         const content = (
           <>
