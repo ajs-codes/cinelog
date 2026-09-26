@@ -11,6 +11,12 @@ import type {
 } from "@/lib/types";
 import { showToast } from "./toastSlice";
 import {
+  completionImpressionPrompt,
+  impressionPromptFailed,
+  impressionPromptRequested,
+  impressionPromptResolved,
+} from "./impressionPromptSlice";
+import {
   libraryFailed,
   libraryGroupPageFailed,
   libraryGroupPageRequested,
@@ -284,7 +290,7 @@ function* fetchLibraryGroupPage(
 function* mutateLibraryItem(
   action: ReturnType<typeof libraryItemMutationRequested>,
 ): SagaIterator {
-  const { mediaType, tmdbId, watch_status, impression, progress } =
+  const { mediaType, tmdbId, title, watch_status, impression, progress } =
     action.payload;
   const mutationKey = `${mediaType}:${tmdbId}`;
 
@@ -338,14 +344,47 @@ function* mutateLibraryItem(
         seriesUpdate,
       }),
     );
+
+    if (watch_status !== undefined || progress) {
+      const prompt = completionImpressionPrompt({
+        mediaType,
+        tmdbId,
+        title: title ?? "this title",
+        source: "library",
+        impression: data.impression,
+        requestedWatchStatus: watch_status,
+        requestedProgress: progress,
+        seasons: data.seasons,
+        resultingWatchStatus: data.watch_status,
+      });
+
+      if (prompt) {
+        yield put(impressionPromptRequested(prompt));
+      }
+    }
+
+    if (impression !== undefined) {
+      yield put(impressionPromptResolved({ mediaType, tmdbId }));
+    }
   } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Library update failed";
     yield put(
       libraryItemMutationFailed({
         mediaType,
         tmdbId,
-        error: error instanceof Error ? error.message : "Library update failed",
+        error: message,
       }),
     );
+    if (impression !== undefined) {
+      yield put(
+        impressionPromptFailed({
+          mediaType,
+          tmdbId,
+          error: message,
+        }),
+      );
+    }
   } finally {
     activeLibraryMutations.delete(mutationKey);
   }

@@ -301,15 +301,8 @@ export async function updateSeriesInLibrary(
 
   if (body.watch_status !== undefined) {
     finalWatchStatus = body.watch_status;
-    const planToWatchValue =
-      Object.values(WATCH_STATUS).find(
-        (s) => s.display_value === "Plan to Watch",
-      )?.value ?? 0;
-    const completedValue =
-      Object.values(WATCH_STATUS).find((s) => s.display_value === "Completed")
-        ?.value ?? 2;
 
-    if (finalWatchStatus === planToWatchValue) {
+    if (finalWatchStatus === WATCH_STATUS[0].value) {
       finalTotalEpsWatched = 0;
       finalTotalSeasonsWatched = 0;
       finalCompletedAt = null;
@@ -324,7 +317,7 @@ export async function updateSeriesInLibrary(
         lastWatchedAt: null,
         updatedAt: now,
       };
-    } else if (finalWatchStatus === completedValue) {
+    } else if (finalWatchStatus === WATCH_STATUS[2].value) {
       finalCompletedAt = now;
       finalLastWatchedAt = now;
       finalTotalEpsWatched = existingSeries.totalNumberOfEpisodes || 0;
@@ -349,18 +342,10 @@ export async function updateSeriesInLibrary(
 
     const totalEps = existingSeries.totalNumberOfEpisodes || 0;
     if (totalEps > 0 && finalTotalEpsWatched >= totalEps) {
-      const completedValue =
-        Object.values(WATCH_STATUS).find(
-          (s) => s.display_value === "Completed",
-        )?.value ?? 2;
-      finalWatchStatus = completedValue;
+      finalWatchStatus = WATCH_STATUS[2].value;
       finalCompletedAt = now;
     } else {
-      const watchingValue =
-        Object.values(WATCH_STATUS).find(
-          (s) => s.display_value === "Watching",
-        )?.value ?? 1;
-      finalWatchStatus = watchingValue;
+      finalWatchStatus = WATCH_STATUS[1].value;
       finalCompletedAt = null;
     }
   }

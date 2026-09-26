@@ -55,7 +55,7 @@ export function ProgressStatus({
   const { isOpen, containerRef, toggle, close } = usePopover(isDisabled);
   const isStatusMutating = isMutating && lastMutation === "update-watch-status";
   const currentStatusObj =
-    WATCH_STATUS[status as keyof typeof WATCH_STATUS] ?? WATCH_STATUS[1];
+    WATCH_STATUS[status as keyof typeof WATCH_STATUS] ?? WATCH_STATUS[0];
   const currentIndicator = WATCH_STATUS_INDICATOR[status] ?? "accentAlt";
   const CurrentStatusIcon =
     WATCH_STATUS_ICONS[status as keyof typeof WATCH_STATUS_ICONS] ??

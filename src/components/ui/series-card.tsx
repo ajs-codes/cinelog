@@ -2,7 +2,6 @@
 
 import { Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CardImpressionToggle } from "@/components/ui/card-impression-toggle";
 import { MediaCard } from "@/components/ui/media-card";
 import { Progress } from "@/components/ui/progress";
 import { useLibraryItemMutation } from "@/hooks/library/use-library-item-mutation";
@@ -13,12 +12,8 @@ import { canUpdateSeriesWatchActivity } from "@/lib/media/status";
 import type { LibrarySeries } from "@/lib/types";
 
 export function SeriesCard({ series }: { series: LibrarySeries }) {
-  const {
-    isPending,
-    isImpressionPending,
-    isProgressPending,
-    requestMutation,
-  } = useLibraryItemMutation("series", series.tmdb_id);
+  const { isPending, isProgressPending, requestMutation } =
+    useLibraryItemMutation("series", series.tmdb_id);
   const progress = calculateSeriesProgress(series.seasons_info);
   const nextEpisode = progress.nextEpisode;
   const totalSeasons = series.total_number_of_seasons ?? 0;
@@ -64,19 +59,13 @@ export function SeriesCard({ series }: { series: LibrarySeries }) {
     <MediaCard
       actions={
         <>
-          <CardImpressionToggle
-            disabled={isPending || !canUpdateWatchActivity}
-            loading={isImpressionPending}
-            impression={series.impression}
-            onSelect={(impression) => requestMutation({ impression })}
-          />
           <Button
             aria-label={nextEpisodeLabel}
             className="h-8 flex-1 justify-center gap-1.5 rounded-[6px] px-2.5 text-xs font-semibold"
             disabled={isNextDisabled}
             onClick={() => {
               if (isNextDisabled || !nextEpisode) return;
-              requestMutation({ progress: nextEpisode });
+              requestMutation({ progress: nextEpisode, title: series.name });
             }}
             title={nextEpisodeLabel}
             type="button"

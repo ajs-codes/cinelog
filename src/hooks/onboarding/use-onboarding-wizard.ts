@@ -127,7 +127,7 @@ export function useOnboardingWizard() {
     () =>
       addedTitleCount > 0
         ? `${addedTitleCount} on your watchlist`
-        : "Tap + to add titles to your watchlist.",
+        : "Tap the bookmark to add titles to your watchlist.",
     [addedTitleCount],
   );
 

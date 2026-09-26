@@ -294,6 +294,10 @@ export async function deleteUserSeries(tmdbId: number, userId: number) {
     return [];
   }
 
+  await db
+    .delete(userSeasonProgress)
+    .where(eq(userSeasonProgress.userSeriesId, row.id));
+
   return db.delete(userSeries).where(eq(userSeries.id, row.id)).returning();
 }
 

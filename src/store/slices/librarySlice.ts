@@ -32,6 +32,7 @@ export type LibraryGroupPage<T extends LibraryMovie | LibrarySeries> = {
 export type LibraryItemMutation = {
   tmdbId: number;
   mediaType: LibraryMediaType;
+  title?: string;
   watch_status?: number;
   impression?: number | null;
   progress?: {
@@ -417,6 +418,47 @@ function buildGroupPages<T extends LibraryMovie | LibrarySeries>(
   }
 
   return pages;
+}
+
+function removeLoadedLibraryItem(
+  state: LibraryState,
+  mediaType: LibraryMediaType,
+  tmdbId: number,
+) {
+  const item = findItem(state, mediaType, tmdbId);
+  const groupBy = state.queries[mediaType].groupBy;
+
+  if (mediaType === "movie") {
+    state.movieCount = Math.max(0, state.movieCount - 1);
+    state.movies = state.movies.filter((movie) => movie.tmdb_id !== tmdbId);
+    for (const page of Object.values(state.movieGroupPages)) {
+      page.items = page.items.filter((movie) => movie.tmdb_id !== tmdbId);
+    }
+    if (item && groupBy !== undefined && state.movieGroups) {
+      const key = libraryGroupKey(item, groupBy);
+      const group = state.movieGroups.find((entry) => entry.key === key);
+      if (group) {
+        group.count = Math.max(0, group.count - 1);
+      }
+      state.movieGroups = state.movieGroups.filter((entry) => entry.count > 0);
+    }
+  } else {
+    state.seriesCount = Math.max(0, state.seriesCount - 1);
+    state.series = state.series.filter((show) => show.tmdb_id !== tmdbId);
+    for (const page of Object.values(state.seriesGroupPages)) {
+      page.items = page.items.filter((show) => show.tmdb_id !== tmdbId);
+    }
+    if (item && groupBy !== undefined && state.seriesGroups) {
+      const key = libraryGroupKey(item, groupBy);
+      const group = state.seriesGroups.find((entry) => entry.key === key);
+      if (group) {
+        group.count = Math.max(0, group.count - 1);
+      }
+      state.seriesGroups = state.seriesGroups.filter((entry) => entry.count > 0);
+    }
+  }
+
+  delete state.pending[libraryItemKey(mediaType, tmdbId)];
 }
 
 function clearGroupLoading(state: LibraryState) {
@@ -805,6 +847,16 @@ const librarySlice = createSlice({
         state.seriesCount += 1;
       }
     },
+    libraryWatchlistItemRemoved: (
+      state,
+      action: PayloadAction<{ mediaType: LibraryMediaType; tmdbId: number }>,
+    ) => {
+      removeLoadedLibraryItem(
+        state,
+        action.payload.mediaType,
+        action.payload.tmdbId,
+      );
+    },
     libraryItemMutationFailed: (
       state,
       action: PayloadAction<{
@@ -855,5 +907,6 @@ export const {
   libraryRequested,
   librarySucceeded,
   libraryWatchlistItemAdded,
+  libraryWatchlistItemRemoved,
 } = librarySlice.actions;
 export default librarySlice.reducer;

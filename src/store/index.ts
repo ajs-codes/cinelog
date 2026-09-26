@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import createSagaMiddleware from "redux-saga";
 import rootSaga from "./rootSaga";
 import contentDetailsReducer from "./slices/contentDetailsSlice";
+import impressionPromptReducer from "./slices/impressionPromptSlice";
 import searchReducer from "./slices/searchSlice";
 import authReducer from "./slices/authSlice";
 import libraryReducer from "./slices/librarySlice";
@@ -13,6 +14,7 @@ const sagaMiddleware = createSagaMiddleware();
 export const store = configureStore({
   reducer: {
     contentDetails: contentDetailsReducer,
+    impressionPrompt: impressionPromptReducer,
     search: searchReducer,
     auth: authReducer,
     library: libraryReducer,

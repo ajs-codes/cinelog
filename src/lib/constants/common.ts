@@ -1,4 +1,4 @@
-import { Check, Clock, Heart, Play, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { Check, Clock, Heart, Play, ThumbsDown, ThumbsUp } from "lucide-react";
 
 import type { BadgeIndicator } from "@/lib/types/ui";
 
@@ -11,7 +11,6 @@ export const WATCH_STATUS = {
   0: { value: 0, display_value: "Plan to Watch" },
   1: { value: 1, display_value: "Watching" },
   2: { value: 2, display_value: "Completed" },
-  3: { value: 3, display_value: "Dropped" },
 } as const;
 
 export const IMPRESSION = {
@@ -65,14 +64,12 @@ export const WATCH_STATUS_INDICATOR: Record<number, BadgeIndicator> = {
   0: "accentAlt",
   1: "info",
   2: "success",
-  3: "error",
 };
 
 export const WATCH_STATUS_ICONS = {
   0: Clock,
   1: Play,
   2: Check,
-  3: X,
 } as const;
 
 export const WATCH_STATUS_INDICATOR_TEXT: Record<BadgeIndicator, string> = {

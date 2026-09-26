@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "@/store";
 import { useEffect, useRef } from "react";
 import { initAuthRequest } from "@/store/slices/authSlice";
+import { GlobalImpressionPrompt } from "@/components/layout/global-impression-prompt";
 import { GlobalToast } from "@/components/layout/global-toast";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <Provider store={store}>
       {children}
       <GlobalToast />
+      <GlobalImpressionPrompt />
     </Provider>
   );
 }
