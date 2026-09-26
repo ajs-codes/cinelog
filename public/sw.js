@@ -1,9 +1,6 @@
-const CACHE_NAME = "cinelog-v3";
-
-const PUBLIC_NAV_PATHS = new Set(["/", "/login", "/signup"]);
+const CACHE_NAME = "cinelog-v4";
 
 const PRECACHE_ASSETS = [
-  "/",
   "/manifest.webmanifest",
   "/icon.svg",
   "/logo_dark.svg",
@@ -19,10 +16,6 @@ const PRECACHE_ASSETS = [
   "/tmdb_logo.svg",
   "/imdb_logo.svg",
 ];
-
-function isPublicNavigation(pathname) {
-  return PUBLIC_NAV_PATHS.has(pathname);
-}
 
 function isStaticAssetPath(pathname) {
   return (
@@ -45,7 +38,7 @@ function shouldClearNavigationEntry(url) {
     return false;
   }
 
-  return !isPublicNavigation(url.pathname);
+  return true;
 }
 
 async function precacheAssets(cache) {
@@ -107,31 +100,19 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Navigation requests: cache only public pages; never serve stale auth pages
+  // Navigation requests: always fetch from network so dynamic auth/dashboard state is never stale
   if (request.mode === "navigate") {
-    const isPublic = isPublicNavigation(url.pathname);
-
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (isPublic && response && response.status === 200) {
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseToCache);
-            });
-          }
-          return response;
-        })
-        .catch(async () => {
-          if (isPublic) {
-            const cachedResponse = await caches.match(request);
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-          }
-
-          return caches.match("/");
-        }),
+      fetch(request).catch(() => {
+        return new Response(
+          "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Offline - CineLog</title><style>body{background:#121314;color:#f8f9fc;font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;padding:24px;text-align:center;}h1{font-size:1.5rem;margin-bottom:8px;}p{color:#9ca3af;font-size:0.95rem;margin-top:0;}</style></head><body><h1>You're Offline</h1><p>Please check your internet connection to continue using CineLog.</p></body></html>",
+          {
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+            status: 503,
+            statusText: "Service Unavailable",
+          },
+        );
+      }),
     );
     return;
   }

@@ -99,6 +99,11 @@ function* handleInit(): SagaIterator {
   try {
     const data = yield call(meApi);
     yield put(authSuccess({ user: data.user }));
+    const pathname = window.location.pathname;
+    if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
+      const target = data.user.hasCompletedOnboarding ? "/" : "/onboarding";
+      window.location.replace(target);
+    }
   } catch {
     yield put(initAuthFailure());
     const pathname = window.location.pathname;
