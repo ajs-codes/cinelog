@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch } from "@/lib/http/client";
 import { GENRE_MAX, LANGUAGE_MAX } from "@/lib/constants";
 import type { MediaLean, UserPreferencesInput } from "@/lib/types";
+import { useAppDispatch } from "@/store";
+import { showToast } from "@/store/slices/toastSlice";
 
 const emptyDraft: UserPreferencesInput = {
   mediaLean: 2,
@@ -20,6 +22,7 @@ function toggle<T>(list: T[], value: T, max: number): T[] {
 }
 
 export function useContentPreferences() {
+  const dispatch = useAppDispatch();
   const [draft, setDraft] = useState<UserPreferencesInput>(emptyDraft);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -77,7 +80,13 @@ export function useContentPreferences() {
         const json = await res.json().catch(() => ({}));
         throw new Error(json.error || "Failed to save preferences");
       }
-      setMessage({ type: "success", text: "Preferences saved." });
+      setMessage(null);
+      dispatch(
+        showToast({
+          message: "Preferences updated",
+          variant: "info",
+        }),
+      );
     } catch (error) {
       setMessage({
         type: "error",
@@ -87,7 +96,7 @@ export function useContentPreferences() {
     } finally {
       setIsSaving(false);
     }
-  }, [draft]);
+  }, [dispatch, draft]);
 
   return { draft, actions, isLoading, isSaving, message, save };
 }

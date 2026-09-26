@@ -21,6 +21,8 @@ import { GuideFeatureList } from "@/components/guide/guide-feature-list";
 import { LandingNav } from "@/components/landing/landing-nav";
 import { ButtonLink } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
+import { useAppSelector } from "@/store";
+import { Loader2 } from "lucide-react";
 
 /* ── Scroll reveal hook ── */
 function useScrollReveal() {
@@ -191,6 +193,22 @@ export function LandingPage() {
   const scrollRef = useScrollReveal();
   const { theme, mounted } = useTheme();
   const isDark = mounted ? theme === "dark" : true;
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      window.location.replace(user.hasCompletedOnboarding ? "/" : "/onboarding");
+    }
+  }, [isAuthenticated, user]);
+
+  if (isAuthenticated) {
+    return (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-surface gap-3">
+        <Loader2 className="size-8 animate-spin text-brand-primary" />
+        <p className="text-sm text-secondary font-medium">Entering CineLog...</p>
+      </div>
+    );
+  }
 
   return (
     <div ref={scrollRef} className="min-h-screen bg-surface text-on-surface">

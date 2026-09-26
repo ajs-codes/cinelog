@@ -6,7 +6,6 @@ import { StepMediaLean } from "@/components/onboarding/steps/step-media-lean";
 import { StepGenres } from "@/components/onboarding/steps/step-genres";
 import { StepLanguages } from "@/components/onboarding/steps/step-languages";
 import { StepEraRating } from "@/components/onboarding/steps/step-era-rating";
-import { StepTitles } from "@/components/onboarding/steps/step-titles";
 import { useContentPreferences } from "@/hooks/settings/use-content-preferences";
 
 export function ContentPreferencesSection() {
@@ -32,7 +31,7 @@ export function ContentPreferencesSection() {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          How you watch
+          What do you watch
         </h2>
         <StepMediaLean value={draft.mediaLean} chosen onSelect={actions.setMediaLean} />
       </section>
@@ -56,29 +55,13 @@ export function ContentPreferencesSection() {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          Era & rating
+          Era & Rating
         </h2>
         <StepEraRating
           eras={draft.eras}
           minRating={draft.minRating}
           onToggleEra={actions.toggleEra}
           onSetRating={actions.setMinRating}
-        />
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="font-public-sans text-sm font-semibold text-on-surface">
-          Titles you love
-        </h2>
-        <p className="font-public-sans text-xs text-secondary">
-          Add titles straight to your watchlist.
-        </p>
-        <StepTitles
-          genreIds={draft.genreIds}
-          mediaLean={draft.mediaLean}
-          languages={draft.languages}
-          minRating={draft.minRating}
-          eras={draft.eras}
         />
       </section>
 

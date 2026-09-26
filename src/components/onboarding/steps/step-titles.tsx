@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Loader2, Plus } from "lucide-react";
 import { apiFetch } from "@/lib/http/client";
 import { MediaCard } from "@/components/ui/media-card";
@@ -249,14 +249,7 @@ export function StepTitles({
     );
   }
 
-  const addedCount = added.size;
-  const helperText = useMemo(
-    () =>
-      addedCount > 0
-        ? `${addedCount} on your watchlist`
-        : "Tap + to add titles to your watchlist.",
-    [addedCount],
-  );
+
 
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -303,7 +296,6 @@ export function StepTitles({
           </p>
         )}
       </div>
-      <p className="font-public-sans text-xs text-secondary">{helperText}</p>
     </div>
   );
 }

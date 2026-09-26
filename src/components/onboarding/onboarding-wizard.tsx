@@ -10,28 +10,26 @@ import { StepGenres } from "@/components/onboarding/steps/step-genres";
 import { StepLanguages } from "@/components/onboarding/steps/step-languages";
 import { StepEraRating } from "@/components/onboarding/steps/step-era-rating";
 import { StepTitles } from "@/components/onboarding/steps/step-titles";
-import { MIN_WATCHLIST_TITLES } from "@/lib/constants";
 import { useOnboardingWizard } from "@/hooks/onboarding/use-onboarding-wizard";
 
 const STEP_TITLES = [
-  { title: "How do you watch?", subtitle: "Tell us what you reach for most." },
-  { title: "Pick your genres", subtitle: "We use these to tailor CineLog to you." },
+  { title: "What do you watch?", subtitle: "Tell us what you reach for most." },
+  { title: "Pick your Genres", subtitle: "We use these to tailor CineLog to you." },
   {
-    title: "Preferred languages",
+    title: "Preferred Languages",
     subtitle: "Pick at least one — helps us surface the right titles.",
   },
-  { title: "Era & rating", subtitle: "Optional — set the vibe and a quality floor." },
+  { title: "Era & Rating", subtitle: "Optional — set the vibe and a quality floor." },
   {
     title: "Add titles you love",
-    subtitle: `Add at least ${MIN_WATCHLIST_TITLES} to your watchlist to finish.`,
+    subtitle: `Add your favourite titles to your watchlist`,
   },
 ];
 
 export function OnboardingWizard() {
   const w = useOnboardingWizard();
   const meta = STEP_TITLES[w.stepIndex];
-  // Languages (step 2) is now required; only era-rating and titles are skippable.
-  const isSkippable = w.stepIndex >= 3;
+
 
   // Wait for the saved draft to be restored before rendering a step, so we
   // never flash step 1 while resuming a later step on reload.
@@ -52,6 +50,11 @@ export function OnboardingWizard() {
           {meta.title}
         </h1>
         <p className="font-public-sans text-sm text-secondary">{meta.subtitle}</p>
+        {w.isLastStep ? (
+          <p className="font-public-sans text-xs text-outline-muted">
+            {w.helperText}
+          </p>
+        ) : null}
       </div>
 
       {w.errorMessage ? (
@@ -108,18 +111,9 @@ export function OnboardingWizard() {
           Back
         </Button>
         <div className="flex items-center gap-2">
-          {isSkippable && !w.isLastStep ? (
-            <Button variant="ghost" onClick={w.next} disabled={w.isSubmitting}>
-              Skip
-            </Button>
-          ) : null}
+
           {w.isLastStep ? (
             <div className="flex items-center gap-3">
-              {!w.canFinish ? (
-                <span className="font-public-sans text-xs text-secondary">
-                  {w.addedTitleCount}/{w.minWatchlistTitles} added
-                </span>
-              ) : null}
               <Button
                 onClick={w.submit}
                 disabled={w.isSubmitting || !w.canFinish}

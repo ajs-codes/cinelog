@@ -18,7 +18,7 @@ export function StepEraRating({
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h3 className="font-public-sans text-sm font-medium text-on-surface">
-          Favorite eras
+          Favorite Eras
         </h3>
         <div className="flex flex-wrap gap-2">
           {ERA_BUCKETS.map((era) => (
@@ -33,7 +33,7 @@ export function StepEraRating({
       </div>
       <div className="flex flex-col gap-2">
         <h3 className="font-public-sans text-sm font-medium text-on-surface">
-          Minimum rating
+          Minimum Rating
         </h3>
         <div className="flex flex-wrap gap-2">
           {MIN_RATING_OPTIONS.map((option) => (

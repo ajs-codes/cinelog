@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch } from "@/lib/http/client";
-import { GENRE_MAX, LANGUAGE_MAX, MIN_WATCHLIST_TITLES } from "@/lib/constants";
+import { GENRE_MAX, LANGUAGE_MAX } from "@/lib/constants";
 import type { MediaLean, UserPreferencesInput } from "@/lib/types";
 
 const STEP_COUNT = 5; // media-lean, genres, languages, era-rating, titles
@@ -122,15 +122,22 @@ export function useOnboardingWizard() {
     }),
     [],
   );
-
   const addedTitleCount = addedTitleKeys.size;
-  const canFinish = addedTitleCount >= MIN_WATCHLIST_TITLES;
+  const helperText = useMemo(
+    () =>
+      addedTitleCount > 0
+        ? `${addedTitleCount} on your watchlist`
+        : "Tap + to add titles to your watchlist.",
+    [addedTitleCount],
+  );
+
+  const canFinish = true;
 
   const canProceed = useMemo(() => {
     if (stepIndex === 0) return mediaLeanChosen;
     if (stepIndex === 1) return draft.genreIds.length >= 1;
     if (stepIndex === 2) return draft.languages.length >= 1;
-    return true; // era-rating is skippable (titles is the gated last step)
+    return true; // era-rating and titles are optional
   }, [stepIndex, mediaLeanChosen, draft.genreIds.length, draft.languages.length]);
 
   const next = useCallback(
@@ -180,8 +187,8 @@ export function useOnboardingWizard() {
     addedTitleKeys,
     markTitleAdded,
     addedTitleCount,
+    helperText,
     canFinish,
-    minWatchlistTitles: MIN_WATCHLIST_TITLES,
     next,
     back,
     submit,
