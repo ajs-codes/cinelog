@@ -55,6 +55,9 @@ const MEDIA_TYPE_OPTIONS = [
   { value: "1", label: "Series" },
 ];
 
+const GROUPING_RESTRICTION_HINT =
+  "Collections displayed on the dashboard cannot be grouped. Disable 'Show in dashboard' to enable grouping.";
+
 export function CollectionListItemEditor({
   collection,
   onCancel,
@@ -174,7 +177,7 @@ export function CollectionListItemEditor({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <FormField id="collection-name" label="Name">
           <Input
-            className="border-outline-alt bg-surface-container"
+            className="border-outline-alt text-on-surface"
             id="collection-name"
             onChange={(event) => setName(event.target.value)}
             placeholder="Collection name"
@@ -273,7 +276,7 @@ export function CollectionListItemEditor({
           labelSuffix={
             <Tooltip
               align="responsive"
-              content="Collections displayed on the dashboard cannot be grouped. Disable 'Show in dashboard' to enable grouping."
+              content={GROUPING_RESTRICTION_HINT}
               contentClassName="w-64 sm:w-72"
               isOpen={groupTooltipOpen}
               onOpenChange={handleGroupTooltipChange}
@@ -284,7 +287,7 @@ export function CollectionListItemEditor({
                 className="inline-flex size-4 cursor-pointer items-center justify-center rounded-full text-secondary transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-primary"
                 onClick={(event) => {
                   event.preventDefault();
-                  handleGroupTooltipChange(!groupTooltipOpen);
+                  triggerGroupTooltip();
                 }}
                 type="button"
               >
@@ -293,19 +296,28 @@ export function CollectionListItemEditor({
             </Tooltip>
           }
         >
-          <SearchFilterSelect
-            aria-label="Group collection"
-            disabled={groupDisabled}
-            heading="Group"
-            menuMinWidth={220}
-            onChange={(value) =>
-              setGroupBy(value === "" ? null : Number(value))
-            }
-            options={LIBRARY_GROUP_OPTIONS}
-            placeholder="None"
-            triggerClassName="min-w-full"
-            value={groupBy === null ? "" : String(groupBy)}
-          />
+          <div
+            className={cn("w-full", groupDisabled && "cursor-not-allowed")}
+            onClick={() => {
+              if (groupDisabled) {
+                triggerGroupTooltip();
+              }
+            }}
+          >
+            <SearchFilterSelect
+              aria-label="Group collection"
+              disabled={groupDisabled}
+              heading="Group"
+              menuMinWidth={220}
+              onChange={(value) =>
+                setGroupBy(value === "" ? null : Number(value))
+              }
+              options={LIBRARY_GROUP_OPTIONS}
+              placeholder="None"
+              triggerClassName="min-w-full"
+              value={groupBy === null ? "" : String(groupBy)}
+            />
+          </div>
         </FormField>
       </div>
 
@@ -331,27 +343,27 @@ export function CollectionListItemEditor({
             }
           }}
         >
-          <ToggleSwitch
-            checked={showInDashboard}
-            disabled={dashboardDisabled}
-            onChange={() =>
-              setShowInDashboard((prev) => {
-                const next = !prev;
-                if (next) {
-                  setGroupBy(null);
-                  triggerGroupTooltip();
-                }
-                return next;
-              })
-            }
-            title={
-              dashboardDisabled
-                ? "Remove grouping to enable dashboard"
-                : "Show on dashboard"
-            }
-          />
+          <span className={cn(dashboardDisabled && "pointer-events-none")}>
+            <ToggleSwitch
+              checked={showInDashboard}
+              disabled={dashboardDisabled}
+              onChange={() =>
+                setShowInDashboard((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    setGroupBy(null);
+                    triggerGroupTooltip();
+                  }
+                  return next;
+                })
+              }
+            />
+          </span>
           <span
-            className="font-public-sans text-xs text-on-surface select-none"
+            className={cn(
+              "font-public-sans text-xs text-on-surface select-none",
+              dashboardDisabled && "pointer-events-none",
+            )}
             onClick={() => {
               if (!dashboardDisabled) {
                 setShowInDashboard((prev) => {

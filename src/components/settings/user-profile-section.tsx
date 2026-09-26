@@ -57,7 +57,7 @@ function UserProfileForm({ user }: { user: User | null }) {
               label="Username"
             >
               <Input
-                className="border-outline-alt bg-surface-container"
+                className="border-outline-alt text-on-surface"
                 disabled={!user || form.isLoading}
                 id="username-input"
                 maxLength={10}
@@ -76,7 +76,7 @@ function UserProfileForm({ user }: { user: User | null }) {
               label="Email Address"
             >
               <Input
-                className="border-outline-alt bg-surface-container"
+                className="border-outline-alt text-on-surface"
                 disabled={!user || form.isLoading}
                 id="email-input"
                 onChange={(event) => form.setEmail(event.target.value)}
@@ -92,7 +92,7 @@ function UserProfileForm({ user }: { user: User | null }) {
               label="Display Name (Optional)"
             >
               <Input
-                className="border-outline-alt bg-surface-container"
+                className="border-outline-alt text-on-surface"
                 disabled={!user || form.isLoading}
                 id="display-name-input"
                 onChange={(event) => form.setDisplayName(event.target.value)}
@@ -120,7 +120,7 @@ function UserProfileForm({ user }: { user: User | null }) {
             <FormField id="current-password-input" label="Current Password">
               <Input
                 autoComplete="current-password"
-                className="border-outline-alt bg-surface-container"
+                className="border-outline-alt text-on-surface"
                 disabled={!user || form.isLoading}
                 id="current-password-input"
                 onChange={(event) =>
@@ -134,7 +134,7 @@ function UserProfileForm({ user }: { user: User | null }) {
             <FormField id="new-password-input" label="New Password">
               <Input
                 autoComplete="new-password"
-                className="border-outline-alt bg-surface-container"
+                className="border-outline-alt text-on-surface"
                 disabled={!user || form.isLoading}
                 id="new-password-input"
                 onChange={(event) => form.setNewPassword(event.target.value)}
@@ -149,7 +149,7 @@ function UserProfileForm({ user }: { user: User | null }) {
             >
               <Input
                 autoComplete="new-password"
-                className="border-outline-alt bg-surface-container"
+                className="border-outline-alt text-on-surface"
                 disabled={!user || form.isLoading}
                 id="confirm-password-input"
                 onChange={(event) =>

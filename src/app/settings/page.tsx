@@ -1,3 +1,5 @@
-export default function SettingsLandingPage() {
-  return null;
+import { redirect } from "next/navigation";
+
+export default function SettingsPage() {
+  redirect("/settings/profile");
 }
