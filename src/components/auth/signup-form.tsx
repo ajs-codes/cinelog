@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type FieldError } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -40,7 +40,13 @@ function ErrorList({ error }: { error?: FieldError }) {
 export function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status, error, isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      window.location.replace(user.hasCompletedOnboarding ? "/" : "/onboarding");
+    }
+  }, [isAuthenticated, user]);
 
   const {
     register,
@@ -54,6 +60,15 @@ export function SignupForm() {
   const onSubmit = (data: SignupInput) => {
     dispatch(signupRequest(data));
   };
+
+  if (isAuthenticated) {
+    return (
+      <div className="flex w-full flex-col items-center justify-center py-12 gap-3">
+        <Loader2 className="size-6 animate-spin text-brand-primary" />
+        <p className="text-xs sm:text-sm text-secondary">Redirecting to dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full flex-col gap-3.5 sm:gap-6">

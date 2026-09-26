@@ -24,7 +24,7 @@ const indicatorClasses: Record<BadgeIndicator, string> = {
 // reliably — the project's `cn` is a plain join, not tailwind-merge.
 const variantClasses: Record<BadgeVariant, string> = {
   default: "border-outline-alt bg-surface-container-low",
-  selected: "border-brand-primary bg-brand-primary-container/15 text-on-surface",
+  selected: "border-status-success bg-status-success/15 text-on-surface",
 };
 
 function Badge({

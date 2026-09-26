@@ -22,7 +22,7 @@ export function SelectableChip({
       disabled={disabled}
       onClick={onToggle}
       className={cn(
-        "inline-flex rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
+        "inline-flex rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-success",
         disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
       )}
     >
@@ -34,7 +34,7 @@ export function SelectableChip({
         // selection doesn't shift the chip's width.
         inlineStart={
           <Check
-            className={cn("text-brand-primary", selected ? "visible" : "invisible")}
+            className={cn("text-status-success", selected ? "visible" : "invisible")}
           />
         }
         text={label}
