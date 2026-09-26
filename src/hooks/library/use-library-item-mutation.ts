@@ -17,7 +17,6 @@ export function useLibraryItemMutation(
     (state) => state.library.pending[libraryItemKey(mediaType, tmdbId)],
   );
   const isPending = pendingSnapshot !== undefined;
-  const isImpressionPending = pendingSnapshot?.pendingType === "impression";
   const isStatusPending = pendingSnapshot?.pendingType === "watch_status";
   const isProgressPending = pendingSnapshot?.pendingType === "progress";
 
@@ -35,7 +34,6 @@ export function useLibraryItemMutation(
 
   return {
     isPending,
-    isImpressionPending,
     isStatusPending,
     isProgressPending,
     requestMutation,

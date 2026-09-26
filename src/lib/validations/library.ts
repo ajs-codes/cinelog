@@ -19,6 +19,7 @@ export const moviePatchSchema = z
   .object({
     watch_status: z
       .number()
+      .int()
       .refine((value) => watchStatusValues.includes(value), {
         message: "Invalid watch_status",
       })
@@ -42,6 +43,7 @@ export const seriesPatchSchema = z
   .object({
     watch_status: z
       .number()
+      .int()
       .refine((value) => watchStatusValues.includes(value), {
         message: "Invalid watch_status",
       })

@@ -107,7 +107,7 @@ export const userMovies = sqliteTable(
   (table) => [
     check(
       "user_movies_watch_status_check",
-      sql`${table.watchStatus} IN (0, 1, 2, 3)`,
+      sql`${table.watchStatus} IN (0, 1, 2)`,
     ),
     check(
       "user_movies_impression_check",
@@ -231,7 +231,7 @@ export const userSeries = sqliteTable(
   (table) => [
     check(
       "user_series_watch_status_check",
-      sql`${table.watchStatus} IN (0, 1, 2, 3)`,
+      sql`${table.watchStatus} IN (0, 1, 2)`,
     ),
     check(
       "user_series_impression_check",

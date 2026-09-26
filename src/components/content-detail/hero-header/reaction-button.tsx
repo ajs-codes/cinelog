@@ -7,6 +7,7 @@ export type ReactionButtonProps = {
   icon: LucideIcon;
   iconClassName?: string;
   label: string;
+  labelClassName?: string;
   active?: boolean;
   loading?: boolean;
   disabled?: boolean;
@@ -37,6 +38,7 @@ export function ReactionButton({
   icon: Icon,
   iconClassName = "",
   label,
+  labelClassName = "",
   active = false,
   loading = false,
   disabled = false,
@@ -48,6 +50,8 @@ export function ReactionButton({
       type="button"
       disabled={disabled || loading}
       onClick={onClick}
+      aria-label={label}
+      title={label}
       variant={active ? "primaryFilled" : "darkFilled"}
       className={cn(
         "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition",
@@ -68,7 +72,7 @@ export function ReactionButton({
           )}
         />
       )}
-      {label}
+      <span className={cn("truncate", labelClassName)}>{label}</span>
     </Button>
   );
 }

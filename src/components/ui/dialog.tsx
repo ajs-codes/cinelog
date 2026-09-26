@@ -104,7 +104,11 @@ function DialogClose({ children, ...props }: ComponentProps<typeof Button>) {
   );
 }
 
-function DialogOverlay({ className, ...props }: ComponentProps<"div">) {
+function DialogOverlay({
+  className,
+  dismissible = true,
+  ...props
+}: ComponentProps<"div"> & { dismissible?: boolean }) {
   const { setOpen } = useDialogContext();
   return (
     <div
@@ -113,7 +117,11 @@ function DialogOverlay({ className, ...props }: ComponentProps<"div">) {
         "fixed inset-0 z-50 bg-black/10 backdrop-blur-xs",
         className,
       )}
-      onMouseDown={() => setOpen(false)}
+      onMouseDown={() => {
+        if (dismissible) {
+          setOpen(false);
+        }
+      }}
       {...props}
     />
   );
@@ -128,16 +136,18 @@ function DialogContent({
   align = "center",
   children,
   className,
+  dismissible = true,
   showCloseButton = true,
   ...props
 }: ComponentProps<"div"> & {
   align?: keyof typeof dialogAlignClasses;
+  dismissible?: boolean;
   showCloseButton?: boolean;
 }) {
   const { open, setOpen } = useDialogContext();
 
   useEffect(() => {
-    if (!open) {
+    if (!open || !dismissible) {
       return;
     }
 
@@ -149,7 +159,7 @@ function DialogContent({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, setOpen]);
+  }, [dismissible, open, setOpen]);
 
   if (!open || typeof document === "undefined") {
     return null;
@@ -157,7 +167,7 @@ function DialogContent({
 
   return createPortal(
     <>
-      <DialogOverlay />
+      <DialogOverlay dismissible={dismissible} />
       <div
         aria-modal="true"
         className={cn(

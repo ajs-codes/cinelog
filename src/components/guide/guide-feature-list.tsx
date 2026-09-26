@@ -98,7 +98,7 @@ export const FEATURE_GUIDES: FeatureGuide[] = [
       "Every title features an immersive cinematic presentation with a full-bleed backdrop hero, high-resolution poster artwork, metadata tags, and deep production specifications. Take immediate actions, log impressions, browse cast & crew, and discover related titles.",
     tips: [
       "Hero bar displays media type, release year, runtime, age certification (e.g. UA), release status, and official tagline",
-      "Use the action bar to toggle watchlist status, share title links, update watch progress (Plan to Watch, In Progress, Completed, Dropped), or log reactions",
+      "Use the action bar to toggle watchlist status, share title links, update watch progress (Plan to Watch, Watching, Completed), or log reactions",
       "Reference external TMDB ID and IMDB ID links for verified cross-platform database info",
       "Detailed specifications include age rating, runtime, audio tracks, narrative synopsis, original creator, and lead studio",
       "Explore the Cast & Key Crew gallery with high-res headshots, actor names, and character roles",

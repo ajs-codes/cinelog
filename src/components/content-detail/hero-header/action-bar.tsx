@@ -1,6 +1,6 @@
 "use client";
 
-import { BookmarkPlus, Check, Loader2 } from "lucide-react";
+import { Bookmark, BookmarkOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReactionButton } from "@/components/content-detail/hero-header/reaction-button";
 import { ShareButton } from "@/components/content-detail/hero-header/share-button";
@@ -51,29 +51,39 @@ export function ActionBar({
       content,
     });
   const isAddingWatchlist = isMutating && lastMutation === "add-watchlist";
+  const isRemovingWatchlist = isMutating && lastMutation === "remove-watchlist";
 
   return (
     <div className="mt-6 border-t border-outline-variant pt-4">
       <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
         <Button
           className="h-10 gap-2 rounded-full border border-outline-variant bg-surface-container px-3.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high! sm:px-4 sm:text-sm"
-          disabled={isMutating || isPresentInWatchlist}
-          onClick={() => requestMutation("add-watchlist")}
+          disabled={isMutating}
+          onClick={() =>
+            requestMutation(
+              isPresentInWatchlist ? "remove-watchlist" : "add-watchlist",
+              isPresentInWatchlist
+                ? { requireWatchActivity: false }
+                : undefined,
+            )
+          }
           type="button"
           variant="darkFilled"
         >
-          {isAddingWatchlist ? (
+          {isAddingWatchlist || isRemovingWatchlist ? (
             <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
           ) : isPresentInWatchlist ? (
-            <Check className="h-4 w-4 text-status-success" />
+            <BookmarkOff className="h-4 w-4" />
           ) : (
-            <BookmarkPlus className="h-4 w-4" />
+            <Bookmark className="h-4 w-4" />
           )}
           {isAddingWatchlist
             ? "Adding..."
-            : isPresentInWatchlist
-              ? "In Watchlist"
-              : "Add to Watchlist"}
+            : isRemovingWatchlist
+              ? "Removing..."
+              : isPresentInWatchlist
+                ? "Remove from Library"
+                : "Add to Library"}
         </Button>
 
         <ShareButton id={id} imdbId={imdbId} type={type} />

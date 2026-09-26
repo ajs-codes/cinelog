@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Loader2, Plus } from "lucide-react";
+import { Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/http/client";
 import { MediaCard } from "@/components/ui/media-card";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
@@ -202,10 +202,10 @@ export function StepTitles({
       return (
         <span
           className={cn(TRIGGER_CLASS, "text-status-success")}
-          aria-label={`${candidate.title} is on your watchlist`}
-          title="On your watchlist"
+          aria-label={`${candidate.title} is on your library`}
+          title="On your library"
         >
-          <Check className="h-4 w-4" />
+          <BookmarkCheck className="h-4 w-4" />
         </span>
       );
     }
@@ -214,8 +214,8 @@ export function StepTitles({
         type="button"
         onClick={() => handleAdd(candidate)}
         disabled={isPending}
-        aria-label={`Add ${candidate.title} to your watchlist`}
-        title={hasError ? "Retry adding to watchlist" : "Add to watchlist"}
+        aria-label={`Add ${candidate.title} to your library`}
+        title={hasError ? "Retry adding to library" : "Add to library"}
         className={cn(
           TRIGGER_CLASS,
           hasError ? "text-status-error" : "text-brand-primary",
@@ -224,7 +224,7 @@ export function StepTitles({
         {isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <Plus className="h-4 w-4" />
+          <Bookmark className="h-4 w-4" />
         )}
       </button>
     );

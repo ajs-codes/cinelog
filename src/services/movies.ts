@@ -129,10 +129,7 @@ export async function updateMovieInLibrary(
 
   if (body.watch_status !== undefined) {
     updateData.watchStatus = body.watch_status;
-    const completedValue =
-      Object.values(WATCH_STATUS).find((s) => s.display_value === "Completed")
-        ?.value ?? 2;
-    if (body.watch_status === completedValue) {
+    if (body.watch_status === WATCH_STATUS[2].value) {
       updateData.completedAt = now;
     } else {
       updateData.completedAt = null;

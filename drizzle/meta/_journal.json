@@ -64,6 +64,13 @@
       "when": 1789913050032,
       "tag": "0008_add_user_preferences",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1790425211677,
+      "tag": "0009_remove_dropped_status",
+      "breakpoints": true
     }
   ]
 }
